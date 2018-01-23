@@ -3,14 +3,23 @@ function fun(algo_name, params, app, createCallbackFcn)
   % Setup a string list of dynamic arguments to be passed to the plugin.
   % for example:
   %    'app.spotting.fields{1}.Value, app.spotting.fields{2}.Value'
+
+  % Delete existing UI components before creating new ones on top
+  if isfield(app.spotting,'fields')
+    for idx=1:length(app.spotting.fields)
+      delete(app.spotting.fields{idx})
+      delete(app.spotting.labels{idx})
+    end
+  end
+
   app_params = {};
   for idx=1:length(params)
     app_params(idx) = {sprintf('app.spotting.fields{%s}.Value', num2str(idx))};
   end
   app_params = strjoin(app_params,', ');
-  v_offset = 100
+  v_offset = 100;
   for idx=1:length(params)
-    v_offset = v_offset + 50
+    v_offset = v_offset + 50;
     field_pos = [165 v_offset 50 22];
     label_pos = [5 v_offset-5 145 22];
 

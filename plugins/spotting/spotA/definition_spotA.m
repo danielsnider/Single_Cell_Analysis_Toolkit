@@ -1,4 +1,3 @@
-display_style = 'buttons'
 
 params(1).name = 'Gaussian Smooth Factor';
 params(1).default = 12;
