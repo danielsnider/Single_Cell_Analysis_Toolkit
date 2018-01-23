@@ -4,8 +4,7 @@ function [X Y] = spotA(img, smooth_param, markersize)
   % seeds(img_mask==0)=0; % remove seeds outside of our img mask
   % Debug with plot
   [X Y] = find(seeds);
-  %figure('name','seeds','NumberTitle', 'off')
-  figure(2)
+  f = figure(222); clf; set(f, 'name','seeds','NumberTitle', 'off')
   imshow(img,[]);
   hold on;
   plot(Y,X,'or','markersize',markersize,'markerfacecolor','r')
