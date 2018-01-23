@@ -1,4 +1,4 @@
-function fun(app, params, createCallbackFcn)
+function fun(algo_name, params, app, createCallbackFcn)
 % function fun(algo_name, params, app, createCallbackFcn)
   % Setup a string list of dynamic arguments to be passed to the plugin.
   % for example:
@@ -14,7 +14,7 @@ function fun(app, params, createCallbackFcn)
     field_pos = [165 v_offset 50 22];
     label_pos = [5 v_offset-5 145 22];
 
-    fieldCallback = @(app, event) eval(['spotA(app.img, ' app_params ');']);
+    fieldCallback = @(app, event) eval([algo_name '(app.img, ' app_params ');']);
 
     app.spotting.fields{idx} = uispinner(app.SpottingTab);
     app.spotting.fields{idx}.ValueChangedFcn = createCallbackFcn(app, fieldCallback, true);
