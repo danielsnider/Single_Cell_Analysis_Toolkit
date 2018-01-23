@@ -25,12 +25,12 @@ function fun(algo_name, params, app, createCallbackFcn)
 
     fieldCallback = @(app, event) eval([algo_name '(app.img, ' app_params ');']);
 
-    app.spotting.fields{idx} = uispinner(app.Tab_4);
+    app.spotting.fields{idx} = uispinner(app.Tab_Spot);
     app.spotting.fields{idx}.ValueChangedFcn = createCallbackFcn(app, fieldCallback, true);
     app.spotting.fields{idx}.Position = field_pos;
     app.spotting.fields{idx}.Value = params(idx).default;
     
-    app.spotting.labels{idx} = uilabel(app.Tab_4);
+    app.spotting.labels{idx} = uilabel(app.Tab_Spot);
     app.spotting.labels{idx}.HorizontalAlignment = 'right';
     app.spotting.labels{idx}.Position = label_pos;
     app.spotting.labels{idx}.Text = params(idx).name;
