@@ -1,40 +1,55 @@
 function fun(app)
   f = figure(111); clf; set(f, 'name','Image','NumberTitle', 'off')
 
-% function fun(algo_name, params, app, createCallbackFcn)
-  % Setup a string list of dynamic arguments to be passed to the plugin.
-  % for example:
-  %    'app.spotting.fields{1}.Value, app.spotting.fields{2}.Value'
+  app.seeds{idx}
+  app.labels{idx}
+  app.measurements{idx}
 
-  % Delete existing UI components before creating new ones on top
-  if isfield(app.spotting,'fields')
-    for idx=1:length(app.spotting.fields)
-      delete(app.spotting.fields{idx})
-      delete(app.spotting.labels{idx})
-    end
+  idx = 1
+  app.figure{idx}.seeds{idx}.color = [1 0 0];
+  % app.figure{idx}.label{idx}
+  % app.figure{idx}.measurements{idx}
+  app.figure{idx}.channels{1}.color = [1 0 0];
+  app.figure{idx}.channels{2}.color = [1 0 0];
+  app.figure{idx}.channels{3}.color = [1 0 0];
+  app.figure{idx}.plate = 1;
+  app.figure{idx}.row = 1;
+  app.figure{idx}.column
+  app.figure{idx}.field
+  app.figure{idx}.timepoint
+  
+
+  if isfield(app.figure,'fields')
+    t = 1
   end
 
-  app_params = {};
-  for idx=1:length(params)
-    app_params(idx) = {sprintf('app.spotting.fields{%s}.Value', num2str(idx))};
-  end
-  app_params = strjoin(app_params,', ');
-  v_offset = 100;
-  for idx=1:length(params)
-    v_offset = v_offset + 50;
-    field_pos = [165 v_offset 50 22];
-    label_pos = [5 v_offset-5 145 22];
+  %% Display RGB Overlay Image
+  output_image = zeros(size(app.cyto,1),size(app.cyto,2));
+  % Select only cells for the selected folder
+  subsetTable=subsetTable(find(strcmp(subsetTable.Folder,{app.folder})),:);
 
-    fieldCallback = @(app, event) eval([algo_name '(app.img, ' app_params ');']);
-
-    app.spotting.fields{idx} = uispinner(app.SpottingTab);
-    app.spotting.fields{idx}.ValueChangedFcn = createCallbackFcn(app, fieldCallback, true);
-    app.spotting.fields{idx}.Position = field_pos;
-    app.spotting.fields{idx}.Value = params(idx).default;
-    
-    app.spotting.labels{idx} = uilabel(app.SpottingTab);
-    app.spotting.labels{idx}.HorizontalAlignment = 'right';
-    app.spotting.labels{idx}.Position = label_pos;
-    app.spotting.labels{idx}.Text = params(idx).name;
+  % Show channels
+  if app.displayCyto
+      output_image = output_image + double(app.cyto(:,:,str2num(app.img_id)));
   end
+  if app.displayReporter
+      output_image = output_image + double(app.pdx(:,:,str2num(app.img_id)));
+  end
+  if app.displayNuc
+      output_image = output_image + double(app.nuc(:,:,str2num(app.img_id)));
+  end
+  labelled_cyto = zeros(size(app.cyto));
+  subsetTable = subsetTable(find(strcmp(subsetTable.Folder,{app.folder})),:);
+  for i=1:height(subsetTable)
+    PixelIdxList = cell2mat(subsetTable{i,{'PixelIdxList'}});
+    labelled_cyto(PixelIdxList)=i;
+  end
+  
+  cla(app.UIAxes);
+  imshow(output_image,[],'Parent',app.UIAxes);
+  hold(app.UIAxes, 'on');
+  labelled_cyto_rgb = label2rgb(uint32(labelled_cyto(:,:,str2num(app.img_id))), 'jet', [1 1 1], 'shuffle');
+  himage = imshow(labelled_cyto_rgb,[],'Parent',app.UIAxes);
+  himage.AlphaData = 0.1;
+  axis off
 end
