@@ -18,19 +18,19 @@ function fun(plates, app)
 
     channel_strings = {};
     if isfield(plate, 'Ch1')
-        channel_strings{1} = sprintf('Ch1: %s', plate.Ch1)
+        channel_strings{1} = sprintf('Ch1: %s', plate.Ch1);
     end
     if isfield(plate, 'Ch2')
-        channel_strings{2} = sprintf('Ch2: %s', plate.Ch2)
+        channel_strings{2} = sprintf('Ch2: %s', plate.Ch2);
     end
     if isfield(plate, 'Ch3')
-        channel_strings{3} = sprintf('Ch3: %s', plate.Ch3)
+        channel_strings{3} = sprintf('Ch3: %s', plate.Ch3);
     end
     if isfield(plate, 'Ch4')
-        channel_strings{4} = sprintf('Ch4: %s', plate.Ch4)
+        channel_strings{4} = sprintf('Ch4: %s', plate.Ch4);
     end
     channel_box = uilistbox(tab, 'Position', [12,178,173,76], 'FontSize', 12, ...
-        'FontName', 'Helvetica', 'Items', channel_strings)
+        'FontName', 'Helvetica', 'Items', channel_strings);
 
 
     %% Format plate data from struct to two cell arrays for the metadata uitable
