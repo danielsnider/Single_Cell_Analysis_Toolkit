@@ -41,9 +41,8 @@ function plates = func(full_path)
       if isempty(key) | isempty(value) % reached empty cell 
         break
       end
-      fprintf('Reading plate metadata: %s = %s\n',key,value);
+      % fprintf('Reading plate metadata: %s = %s\n',key,value);
       plate.(key) = value;
-      plate
       offset = offset + 1;
     end
 

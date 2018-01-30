@@ -1,4 +1,4 @@
-function result = spotB(img, smooth_param, markersize, result)
+function result = spotB(img, smooth_param, markersize)
   img_smooth = imgaussfilt(img,smooth_param); % more smoothing to join close seeds
   seeds = imregionalmax(img_smooth);
   % seeds(img_mask==0)=0; % remove seeds outside of our img mask
