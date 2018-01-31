@@ -13,20 +13,6 @@ function result = fun(app, seg_num, createCallbackFcn)
   % Load parameters of the algorithm plugin
   params = eval(['definition_' algo_name]);
 
-  % Setup a string list of dynamic arguments to be passed to the plugin.
-  % for example:
-  %    'app.segmentation.fields{1}.Value, app.segmentation.fields{2}.Value'
-  % algo_params = {};
-  % for idx=1:length(params)
-  %   algo_params(idx) = {sprintf('app.segment{%s}.fields{%s}.Value', num2str(seg_num), num2str(idx))};
-  % end
-  % algo_params = strjoin(algo_params,', ');
-
-  % algo_params = {};
-  % for idx=1:length(params)
-  %   algo_params(idx) = {app.segment{seg_num}.fields{idx}.Value};
-  % end
-
   % Display GUI component for each parameter to the algorithm
   v_offset = 100;
   for idx=1:length(params)
@@ -36,8 +22,6 @@ function result = fun(app, seg_num, createCallbackFcn)
     label_pos = [5 v_offset-5 145 22];
 
     % Callback for when parameter value is changed by the user
-    % app.segment{seg_num}.Callback = @(app, event) eval([algo_name '(app.img, ' algo_params ');']);
-    % app.segment{seg_num}.Callback = @(app, event) do_segmentation(app,algo_name,algo_params,params);
     app.segment{seg_num}.Callback = @(app, event) do_segmentation(seg_num, app, algo_name);
 
     % Parameter Input Box
@@ -52,5 +36,6 @@ function result = fun(app, seg_num, createCallbackFcn)
     app.segment{seg_num}.labels{idx}.Position = label_pos;
     app.segment{seg_num}.labels{idx}.Text = params(idx).name;
   end
- 
+
+  app.segment{seg_num}.Callback(app, 'Update') % trigger once
 end
