@@ -1,9 +1,9 @@
 function fun(algo_name, params, app, createCallbackFcn)
 % function fun(algo_name, params, app, createCallbackFcn)
+
   % Setup a string list of dynamic arguments to be passed to the plugin.
   % for example:
   %    'app.spotting.fields{1}.Value, app.spotting.fields{2}.Value'
-
   app_params = {};
   for idx=1:length(params)
     app_params(idx) = {sprintf('app.spotting.fields{%s}.Value', num2str(idx))};

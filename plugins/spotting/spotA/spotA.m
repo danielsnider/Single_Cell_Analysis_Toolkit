@@ -8,6 +8,6 @@ function result = spotA(img, smooth_param, markersize)
   imshow(img,[]);
   hold on;
   plot(Y,X,'or','markersize',markersize,'markerfacecolor','r')
-  result = [X Y];
+  result = [Y X];
 
 end
