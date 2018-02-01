@@ -8,18 +8,24 @@ function result = fun(app, seg_num, createCallbackFcn)
       delete(app.segment{seg_num}.fields{idx});
       delete(app.segment{seg_num}.labels{idx});
     end
+    app.segment{seg_num}.fields = {};
+    app.segment{seg_num}.labels = {};
   end
   if isfield(app.segment{seg_num},'SegmentDropDown')
     for idx=1:length(app.segment{seg_num}.SegmentDropDown)
       delete(app.segment{seg_num}.SegmentDropDown{idx});
       delete(app.segment{seg_num}.SegmentLabel{idx});
     end
+    app.segment{seg_num}.SegmentDropDown = {};
+    app.segment{seg_num}.SegmentLabel = {};
   end
   if isfield(app.segment{seg_num},'ChannelDropDown')
     for idx=1:length(app.segment{seg_num}.ChannelDropDown)
       delete(app.segment{seg_num}.ChannelDropDown{idx});
       delete(app.segment{seg_num}.ChannelLabel{idx});
     end
+    app.segment{seg_num}.ChannelDropDown = {};
+    app.segment{seg_num}.ChannelLabel = {};
   end
 
   % Load parameters of the algorithm plugin
