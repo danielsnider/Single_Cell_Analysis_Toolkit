@@ -15,11 +15,11 @@ function fun(app)
     %% Load Image
     app.img = imread(image_name);
 
-    %% Perform Spotting
-    seeds = [];
-    if ~strcmp(app.SpotAlgorithmDropDown.Value, 'Off')
-      seeds = app.spotting.Callback(app, 'Update');
-    end
+    % %% Perform Spotting
+    % seeds = [];
+    % if ~strcmp(app.SpotAlgorithmDropDown.Value, 'Off')
+    %   seeds = app.spotting.Callback(app, 'Update');
+    % end
 
     %% Perform Segmentation
     % Loop over each configured segment and execute the segmentation algorithm
