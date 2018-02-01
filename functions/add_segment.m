@@ -46,6 +46,4 @@ function fun(app, createCallbackFcn)
   % Populate GUI components in new tab
   app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
 
-  % Update names of segments across the GUI
-  CallbackSegmentNameChange(app, seg_num);
 end

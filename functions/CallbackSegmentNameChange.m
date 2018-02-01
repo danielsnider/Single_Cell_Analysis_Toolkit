@@ -1,6 +1,8 @@
 function NameCallback(app, seg_num)
   % Update tab title
-  if ~strcmp(app.segment{seg_num}.Name.Value,'')
+  if strcmp(app.segment{seg_num}.Name.Value,'')
+    app.segment{seg_num}.tab.Title = sprintf('Segment %i', seg_num);
+  else
     app.segment{seg_num}.tab.Title = sprintf('Segment %i: %s', seg_num, app.segment{seg_num}.Name.Value);
   end
 

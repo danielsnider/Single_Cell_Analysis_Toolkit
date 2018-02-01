@@ -16,4 +16,5 @@ function do_segmentation(seg_num, app, algo_name)
 
   % Call algorithm
   result = feval(algo_name, app.img, algo_params{:});
+  % result % works
 end
