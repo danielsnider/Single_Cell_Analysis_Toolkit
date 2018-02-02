@@ -13,9 +13,11 @@ function params = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
-  params(n).name = 'Marker Size';
-  params(n).default = 2;
-  params(n).help = 'eueuiouiouieoi oeuiouio ';
-  params(n).type = 'numeric';
+  params(n).name = 'Debug Level';
+  params(n).default = 'Result Only';
+  params(n).help = '';
+  params(n).type = 'dropdown';
+  params(n).options = {'Result Only','Off'};
+
 
 end

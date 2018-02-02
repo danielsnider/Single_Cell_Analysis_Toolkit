@@ -1,14 +1,14 @@
-function result = spotA(smooth_param, markersize, img)
-  img_smooth = imgaussfilt(img,smooth_param); % more smoothing to join close seeds
+function seeds = spotA(smooth_param, debug_level, img)
+  img_smooth = imgaussfilt(img,smooth_param);
   seeds = imregionalmax(img_smooth);
-  % seeds(img_mask==0)=0; % remove seeds outside of our img mask
-  % Debug with plot
-  [X Y] = find(seeds);
-  f = figure(222); clf; set(f, 'name','seeds','NumberTitle', 'off')
-  imshow(img,[]);
-  hold on;
-  plot(Y,X,'or','markersize',markersize,'markerfacecolor','r')
-  hold off;
-  result = seeds;
+
+  if ismember(debug_level,{'Result Only'})
+    [X Y] = find(seeds);
+    f = figure(222); clf; set(f, 'name','seeds','NumberTitle', 'off')
+    imshow(img,[]);
+    hold on;
+    plot(Y,X,'or','markersize',2,'markerfacecolor','r')
+    hold off;
+  end
 
 end
