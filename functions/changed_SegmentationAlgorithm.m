@@ -46,14 +46,24 @@ function result = fun(app, seg_num, createCallbackFcn)
     app.segment{seg_num}.do_segmentation = @(app, event) do_segmentation(app, seg_num, algo_name);
 
     % Parameter Input Box
-    if strcmp(param.type,'numeric')
+    if ismember(param.type,{'numeric','text','dropdown'})
       % Set an index number for this component
       if ~isfield(app.segment{seg_num},'fields')
         app.segment{seg_num}.fields = {};
       end
       field_num = length(app.segment{seg_num}.fields) + 1;
       % Create UI components
-      app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
+      if strcmp(param.type,'numeric')
+        app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
+        % 'Limits', [-5 10],...
+        % 'LowerLimitInclusive','off',...
+        % 'UpperLimitInclusive','on',...
+      elseif strcmp(param.type,'text')
+        app.segment{seg_num}.fields{field_num} = uieditfield(app.segment{seg_num}.tab);
+      elseif strcmp(param.type,'dropdown')
+        app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
+        app.segment{seg_num}.fields{field_num}.Items = param.options;
+      end
       app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true);
       app.segment{seg_num}.fields{field_num}.Position = param_pos;
       app.segment{seg_num}.fields{field_num}.Value = param.default;
@@ -80,6 +90,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       % Create UI components
       dropdown = uidropdown(app.segment{seg_num}.tab, ...
         'Position', param_pos);
+        'ValueChangedFcn', createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true), ...
         'Items', {}, ...
       label = uilabel(app.segment{seg_num}.tab, ...
         'Text', param.name, ...
@@ -95,10 +106,17 @@ function result = fun(app, seg_num, createCallbackFcn)
         app.segment{seg_num}.ChannelDropDown = {};
       end
       chan_num = length(app.segment{seg_num}.ChannelDropDown) + 1;
+      % Get channel names based on the currently displaying plate
+      plate_num = app.PlateDropDown.Value;
+      chan_names = app.input_data.plates(plate_num).chan_names;
+      chan_nums = app.input_data.plates(plate_num).channels;
       % Create UI components
       dropdown = uidropdown(app.segment{seg_num}.tab, ...
-        'Items', app.input_data.unique_channels, ...
+        'Items', chan_names, ...
+        'ItemsData', chan_nums, ...
+        'ValueChangedFcn', createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true), ...
         'Position', param_pos);
+        % 'Items', app.input_data.unique_channels, ...
       label = uilabel(app.segment{seg_num}.tab, ...
         'Text', param.name, ...
         'HorizontalAlignment', 'right', ...
@@ -106,7 +124,9 @@ function result = fun(app, seg_num, createCallbackFcn)
       app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
       app.segment{seg_num}.ChannelLabel{chan_num} = label;
     else
-      error(sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name))
+      msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
+      errordlg(msg);
+      error(msg);
     end
 
   end

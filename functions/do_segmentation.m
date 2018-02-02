@@ -1,5 +1,4 @@
 function result = do_segmentation(app, seg_num, algo_name)
-  %°º¤ø,¸¸,ø¤º°`°º¤ø,¸,ø¤°º¤ø,¸¸,ø¤º°`°º¤ø,¸
   
   try
 
@@ -9,15 +8,31 @@ function result = do_segmentation(app, seg_num, algo_name)
       algo_params(length(algo_params)+1) = {app.segment{seg_num}.fields{idx}.Value};
     end
 
-    for idx=1:length(app.segment{seg_num}.SegmentDropDown)
-      dep_seg_num = app.segment{seg_num}.SegmentDropDown{idx}.Value;
-      dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
-      result = do_segmentation(app, dep_seg_num, dep_algo_name); % operate on the last loaded image in app.img
-      algo_params(length(algo_params)+1) = {result};
+    % Create list of segmentation results to be passed to the plugin
+    if isfield(app.segment{seg_num}, 'SegmentDropDown')
+      for drop_num=1:length(app.segment{seg_num}.SegmentDropDown)
+        dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
+        if isempty(dep_seg_num)
+          input_name = app.segment{seg_num}.SegmentLabel{drop_num}.Text;
+          errordlg(sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title));
+          result = [];
+          return
+        end
+        dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
+        segment_result = do_segmentation(app, dep_seg_num, dep_algo_name); % operate on the last loaded image in app.img
+        algo_params(length(algo_params)+1) = {segment_result};
+      end
+    end
+
+    % Create list of input channels to be passed to the plugin
+    for idx=1:length(app.segment{seg_num}.ChannelDropDown)
+      dep_chan_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
+      image_channel = app.image(dep_chan_num).data;
+      algo_params(length(algo_params)+1) = {image_channel};
     end
 
     % Call algorithm
-     result = feval(algo_name, app.img, algo_params{:});
+     result = feval(algo_name, algo_params{:});
      app.segment{seg_num}.data = result;
 
   catch ME

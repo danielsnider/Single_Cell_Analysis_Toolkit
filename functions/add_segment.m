@@ -1,5 +1,5 @@
 function fun(app, createCallbackFcn)
-  segmentation_plugins = {'seed_based_watershedA','spotA'};
+  segmentation_plugins = {'spotA','seed_based_watershedA'};
 
   % Setup
   if isempty(app.segmentation.tabgp)
