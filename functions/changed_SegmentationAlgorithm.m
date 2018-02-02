@@ -37,13 +37,13 @@ function result = fun(app, seg_num, createCallbackFcn)
     param = params(idx);
 
     % Location of GUI component
-    v_offset = v_offset - 25;
+    v_offset = v_offset - 33;
 
     param_pos = [600 v_offset 125 22];
     label_pos = [400 v_offset-5 200 22];
 
     % Callback for when parameter value is changed by the user
-    app.segment{seg_num}.Callback = @(app, event) do_segmentation(seg_num, app, algo_name);
+    app.segment{seg_num}.do_segmentation = @(app, event) do_segmentation(app, seg_num, algo_name);
 
     % Parameter Input Box
     if strcmp(param.type,'numeric')
@@ -54,7 +54,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       field_num = length(app.segment{seg_num}.fields) + 1;
       % Create UI components
       app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
-      app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.Callback, true);
+      app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true);
       app.segment{seg_num}.fields{field_num}.Position = param_pos;
       app.segment{seg_num}.fields{field_num}.Value = param.default;
       app.segment{seg_num}.labels{field_num} = uilabel(app.segment{seg_num}.tab);
@@ -111,7 +111,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
   end
 
-  % app.segment{seg_num}.Callback(app, 'Update') % trigger once
+  % app.segment{seg_num}.do_segmentation(app, seg_name, algo_name) % trigger once
 
 
   % Update names of segments across the GUI

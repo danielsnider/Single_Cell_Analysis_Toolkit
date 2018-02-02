@@ -53,6 +53,13 @@ function plates = func(full_path)
     assert(isfield(plate, 'ImageNamingScheme'), 'Failed to load platemap because required piece of plate metadata "ImageNamingScheme" was not found.')
     assert(isfield(plate, 'ImageFormat'), 'Failed to load platemap because required piece of plate metadata "ImageFormat" was not found.')
 
+    %% Set default plate number setting. The plate number in the filename of images. For example see "p01" in r05c04f49p01-ch3sk1fk1fl1.tiff. 
+    if strcmp(plate.ImageNamingScheme, 'Operetta')
+      if ~isfield(plate, 'PlateNumber')
+        plate.plate_num = 1;
+      end
+    end
+
     %% Find Condition Columns (extra columns on the right hand side of the plate to describe the experiment)
     xoffset = 1 + startx + plate.columns;
     yoffset = 2 + starty;

@@ -26,7 +26,7 @@ function fun(plates, app)
         'FontName', 'Helvetica', 'Items', channel_strings);
 
 
-    %% Format plate data from struct to two cell arrays for the metadata uitable
+    %% Format plate data from struct to two cell arrays for the metadata uitable, one for column names and one for values
     fields = fieldnames(plate);
     count = 1;
     keys = {};
@@ -41,9 +41,28 @@ function fun(plates, app)
       values{count} = val;
       count = count + 1;
     end
-    metadata_table = uitable(tab,'Data',values,'ColumnName', keys, 'RowName',{'MetaData'}, 'Position',[196,178,594,76]);
 
-    well_table = uitable(tab,'Data',plate.wells,'Position',[12,13,779,153],'ColumnEditable',false);
+    metadata_table = uitable(tab,'Data',values,'ColumnName', keys, ...
+      'RowName',{'MetaData'}, 'Position',[196,178,594,76], ...
+      'ColumnEditable',true);
+
+    % Generate plate row column labels, ex. A, B, C
+    unicode_A = 65; % unicode for A
+    unicode_end = 65 + plate.rows; % ex. 'ABCDEF'
+    letters = split(char(unicode_A):char(unicode_end),''); % ex. {0x} {A} {B}
+    letters = {letters{2:end-1}}; % first and last are empty, thx matlab
+
+    % Replace "NaN" to "" in the wells
+    for x=1:size(plate.wells,1)
+      for y=1:size(plate.wells,2)
+        if isnan(plate.wells{x,y})
+          plate.wells{x,y} = '';
+        end
+      end
+    end
+
+    well_table = uitable(tab,'Data',plate.wells,'Position',[12,13,779,153], ...
+      'ColumnEditable',true, 'RowName',letters);
   end
   
 

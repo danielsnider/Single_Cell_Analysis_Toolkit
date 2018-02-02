@@ -15,8 +15,14 @@ function params = fun()
 
   n = n + 1;
   params(n).name = 'Gaussian Smooth Factor';
-  params(n).default = 12;
+  params(n).default = 2;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
+  params(n).type = 'numeric';
+
+  n = n + 1;
+  params(n).name = 'Threshold';
+  params(n).default = 100;
+  params(n).help = '';
   params(n).type = 'numeric';
 
 end
