@@ -35,11 +35,6 @@ function fun(app, createCallbackFcn)
     'Position', [57,261,90,15]);
 
 
-  % param_pos = [600 v_offset 125 22];
-  % label_pos = [400 v_offset-5 200 22];
-
-
-
   % Switch to new tab
   app.segmentation.tabgp.SelectedTab = app.segment{seg_num}.tab;
 

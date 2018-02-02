@@ -39,7 +39,16 @@ function fun(app)
     app.input_data.plates(plate_num).timepoints = unique(app.input_data.plates(plate_num).timepoints,'sort');
     app.input_data.plates(plate_num).channels = unique(app.input_data.plates(plate_num).channels,'sort');
     app.input_data.plates(plate_num).plates = unique(app.input_data.plates(plate_num).plates,'sort');
-  end
+
+    % Enable channels for display in the figure
+    app.input_data.plates(plate_num).enabled_channels = logical(app.input_data.plates(plate_num).channels);
+
+    % Build a list of channel names in plate.chan_names. Ex. chan_names = {'DAPI'} {'SE'}
+    app.input_data.plates(plate_num).chan_names = {};
+    for chan_num=[app.input_data.plates(plate_num).channels]
+      chan_name = getfield(app.input_data.plates(plate_num),['Ch' num2str(chan_num)]);
+      app.input_data.plates(plate_num).chan_names{chan_num} = chan_name;
+    end
 
 
 end
