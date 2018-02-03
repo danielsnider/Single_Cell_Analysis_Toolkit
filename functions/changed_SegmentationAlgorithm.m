@@ -32,14 +32,14 @@ function result = fun(app, seg_num, createCallbackFcn)
   params = eval(['definition_' algo_name]);
 
   % Display GUI component for each parameter to the algorithm
-  v_offset = 300;
+  v_offset = 393;
   for idx=1:length(params)
     param = params(idx);
 
     % Location of GUI component
     v_offset = v_offset - 33;
 
-    param_pos = [600 v_offset 125 22];
+    param_pos = [620 v_offset 125 22];
     label_pos = [400 v_offset-5 200 22];
 
     % Callback for when parameter value is changed by the user
@@ -55,9 +55,9 @@ function result = fun(app, seg_num, createCallbackFcn)
       % Create UI components
       if strcmp(param.type,'numeric')
         app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
-        % 'Limits', [-5 10],...
-        % 'LowerLimitInclusive','off',...
-        % 'UpperLimitInclusive','on',...
+        if isfield(param,'limits')
+          app.segment{seg_num}.fields{field_num}.Limits = param.limits;
+        end
       elseif strcmp(param.type,'text')
         app.segment{seg_num}.fields{field_num} = uieditfield(app.segment{seg_num}.tab);
       elseif strcmp(param.type,'dropdown')
