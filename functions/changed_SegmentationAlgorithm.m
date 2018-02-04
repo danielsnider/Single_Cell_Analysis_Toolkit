@@ -3,30 +3,24 @@ function result = fun(app, seg_num, createCallbackFcn)
   algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
 
   % Delete existing UI components before creating new ones on top
-  if isfield(app.segment{seg_num},'fields')
-    for idx=1:length(app.segment{seg_num}.fields)
-      delete(app.segment{seg_num}.fields{idx});
-      delete(app.segment{seg_num}.labels{idx});
+  component_names = { ...
+    'fields', ...
+    'labels', ...
+    'SegmentDropDown', ...
+    'SegmentLabel', ...
+    'ChannelDropDown', ...
+    'ChannelLabel', ...
+  };
+  for cid=1:length(component_names)
+    comp_name = component_names{cid};
+    if isfield(app.segment{seg_num},comp_name)
+      for idx=1:length(app.segment{seg_num}.(comp_name))
+        delete(app.segment{seg_num}.(comp_name){idx});
+      end
+      app.segment{seg_num}.(comp_name) = {};
     end
-    app.segment{seg_num}.fields = {};
-    app.segment{seg_num}.labels = {};
   end
-  if isfield(app.segment{seg_num},'SegmentDropDown')
-    for idx=1:length(app.segment{seg_num}.SegmentDropDown)
-      delete(app.segment{seg_num}.SegmentDropDown{idx});
-      delete(app.segment{seg_num}.SegmentLabel{idx});
-    end
-    app.segment{seg_num}.SegmentDropDown = {};
-    app.segment{seg_num}.SegmentLabel = {};
-  end
-  if isfield(app.segment{seg_num},'ChannelDropDown')
-    for idx=1:length(app.segment{seg_num}.ChannelDropDown)
-      delete(app.segment{seg_num}.ChannelDropDown{idx});
-      delete(app.segment{seg_num}.ChannelLabel{idx});
-    end
-    app.segment{seg_num}.ChannelDropDown = {};
-    app.segment{seg_num}.ChannelLabel = {};
-  end
+
 
   % Load parameters of the algorithm plugin
   params = eval(['definition_' algo_name]);
@@ -45,6 +39,12 @@ function result = fun(app, seg_num, createCallbackFcn)
     % Callback for when parameter value is changed by the user
     app.segment{seg_num}.do_segmentation = @(app, event) do_segmentation(app, seg_num, algo_name);
 
+    % Correct unavailable user set default value
+    if ismember(param.type,{'dropdown','listbox'})
+      if ~ismember(param.default, param.options) 
+          param.default = param.options{1};
+      end
+    end
     % Parameter Input Box
     if ismember(param.type,{'numeric','text','dropdown'})
       % Set an index number for this component
@@ -63,8 +63,6 @@ function result = fun(app, seg_num, createCallbackFcn)
       elseif strcmp(param.type,'dropdown')
         app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
         app.segment{seg_num}.fields{field_num}.Items = param.options;
-        if ~ismember(param.default, param.options) % Correct unavailable user set default value
-          param.default = param.options{1};
       end
       app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true);
       app.segment{seg_num}.fields{field_num}.Position = param_pos;
@@ -76,14 +74,6 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     % Create segment selection dropdown box
     elseif strcmp(param.type,'segment_dropdown')
-      % % Build Segment Names
-      % segment_names = {};
-      % for n=1:length(app.segment)
-      %   segment_names{n} = app.segment{n}.Name.Value;
-      %   if strcmp(segment_names{n},'')
-      %     segment_names{n} = sprintf('Segment %i', n);
-      %   end
-      % end
       % Set an index number for this component
       if ~isfield(app.segment{seg_num},'SegmentDropDown')
         app.segment{seg_num}.SegmentDropDown = {};
@@ -125,13 +115,16 @@ function result = fun(app, seg_num, createCallbackFcn)
         'Position', label_pos);
       app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
       app.segment{seg_num}.ChannelLabel{chan_num} = label;
+
     else
       msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
       errordlg(msg);
       error(msg);
     end
 
+
   end
+
 
   % app.segment{seg_num}.do_segmentation(app, seg_name, algo_name) % trigger once
 

@@ -1,6 +1,5 @@
 function fun(app, createCallbackFcn)
-  % measure_plugins = {'region_props','mitosis_detection_saddlepoint'};
-  measure_plugins = {'mitosis_detection_saddlepoint'};
+  measure_plugins = {'region_props','mitosis_detection_saddlepoint'};
 
   % Setup
   if isempty(app.measure_tabgp)
