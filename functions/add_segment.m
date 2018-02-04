@@ -41,13 +41,18 @@ function fun(app, createCallbackFcn)
     'FontName', 'Yu Gothic UI Light', ...
     'FontSize', 28, ...
     'Position', [70,396,218,41]);
-
   label = uilabel(tab, ...
     'Text', 'Parameters', ...
     'FontName', 'Yu Gothic UI Light', ...
     'FontSize', 28, ...
     'Position', [480,396,218,41]);
 
+  %% Initialize display check box for this channel
+  plate_num = app.PlateDropDown.Value; % Currently selected plate number
+  app.input_data.plates(plate_num).enabled_segments(seg_num) = 1;
+  
+  % Update the segment list in the display tab
+  draw_segment_selection(app);
 
   % Switch to new tab
   app.segmentation.tabgp.SelectedTab = app.segment{seg_num}.tab;

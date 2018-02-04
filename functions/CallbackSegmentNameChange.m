@@ -37,4 +37,8 @@ function NameCallback(app, seg_num)
       end
     end
   end
+
+  % Update the segment name in the display tab
+  draw_segment_selection(app);
+
 end

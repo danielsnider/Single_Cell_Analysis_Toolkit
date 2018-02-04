@@ -64,8 +64,8 @@ function fun(app)
     label_pos = [256,v_offset+4,61,15]; % 309
     color_picker_pos = [382,v_offset,28,24]; % 305
     focus_pos = [413,v_offset,29,24]; % 305
-    min_slider_pos = [320,v_offset+17,33,3]; % 322
-    max_slider_pos = [320,v_offset+1,33,3]; % 306
+    min_slider_pos = [320,v_offset+17,25,3]; % 322
+    max_slider_pos = [320,v_offset+1,25,3]; % 306
     min_label_pos = [355,v_offset+13,25,15]; % 318
     max_label_pos = [355,v_offset-4,28,15]; % 301
 
@@ -127,7 +127,7 @@ function fun(app)
       'BackgroundColor', [.3,.75,.9], ...
       'Position', focus_pos);
 
-    v_offset = v_offset - 30;
+    v_offset = v_offset - 35;
   end
 
 
