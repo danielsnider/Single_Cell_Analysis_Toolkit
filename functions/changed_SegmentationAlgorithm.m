@@ -63,6 +63,8 @@ function result = fun(app, seg_num, createCallbackFcn)
       elseif strcmp(param.type,'dropdown')
         app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
         app.segment{seg_num}.fields{field_num}.Items = param.options;
+        if ~ismember(param.default, param.options) % Correct unavailable user set default value
+          param.default = param.options{1};
       end
       app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true);
       app.segment{seg_num}.fields{field_num}.Position = param_pos;
@@ -74,14 +76,14 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     % Create segment selection dropdown box
     elseif strcmp(param.type,'segment_dropdown')
-      % Build Segment Names
-      segment_names = {};
-      for n=1:length(app.segment)
-        segment_names{n} = app.segment{n}.Name.Value;
-        if strcmp(segment_names{n},'')
-          segment_names{n} = sprintf('Segment %i', n);
-        end
-      end
+      % % Build Segment Names
+      % segment_names = {};
+      % for n=1:length(app.segment)
+      %   segment_names{n} = app.segment{n}.Name.Value;
+      %   if strcmp(segment_names{n},'')
+      %     segment_names{n} = sprintf('Segment %i', n);
+      %   end
+      % end
       % Set an index number for this component
       if ~isfield(app.segment{seg_num},'SegmentDropDown')
         app.segment{seg_num}.SegmentDropDown = {};
@@ -134,6 +136,6 @@ function result = fun(app, seg_num, createCallbackFcn)
   % app.segment{seg_num}.do_segmentation(app, seg_name, algo_name) % trigger once
 
 
-  % Update names of segments across the GUI
-  CallbackSegmentNameChange(app, seg_num);
+  % Fill in the names of segments across the GUI
+  changed_SegmentName(app, seg_num);
 end

@@ -59,12 +59,17 @@ function fun(app)
     app.input_data.plates(plate_num).channel_colors = default_colors(1:length(app.input_data.plates(plate_num).channels),:); % set each channel a default colour;
 
 
-    % Build a list of channel names in plate.chan_names. Ex. chan_names = {'DAPI'} {'SE'}
+    % Build a list of channel names per plate in app.input_data.plate.chan_names. Ex. {'DAPI'} {'SE'}
     app.input_data.plates(plate_num).chan_names = {};
     for chan_num=[app.input_data.plates(plate_num).channels]
       chan_name = getfield(app.input_data.plates(plate_num),['Ch' num2str(chan_num)]);
       app.input_data.plates(plate_num).chan_names{chan_num} = chan_name;
     end
 
+  end
+
+  % Build list of channel names across all plotes in app.input_data.channel_names. Ex. {'DAPI'} {'SE'}
+  app.input_data.channel_map = cat(1,app.input_data.plates.chan_names);
+  app.input_data.channel_names = unique(app.input_data.channel_map);
 
 end

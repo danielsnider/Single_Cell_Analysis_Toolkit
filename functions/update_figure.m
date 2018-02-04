@@ -62,19 +62,6 @@ function fun(app)
     chan_num = app.display.channel_override;
     img = app.image(chan_num).data;
 
-%     I2 = imadjust(I,[min(I(:)) max(I(:))],[min(I(:))+dynamic_range*0.5 max(I(:))-dynamic_range*0.4]);
-% premin = prctile(I(:),50)
-% premax = prctile(I(:),60)
-% im_norm = normalize0to1(double(I));
-% %dynamic_range*0.5 max(I(:))-dynamic_range*0.4
-% im_adj = imadjust(im_norm,[0.5 0.6], [0 1]);
-% imshow(im_adj,[]);
-
-% denormalized_im_adj = (im_adj).*double(premax-premin);
-% denormalized_im_adj = denormalized_im_adj + double(premin);
-% min(denormalized_im_adj(:))
-% max(denormalized_im_adj(:))
-
     % Scale image values according to the min max display sliders
     min_dyn_range_percent = app.input_data.plates(plate_num).channel_min(chan_num);
     max_dyn_range_percent = app.input_data.plates(plate_num).channel_max(chan_num);

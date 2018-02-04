@@ -1,5 +1,6 @@
-draw_measurement_selection
+function fun(app)
 
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
+end

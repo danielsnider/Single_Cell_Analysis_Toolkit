@@ -2,10 +2,10 @@ function fun(app, createCallbackFcn)
   segmentation_plugins = {'spotA','seed_based_watershedA'};
 
   % Setup
-  if isempty(app.segmentation.tabgp)
-    app.segmentation.tabgp = uitabgroup(app.Tab_Segment,'Position',[17,20,803,477]);
+  if isempty(app.segment_tabgp)
+    app.segment_tabgp = uitabgroup(app.Tab_Segment,'Position',[17,20,803,477]);
   end
-  tabgp = app.segmentation.tabgp;
+  tabgp = app.segment_tabgp;
   seg_num = length(tabgp.Children)+1;
 
   % Create new tab
@@ -24,12 +24,12 @@ function fun(app, createCallbackFcn)
     'Position', [90,365,57,15]);
 
   % Segment name edit field
-  function CallbackSegmentNameChange_(app, event)
-    CallbackSegmentNameChange(app, seg_num);
+  function changed_SegmentName_(app, event)
+    changed_SegmentName(app, seg_num);
   end
   app.segment{seg_num}.Name = uieditfield(tab, ...
     'Value', '', ...
-    'ValueChangedFcn', createCallbackFcn(app, @CallbackSegmentNameChange_, true), ...
+    'ValueChangedFcn', createCallbackFcn(app, @changed_SegmentName_, true), ...
     'Position', [162,327,200,22]);
   label = uilabel(tab, ...
     'Text', 'Segment Name', ...
@@ -52,10 +52,10 @@ function fun(app, createCallbackFcn)
   app.input_data.plates(plate_num).enabled_segments(seg_num) = 1;
   
   % Update the segment list in the display tab
-  draw_segment_selection(app);
+  draw_display_segment_selection(app);
 
   % Switch to new tab
-  app.segmentation.tabgp.SelectedTab = app.segment{seg_num}.tab;
+  app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
   % Populate GUI components in new tab
   app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');

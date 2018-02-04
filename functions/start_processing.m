@@ -27,6 +27,9 @@ function fun(app)
       app.segments{sid}.result = app.segments{sid}.Callback(app, 'Update');
     end
 
+    %% If there are no objects in the primary segment to measure, continue to the next image
+    
+
     %% Primary Segment Handling
     % Update subcomponent segment-ids to match the id of the primary segment that they are contained in
     NumberOfCells = 0000
