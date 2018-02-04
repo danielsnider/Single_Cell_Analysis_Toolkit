@@ -34,17 +34,60 @@ function fun(app)
   enabled_channels = app.input_data.plates(plate_num).enabled_channels;
   enabled_channel_nums = channel_nums(enabled_channels);
   for chan_num=[enabled_channel_nums]
-    colour = rand(1,3);
-    scaled_img = app.image(chan_num).data./length(enabled_channels); % reduce intensity so not to go overbounds of uint16
+    img = app.image(chan_num).data;
+
+    % Scale image values according to the min max display sliders
+    min_dyn_range_percent = app.input_data.plates(plate_num).channel_min(chan_num)/100;
+    max_dyn_range_percent = app.input_data.plates(plate_num).channel_max(chan_num)/100;
+    im_norm = normalize0to1(double(img));
+    im_adj = imadjust(im_norm,[min_dyn_range_percent max_dyn_range_percent], [0 1]);
+    scaled_img = uint16(im_adj.*2^16); % increase intensity to use full range of uint16 values
+    scaled_img = scaled_img./length(enabled_channels); % reduce intensity so not to go overbounds of uint16
+
+    % Set color
+    colour = app.input_data.plates(plate_num).channel_colors(chan_num,:);
     colour_img = uint16(zeros(size(composite_img)));
     colour_img(:,:,1) = scaled_img .* colour(1);
     colour_img(:,:,2) = scaled_img .* colour(2);
     colour_img(:,:,3) = scaled_img .* colour(3);
+
+    % Composite
     composite_img = composite_img + colour_img;
   end
   % Increase image brightness to use full range of unit16 values
   scale_factor = 2^16/max(composite_img(:));
   composite_img = composite_img .* scale_factor;
+
+  if app.display.channel_override
+    chan_num = app.display.channel_override;
+    img = app.image(chan_num).data;
+
+%     I2 = imadjust(I,[min(I(:)) max(I(:))],[min(I(:))+dynamic_range*0.5 max(I(:))-dynamic_range*0.4]);
+% premin = prctile(I(:),50)
+% premax = prctile(I(:),60)
+% im_norm = normalize0to1(double(I));
+% %dynamic_range*0.5 max(I(:))-dynamic_range*0.4
+% im_adj = imadjust(im_norm,[0.5 0.6], [0 1]);
+% imshow(im_adj,[]);
+
+% denormalized_im_adj = (im_adj).*double(premax-premin);
+% denormalized_im_adj = denormalized_im_adj + double(premin);
+% min(denormalized_im_adj(:))
+% max(denormalized_im_adj(:))
+
+    % Scale image values according to the min max display sliders
+    min_dyn_range_percent = app.input_data.plates(plate_num).channel_min(chan_num);
+    max_dyn_range_percent = app.input_data.plates(plate_num).channel_max(chan_num);
+    min_dyn_range_value = prctile(img(:), min_dyn_range_percent);
+    max_dyn_range_value = prctile(img(:), max_dyn_range_percent);
+    im_norm = normalize0to1(double(img));
+    im_adj = imadjust(im_norm,[min_dyn_range_percent/100 max_dyn_range_percent/100], [0 1]);
+    denormalized_im_adj = im_adj.*double(max_dyn_range_value-min_dyn_range_value);
+    denormalized_im_adj = denormalized_im_adj + double(min_dyn_range_value);
+
+    % Override composite image
+    composite_img = uint16(denormalized_im_adj);
+  end
 
   % Display
   f = figure(111); clf; set(f, 'name','Image','NumberTitle', 'off');

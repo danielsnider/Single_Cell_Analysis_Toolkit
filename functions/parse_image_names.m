@@ -40,8 +40,24 @@ function fun(app)
     app.input_data.plates(plate_num).channels = unique(app.input_data.plates(plate_num).channels,'sort');
     app.input_data.plates(plate_num).plates = unique(app.input_data.plates(plate_num).plates,'sort');
 
-    % Enable channels for display in the figure
+    % Enable by default all channels for display in the figure
     app.input_data.plates(plate_num).enabled_channels = logical(app.input_data.plates(plate_num).channels);
+
+    % Enable by default full dynamic range of channel intensities for display in the figure
+    app.input_data.plates(plate_num).channel_max = ones(1,length(app.input_data.plates(plate_num).channels))*100;
+    app.input_data.plates(plate_num).channel_min = zeros(1,length(app.input_data.plates(plate_num).channels));
+
+    % Default channels colors for display in the figure
+    default_colors = [...
+      1 0 0;
+      0 1 0;
+      0 0 1;
+      1 1 0;
+      0 1 1;
+      1 0 1; % limitation introduced here on the number of channels
+    ];
+    app.input_data.plates(plate_num).channel_colors = default_colors(1:length(app.input_data.plates(plate_num).channels),:); % set each channel a default colour;
+
 
     % Build a list of channel names in plate.chan_names. Ex. chan_names = {'DAPI'} {'SE'}
     app.input_data.plates(plate_num).chan_names = {};
