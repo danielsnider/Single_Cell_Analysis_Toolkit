@@ -16,6 +16,8 @@ function fun(app)
     % The plate number in the filename of images
     plate_num_file_part = sprintf('p%02d',app.input_data.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
     img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
+    app.input_data.plates(plate_num).img_files = img_files;
+    app.image_names = [app.image_names; img_files];
 
     % Get unique row, column, etc. values from all the image names
     app.input_data.plates(plate_num).rows = [];
@@ -65,6 +67,7 @@ function fun(app)
       chan_name = getfield(app.input_data.plates(plate_num),['Ch' num2str(chan_num)]);
       app.input_data.plates(plate_num).chan_names{chan_num} = chan_name;
     end
+
 
   end
 
