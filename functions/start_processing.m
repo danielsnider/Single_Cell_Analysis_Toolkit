@@ -5,26 +5,8 @@ function fun(app)
   NumberOfImages = length(app.image_names);
   images_to_process = app.image_names;
 
-  % Collect names of all segments to measure
-  all_segments_to_measure = {};
-  for meas_num=1:length(app.measure)
-    for param_num=1:length(app.measure{meas_num}.SegmentListbox)
-      all_segments_to_measure{length(all_segments_to_measure)+1} = app.measure{meas_num}.SegmentListbox{param_num}.Value;
-    end
-  end
-  all_segments_to_measure = unique(cat(1,all_segments_to_measure{:}));
-
-  % Collect names of all channels to measure
-  all_channels_to_measure = {};
-  for meas_num=1:length(app.measure)
-    for param_num=1:length(app.measure{meas_num}.ChannelListbox)
-      all_channels_to_measure{length(all_channels_to_measure)+1} = app.measure{meas_num}.ChannelListbox{param_num}.Value;
-    end
-  end
-  all_channels_to_measure = unique(cat(1,all_channels_to_measure{:}));
-
   %% Loop over images performing segmentation and measuring
-  while images_to_process
+  while length(images_to_process)
     msg = sprintf('Processing image %d of %d.',NumberOfImages-length(images_to_process)+1,NumberOfImages);
     app.log_processing_message(app, msg);
     
@@ -85,32 +67,26 @@ function fun(app)
       end
     end
 
-
-
-
     %% Perform Measurements
     if NumberOfCells > 0
+      iterTable = [];
       % Loop over each configured measurement and execute the measurement code
-      for meas_num=1:length(app.measurements)
-        measurement = app.measurements{meas_num};
-        msg = sprintf('Running %s...\n', measurement.name);
+      for meas_num=1:length(app.measure)
+        algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
+        msg = sprintf('Running %s...\n', algo_name);
         app.log_processing_message(app, msg);
-        Measurements = measurement.Callback(app, 'Update')
-
-        %% BOUNDARIES EXAMPLE
-        % Loop over known segments (app.measure{idx}.segments = segments = cell, nuc)
-          % Get pixel boundaries
-
-        %% REGION_PROPS EXAMPLE
-        % Loop over known segments (app.measure_segments = segments = cell, nuc)
-          % Take measurement per label (app.measure{idx}.metrics = area, shape)
-          % Loop over known channels (app.measure_channels = channels = DAPI, SE)
-            % Take measurement per channel (intensity)
-
-        iterTable=[iterTable Measurements];
+        MeasureTable = do_measurement(app, plate, meas_num, algo_name);
+        iterTable=[iterTable MeasureTable];
+      end
+      % Resolve missing table columns, they must all be present in both tables before combining
+      if ~isempty(ResultTable)
+          iterTablecolmissing = setdiff(ResultTable.Properties.VariableNames, iterTable.Properties.VariableNames);
+          ResultTablecolmissing = setdiff(iterTable.Properties.VariableNames, ResultTable.Properties.VariableNames);
+          iterTable = [iterTable array2table(nan(height(iterTable), numel(iterTablecolmissing)), 'VariableNames', iterTablecolmissing)];
+          ResultTable = [ResultTable array2table(nan(height(ResultTable), numel(ResultTablecolmissing)), 'VariableNames', ResultTablecolmissing)];
       end
       % Save result
-      ResultTable = [ResultTable; iterTable];
+      ResultTable = [iterTable; ResultTable];
     end
 
     % Remove image names from list of images to process
@@ -135,5 +111,7 @@ function fun(app)
     progress = (NumberOfImages-length(images_to_process))/NumberOfImages;
     app.ProgressSlider.Value = progress;
   end
+  app.ResultTable = ResultTable;
+  app.log_processing_message(app, 'DONE. Finished measuring all images.');
 
 end

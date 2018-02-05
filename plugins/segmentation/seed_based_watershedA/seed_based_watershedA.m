@@ -94,9 +94,10 @@ function result = fun(threshold_smooth_param, thresh_param, min_area, max_area, 
     imshow(uint8(img./8),[]);
     hold on
     % Display color overlay
-    labelled_rgb = label2rgb(uint32(bwlabel(bwperim(labelled_img))), 'jet', [1 1 1], 'shuffle');
+    labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
+    labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
     himage = imshow(uint8(labelled_rgb),[]);
-    himage.AlphaData = bwperim(labelled_img)*1;
+    himage.AlphaData = labelled_perim*1;
     % Display red borders
     [xm,ym]=find(seeds);
     hold on
