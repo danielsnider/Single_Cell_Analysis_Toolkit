@@ -18,29 +18,34 @@ function fun(app)
     img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
     app.input_data.plates(plate_num).img_files = img_files;
     app.image_names = [app.image_names; img_files];
+    
+    if isempty(img_files)
+      msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+      errordlg(msg);
+      error(msg);
+    end
 
     % Get unique row, column, etc. values from all the image names
-    app.input_data.plates(plate_num).rows = [];
-    app.input_data.plates(plate_num).columns = [];
-    app.input_data.plates(plate_num).fields = [];
-    app.input_data.plates(plate_num).timepoints = [];
-    app.input_data.plates(plate_num).channels = [];
-    app.input_data.plates(plate_num).plates = [];
-    for img_num=1:length(img_files)
-      re = regexp(img_files(img_num).name,'r(?<row>\d+)c(?<column>\d+)f(?<field>\d+)p(?<plate>\d+)-ch(?<channel>\d+)sk(?<timepoint>\d+)','names');
-      app.input_data.plates(plate_num).rows = [app.input_data.plates(plate_num).rows str2num(re.row)];
-      app.input_data.plates(plate_num).columns = [app.input_data.plates(plate_num).columns str2num(re.column)];
-      app.input_data.plates(plate_num).fields = [app.input_data.plates(plate_num).fields str2num(re.field)];
-      app.input_data.plates(plate_num).timepoints = [app.input_data.plates(plate_num).timepoints str2num(re.timepoint)];
-      app.input_data.plates(plate_num).channels = [app.input_data.plates(plate_num).channels str2num(re.channel)];
-      app.input_data.plates(plate_num).plates = [app.input_data.plates(plate_num).plates str2num(re.plate)];
-    end
-    app.input_data.plates(plate_num).rows = unique(app.input_data.plates(plate_num).rows,'sort');
-    app.input_data.plates(plate_num).columns = unique(app.input_data.plates(plate_num).columns,'sort');
-    app.input_data.plates(plate_num).fields = unique(app.input_data.plates(plate_num).fields,'sort');
-    app.input_data.plates(plate_num).timepoints = unique(app.input_data.plates(plate_num).timepoints,'sort');
-    app.input_data.plates(plate_num).channels = unique(app.input_data.plates(plate_num).channels,'sort');
-    app.input_data.plates(plate_num).plates = unique(app.input_data.plates(plate_num).plates,'sort');
+    rows = cellfun(@(x) str2num(x(2:3)), {img_files.name},'UniformOutput',false);
+    rows = unique([rows{:}],'sort');
+    columns = cellfun(@(x) str2num(x(5:6)), {img_files.name},'UniformOutput',false);
+    columns = unique([columns{:}],'sort');
+    fields = cellfun(@(x) str2num(x(8:9)), {img_files.name},'UniformOutput',false);
+    fields = unique([fields{:}],'sort');
+    plates = cellfun(@(x) str2num(x(11:12)), {img_files.name},'UniformOutput',false);
+    plates = unique([plates{:}],'sort');
+    channels = cellfun(@(x) str2num(x(16)), {img_files.name},'UniformOutput',false);
+    channels = unique([channels{:}],'sort');
+    paren = @(x, varargin) str2num(x{varargin{:}}); % helper to extract value from array in one line
+    timepoints = cellfun(@(x) paren(strsplit(x,{'sk','fk'}),2), {img_files.name},'UniformOutput',false);
+    timepoints = unique([timepoints{:}],'sort');
+
+    app.input_data.plates(plate_num).rows = rows;
+    app.input_data.plates(plate_num).columns = columns;
+    app.input_data.plates(plate_num).fields = fields;
+    app.input_data.plates(plate_num).timepoints = timepoints;
+    app.input_data.plates(plate_num).channels = channels;
+    app.input_data.plates(plate_num).plates = plates;
 
     % Enable by default all channels for display in the figure
     app.input_data.plates(plate_num).enabled_channels = logical(app.input_data.plates(plate_num).channels);
