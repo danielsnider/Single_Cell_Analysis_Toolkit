@@ -47,6 +47,9 @@ function fun(app, createCallbackFcn)
     'FontSize', 28, ...
     'Position', [480,396,218,41]);
 
+  %% Set a display color to see in the figure
+  app.segment{seg_num}.display_color = [];
+
   %% Initialize display check box for this channel
   plate_num = app.PlateDropDown.Value; % Currently selected plate number
   app.input_data.plates(plate_num).enabled_segments(seg_num) = 1;

@@ -83,14 +83,32 @@ function fun(app)
 
   % Display segments as colorized layers
   for seg_num=1:length(app.segment)
-    if ~isfield(app.segment{seg_num},'data')
+    if ~isfield(app.segment{seg_num},'result')
+      continue
+    end
+    if ~app.display.segment{seg_num}.checkbox.Value
       continue
     end
     seg = app.segment{seg_num}.result;
-    seg = imdilate(seg,strel('disk',5));
-    seg_colors = label2rgb(uint16(seg), 'jet', [1 1 1], 'shuffle');
+    gain = app.display.segment{seg_num}.gain_slider.Value/100;
+    perimeter = app.display.segment{seg_num}.perimeter_toggle.Value;
+    thickness = app.display.segment{seg_num}.perimeter_thickness.Value;
+    if perimeter
+      seg = bwperim(seg);
+      seg = bwlabel(seg);
+    end
+    seg = imdilate(seg,strel('disk',thickness));
+    colour = app.segment{seg_num}.display_color;
+    if any(colour)
+      seg_colors = uint8(zeros(size(composite_img)));
+      seg_colors(:,:,1) = logical(seg) .* colour(1) .* 255;
+      seg_colors(:,:,2) = logical(seg) .* colour(2) .* 255;
+      seg_colors(:,:,3) = logical(seg) .* colour(3) .* 255;
+    else
+      seg_colors = label2rgb(uint16(seg), 'jet', [1 1 1], 'shuffle'); % outputs uint8
+    end
     layer = imshow(seg_colors,[]);
-    layer.AlphaData = logical(seg)*.5;
+    layer.AlphaData = logical(seg)*gain;
   end
 
   hold off
