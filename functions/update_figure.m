@@ -86,7 +86,7 @@ function fun(app)
     if ~isfield(app.segment{seg_num},'data')
       continue
     end
-    seg = app.segment{seg_num}.data;
+    seg = app.segment{seg_num}.result;
     seg = imdilate(seg,strel('disk',5));
     seg_colors = label2rgb(uint16(seg), 'jet', [1 1 1], 'shuffle');
     layer = imshow(seg_colors,[]);

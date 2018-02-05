@@ -33,7 +33,7 @@ function result = do_segmentation(app, seg_num, algo_name)
 
     % Call algorithm
      result = feval(algo_name, algo_params{:});
-     app.segment{seg_num}.data = result;
+     app.segment{seg_num}.result = result;
 
   catch ME
     if strfind(ME.message,'infinite recursion within the program')

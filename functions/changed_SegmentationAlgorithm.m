@@ -55,7 +55,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       % Create UI components
       if strcmp(param.type,'numeric')
         app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
-        if isfield(param,'limits')
+        if isfield(param,'limits') & size(param.limits)==[1 2]
           app.segment{seg_num}.fields{field_num}.Limits = param.limits;
         end
       elseif strcmp(param.type,'text')

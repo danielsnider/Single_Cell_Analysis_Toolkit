@@ -1,7 +1,7 @@
-function result = fun(smooth_param, thresh_param, min_area, max_area, debug_level, seeds, img)
+function result = fun(threshold_smooth_param, thresh_param, min_area, max_area, debug_level, seeds, img)
 
   % Smooth
-  img_smooth = imgaussfilt(img,smooth_param);
+  img_smooth = imgaussfilt(img,threshold_smooth_param);
   if ismember(debug_level,{'All'})
     f = figure(886); clf; set(f,'name','imgaussfilt','NumberTitle', 'off'); imshow(img_smooth,[])
     imshow(img_smooth,[]);
@@ -28,8 +28,7 @@ function result = fun(smooth_param, thresh_param, min_area, max_area, debug_leve
   end
 
   %% Watershed
-  img_smooth = imgaussfilt(img,1); % don't smooth too much for watersheding
-  img_min = imimposemin(-img_smooth,seeds); % set locations of seeds to be -Inf (cause matlab watershed)
+  img_min = imimposemin(max(img(:))-img,seeds); % set locations of seeds to be -Inf as per  matlab's watershed
   if ismember(debug_level,{'All'})
     f = figure(564); clf; set(f,'name','imimposemin','NumberTitle', 'off')
     imshow(img_min,[]);
@@ -61,11 +60,18 @@ function result = fun(smooth_param, thresh_param, min_area, max_area, debug_leve
     imshow(filled_img,[]);
   end
 
+  % Remove segments that don't have a seed
+  reconstruct_img = imreconstruct(seeds,logical(filled_img));
+  if ismember(debug_level,{'All'})
+    f = figure(514); clf; set(f,'name','imreconstruct','NumberTitle', 'off')
+    imshow(reconstruct_img,[]);
+  end
+
   % Label image
-  labelled_img = bwlabel(filled_img);
+  labelled_img = bwlabel(reconstruct_img);
 
   % Remove objects that are too small or too large
-  stats = regionprops(labelled_img,'area')
+  stats = regionprops(labelled_img,'area');
   area = cat(1,stats.Area);
   for idx=1:length(area)
     size = area(idx);
@@ -84,6 +90,17 @@ function result = fun(smooth_param, thresh_param, min_area, max_area, debug_leve
 
   if ismember(debug_level,{'All','Result Only'})
     f = figure(743); clf; set(f,'name','watersed result','NumberTitle', 'off')
-    imshow(labelled_img,[]);
+    % Display original image
+    imshow(uint8(img./8),[]);
+    hold on
+    % Display color overlay
+    labelled_rgb = label2rgb(uint32(bwlabel(bwperim(labelled_img))), 'jet', [1 1 1], 'shuffle');
+    himage = imshow(uint8(labelled_rgb),[]);
+    himage.AlphaData = bwperim(labelled_img)*1;
+    % Display red borders
+    [xm,ym]=find(seeds);
+    hold on
+    plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
   end
+  
 end

@@ -14,14 +14,15 @@ function params = fun()
   params(n).type = 'segment_dropdown';
 
   n = n + 1;
-  params(n).name = 'Gaussian Smooth Factor';
-  params(n).default = 2;
+  params(n).name = 'Gaussian Blur';
+  params(n).default = 0.3;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
+  params(n).limits = [0.00001 Inf];
 
   n = n + 1;
   params(n).name = 'Threshold';
-  params(n).default = 1000;
+  params(n).default = 275;
   params(n).help = '';
   params(n).type = 'numeric';
 
@@ -33,7 +34,7 @@ function params = fun()
 
   n = n + 1;
   params(n).name = 'Max Area';
-  params(n).default = 10000;
+  params(n).default = 100000;
   params(n).help = '';
   params(n).type = 'numeric';
 

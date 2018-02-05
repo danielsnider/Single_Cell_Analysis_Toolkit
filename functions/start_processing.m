@@ -59,15 +59,34 @@ function fun(app)
       app.segment{seg_num}.result = app.segment{seg_num}.do_segmentation(app, 'Update');
     end
 
-    %% If there are no objects in the primary segment to measure, continue to the next image
-    % TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
-    
 
     %% Primary Segment Handling
-    % Update subcomponent segment-ids to match the id of the primary segment that they are contained in
-    % TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
+    % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
+    primary_seg_num = app.PrimarySegmentDropDown.Value;
+    primary_seg_data = app.segment{primary_seg_num}.result;
+    primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
+    app.segment{primary_seg_num}.result = primary_seg_data;
+    NumberOfCells = max(primary_seg_data(:));
+    % Loop over non-primary segment results and properly set the pixel values to be what is found in the region of the primary id
+    if NumberOfCells > 0
+      for seg_num=1:length(app.segment)
+        if seg_num==primary_seg_num % skip primary segment, only operate on subcomponents
+          continue
+        end
+        sub_seg_data = app.segment{seg_num}.result;
+        new_sub_seg_data = zeros(size(sub_seg_data));
+        % Loop over each segment in the primary segment and update the subcomponent value
+        for primary_seg_id=1:NumberOfCells
+          % Set the subcomponent single segment value to be equal to the primary segment where the primary segment and subcomponent overlay.
+          new_sub_seg_data(primary_seg_data==primary_seg_id) = primary_seg_id;
+          new_sub_seg_data(sub_seg_data==0)=0;
+        end
+        app.segment{seg_num}.result = new_sub_seg_data;
+      end
+    end
 
-    NumberOfCells = 0;
+
+
 
     %% Perform Measurements
     if NumberOfCells > 0

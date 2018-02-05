@@ -53,7 +53,7 @@ function result = fun(app, meas_num, createCallbackFcn)
       % Create UI components
       if strcmp(param.type,'numeric')
         app.measure{meas_num}.fields{param_num} = uispinner(app.measure{meas_num}.tab);
-        if isfield(param,'limits')
+        if isfield(param,'limits') & size(param.limits)==[1 2]
           app.measure{meas_num}.fields{param_num}.Limits = param.limits;
         end
       elseif strcmp(param.type,'text')
