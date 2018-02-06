@@ -1,6 +1,11 @@
-function fun(app)
+function fun(app, createCallbackFcn)
   tabgp = uitabgroup(app.Tab_Input,'Position',[17,20,803,477]);
   app.input_data.tabgp = tabgp;
+
+  %% Filter input data
+  function changed_FilterInput_(app, event)
+    changed_FilterInput(app, plate_num);
+  end
 
   for plate_num=1:length(app.plates)
     plate = app.plates(plate_num);
@@ -69,28 +74,36 @@ function fun(app)
       end
     end
 
+
     well_table = uitable(tab,'Data',plate.wells,'Position',[163,15,624,254], ...
       'ColumnEditable',true, 'RowName',letters);
     well_label = uilabel(tab, 'Text', 'Plate Map:', 'Position', [163,276,73,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
 
-    %% Filter input data
+
+
     filter_label = uilabel(tab, 'Text', 'Filter Input:', 'Position', [15,276,93,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
 
     rows_label = uilabel(tab, 'Text', 'Rows:', 'Position', [48,248,34,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    rows_field = uieditfield(tab, 'Position', [87,247,56,22]);
+    app.plates(plate_num).filter_rows = uieditfield(tab, 'Position', [87,247,56,22], ...
+      'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
+    );
 
     columns_label = uilabel(tab, 'Text', 'Columns:', 'Position', [26,219,56,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    columns_field = uieditfield(tab, 'Position', [87,218,56,22]);
+    app.plates(plate_num).filter_columns = uieditfield(tab, 'Position', [87,218,56,22], ...
+      'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
+    );
 
     fields_label = uilabel(tab, 'Text', 'Fields:', 'Position', [43,190,39,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    fields_field = uieditfield(tab, 'Position', [87,189,56,22]);
+    app.plates(plate_num).filter_fields = uieditfield(tab, 'Position', [87,189,56,22], ...
+      'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
+    );
 
     timepoints_label = uilabel(tab, 'Text', 'Timepoints:', 'Position', [15,161,67,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    timepoints_field = uieditfield(tab, 'Position', [87,160,56,22]);
+    app.plates(plate_num).filter_timepoints = uieditfield(tab, 'Position', [87,160,56,22], ...
+      'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
+    );
 
-
-
+    changed_FilterInput(app, plate_num);
   end
-  
 
 end
