@@ -8,15 +8,24 @@ function result = do_measurement(app, plate, meas_num, algo_name)
 
   % Collect numbers of segments to measure
   segments_to_measure = [];
-  for param_num=1:length(app.measure{meas_num}.SegmentListbox)
-    segments_to_measure = [segments_to_measure app.measure{meas_num}.SegmentListbox{param_num}.Value];
+  if isfield(app.measure{meas_num},'SegmentListbox')
+    for param_num=1:length(app.measure{meas_num}.SegmentListbox)
+      segments_to_measure = [segments_to_measure app.measure{meas_num}.SegmentListbox{param_num}.Value];
+    end
   end
   segments_to_measure = unique(segments_to_measure);
 
   % Collect names of channels to measure
   channels_to_measure = {};
-  for param_num=1:length(app.measure{meas_num}.ChannelListbox)
-    channels_to_measure{length(channels_to_measure)+1} = app.measure{meas_num}.ChannelListbox{param_num}.Value;
+  if isfield(app.measure{meas_num},'ChannelListbox')
+    for param_num=1:length(app.measure{meas_num}.ChannelListbox)
+      channels_to_measure{length(channels_to_measure)+1} = app.measure{meas_num}.ChannelListbox{param_num}.Value;
+    end
+  end
+  if isfield(app.measure{meas_num},'ChannelDropDown')
+    for param_num=1:length(app.measure{meas_num}.ChannelDropDown)
+      channels_to_measure{length(channels_to_measure)+1} = app.measure{meas_num}.ChannelDropDown{param_num}.Value;
+    end
   end
   channels_to_measure = unique(cat(1,channels_to_measure{:}));
   % Keep only the channels which exist in the plate
