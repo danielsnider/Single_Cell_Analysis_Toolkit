@@ -19,38 +19,38 @@ function fun(app)
 
   function CheckCallback(uiElem, Update, app, plate_num, chan_num)
     app.display.channel_override = false;
-    app.input_data.plates(plate_num).enabled_channels(chan_num) = app.display.channel{chan_num}.checkbox.Value;
+    app.plates(plate_num).enabled_channels(chan_num) = app.display.channel{chan_num}.checkbox.Value;
     update_figure(app);
   end
 
   function ColorPicker_Callback(uiElem, Update, app, plate_num, chan_num)
     app.display.channel_override = false;
-    current_RGB = app.input_data.plates(plate_num).channel_colors(chan_num,:);
+    current_RGB = app.plates(plate_num).channel_colors(chan_num,:);
     new_RGB = uisetcolor(current_RGB);
-    app.input_data.plates(plate_num).channel_colors(chan_num,:) = new_RGB;
+    app.plates(plate_num).channel_colors(chan_num,:) = new_RGB;
     update_figure(app);
   end
 
   function MinSlider_Callback(uiElem, Update, app, plate_num, chan_num)
-    app.input_data.plates(plate_num).channel_min(chan_num) = app.display.channel{chan_num}.min_slider.Value;
+    app.plates(plate_num).channel_min(chan_num) = app.display.channel{chan_num}.min_slider.Value;
     update_figure(app);
   end
   function MaxSlider_Callback(uiElem, Update, app, plate_num, chan_num)
-    app.input_data.plates(plate_num).channel_max(chan_num) = app.display.channel{chan_num}.max_slider.Value;
+    app.plates(plate_num).channel_max(chan_num) = app.display.channel{chan_num}.max_slider.Value;
     update_figure(app);
   end
 
   function Focus_Callback(uiElem, Update, app, plate_num, chan_num)
     app.display.channel_override = chan_num;
     % Focus check boxes so that only one is checked
-    for chan_num_idx = [app.input_data.plates(plate_num).channels]
+    for chan_num_idx = [app.plates(plate_num).channels]
       if chan_num == chan_num_idx
         app.display.channel{chan_num_idx}.checkbox.Value = 1;
-        app.input_data.plates(plate_num).enabled_channels(chan_num_idx) = 1;
+        app.plates(plate_num).enabled_channels(chan_num_idx) = 1;
         continue
       end
       app.display.channel{chan_num_idx}.checkbox.Value = 0;
-      app.input_data.plates(plate_num).enabled_channels(chan_num_idx) = 0;
+      app.plates(plate_num).enabled_channels(chan_num_idx) = 0;
     end
     update_figure(app);
   end
@@ -58,7 +58,7 @@ function fun(app)
   v_offset = 325;
 
   % Loop over channels
-  for chan_num=[app.input_data.plates(plate_num).channels]
+  for chan_num=[app.plates(plate_num).channels]
     % Location of GUI component
     check_pos = [239,v_offset+4,25,15]; % 309
     label_pos = [256,v_offset+4,61,15]; % 309
@@ -72,13 +72,13 @@ function fun(app)
     % Check Box
     app.display.channel{chan_num}.checkbox = uicheckbox(app.Tab_Display, ...
       'Position', check_pos, ...
-      'Value', app.input_data.plates(plate_num).enabled_channels(chan_num), ...
+      'Value', app.plates(plate_num).enabled_channels(chan_num), ...
       'Text', '', ...
       'ValueChangedFcn', {@CheckCallback, app, plate_num, chan_num});
 
     % Channel Label
     app.display.channel{chan_num}.label = uilabel(app.Tab_Display, ...
-      'Text', app.input_data.plates(plate_num).chan_names{chan_num}, ...
+      'Text', app.plates(plate_num).chan_names{chan_num}, ...
       'Position', label_pos);
 
     % Min Slider
@@ -86,7 +86,7 @@ function fun(app)
       'MajorTicks', [], ...
       'MajorTickLabels', {}, ...
       'MinorTicks', [], ...
-      'Value', app.input_data.plates(plate_num).channel_min(chan_num), ...
+      'Value', app.plates(plate_num).channel_min(chan_num), ...
       'ValueChangedFcn', {@MinSlider_Callback, app, plate_num, chan_num}, ...
       'Position', min_slider_pos);
 
@@ -95,7 +95,7 @@ function fun(app)
       'MajorTicks', [], ...
       'MajorTickLabels', {}, ...
       'MinorTicks', [], ...
-      'Value', app.input_data.plates(plate_num).channel_max(chan_num), ...
+      'Value', app.plates(plate_num).channel_max(chan_num), ...
       'ValueChangedFcn', {@MaxSlider_Callback, app, plate_num, chan_num}, ...
       'Position', max_slider_pos);
 

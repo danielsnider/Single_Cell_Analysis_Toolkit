@@ -52,7 +52,7 @@ function fun(app, createCallbackFcn)
 
   %% Initialize display check box for this channel
   plate_num = app.PlateDropDown.Value; % Currently selected plate number
-  app.input_data.plates(plate_num).enabled_segments(seg_num) = 1;
+  app.plates(plate_num).enabled_segments(seg_num) = 1;
   
   % Update the segment list in the display tab
   draw_display_segment_selection(app);

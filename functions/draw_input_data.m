@@ -1,11 +1,11 @@
-function fun(plates, app)
+function fun(app)
   tabgp = uitabgroup(app.Tab_Input,'Position',[17,20,803,477]);
   app.input_data.tabgp = tabgp;
 
-  for idx=1:length(plates)
-    plate = plates(idx);
+  for plate_num=1:length(app.plates)
+    plate = app.plates(plate_num);
 
-    tab = uitab(tabgp,'Title',sprintf('Plate %s', num2str(idx)), ...
+    tab = uitab(tabgp,'Title',sprintf('Plate %s', num2str(plate_num)), ...
       'BackgroundColor', [1 1 1]);
 
     plate_label = uilabel(tab, 'Text', plate.Name, 'Position', [34,413,494,33], 'FontSize', 24, 'FontName', 'Yu Gothic UI Light');
@@ -38,8 +38,8 @@ function fun(plates, app)
     count = 1;
     keys = {};
     values = {};
-    for idx=1:length(fields)
-      field = fields{idx};
+    for field_num=1:length(fields)
+      field = fields{field_num};
       if ~ischar(plate.(field)) & ~isnumeric(plate.(field))
           continue
       end
@@ -72,6 +72,23 @@ function fun(plates, app)
     well_table = uitable(tab,'Data',plate.wells,'Position',[163,15,624,254], ...
       'ColumnEditable',true, 'RowName',letters);
     well_label = uilabel(tab, 'Text', 'Plate Map:', 'Position', [163,276,73,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
+
+    %% Filter input data
+    filter_label = uilabel(tab, 'Text', 'Filter Input:', 'Position', [15,276,93,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
+
+    rows_label = uilabel(tab, 'Text', 'Rows:', 'Position', [48,248,34,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    rows_field = uieditfield(tab, 'Position', [87,247,56,22]);
+
+    columns_label = uilabel(tab, 'Text', 'Columns:', 'Position', [26,219,56,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    columns_field = uieditfield(tab, 'Position', [87,218,56,22]);
+
+    fields_label = uilabel(tab, 'Text', 'Fields:', 'Position', [43,190,39,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    fields_field = uieditfield(tab, 'Position', [87,189,56,22]);
+
+    timepoints_label = uilabel(tab, 'Text', 'Timepoints:', 'Position', [15,161,67,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    timepoints_field = uieditfield(tab, 'Position', [87,160,56,22]);
+
+
 
   end
   

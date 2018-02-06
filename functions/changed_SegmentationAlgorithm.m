@@ -100,8 +100,8 @@ function result = fun(app, seg_num, createCallbackFcn)
       chan_num = length(app.segment{seg_num}.ChannelDropDown) + 1;
       % Get channel names based on the currently displaying plate
       plate_num = app.PlateDropDown.Value;
-      chan_names = app.input_data.plates(plate_num).chan_names;
-      chan_nums = app.input_data.plates(plate_num).channels;
+      chan_names = app.plates(plate_num).chan_names;
+      chan_nums = app.plates(plate_num).channels;
       % Create UI components
       dropdown = uidropdown(app.segment{seg_num}.tab, ...
         'Items', chan_names, ...

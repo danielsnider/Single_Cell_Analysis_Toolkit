@@ -7,6 +7,8 @@ function MeasureTable = func(stats_per_label, stats_per_channel, imgs, segments)
     return;
   end
   seg_names = fields(segments);
+
+  % Get channel names if there are any
   if ~isempty(imgs)
     chan_names = fields(imgs);
   end

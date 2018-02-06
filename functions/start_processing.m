@@ -13,9 +13,9 @@ function fun(app)
     image_file = images_to_process(1);
     
     % Get plate for this image
-    for plate_num=1:length(app.input_data.plates)
-      if strcmp(app.input_data.plates(plate_num).ImageDir, image_file.folder)
-        plate=app.input_data.plates(plate_num);
+    for plate_num=1:length(app.plates)
+      if strcmp(app.plates(plate_num).ImageDir, image_file.folder)
+        plate=app.plates(plate_num);
       end
     end
 
