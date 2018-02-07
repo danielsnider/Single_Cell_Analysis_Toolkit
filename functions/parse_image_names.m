@@ -27,25 +27,35 @@ function fun(app)
 
     % Get unique row, column, etc. values from all the image names
     rows = cellfun(@(x) str2num(x(2:3)), {img_files.name},'UniformOutput',false);
-    rows = unique([rows{:}],'sort');
+    uniq_rows = unique([rows{:}],'sort');
     columns = cellfun(@(x) str2num(x(5:6)), {img_files.name},'UniformOutput',false);
-    columns = unique([columns{:}],'sort');
+    uniq_columns = unique([columns{:}],'sort');
     fields = cellfun(@(x) str2num(x(8:9)), {img_files.name},'UniformOutput',false);
-    fields = unique([fields{:}],'sort');
+    uniq_fields = unique([fields{:}],'sort');
     plates = cellfun(@(x) str2num(x(11:12)), {img_files.name},'UniformOutput',false);
-    plates = unique([plates{:}],'sort');
+    uniq_plates = unique([plates{:}],'sort');
     channels = cellfun(@(x) str2num(x(16)), {img_files.name},'UniformOutput',false);
-    channels = unique([channels{:}],'sort');
+    uniq_channels = unique([channels{:}],'sort');
     paren = @(x, varargin) str2num(x{varargin{:}}); % helper to extract value from array in one line
     timepoints = cellfun(@(x) paren(strsplit(x,{'sk','fk'}),2), {img_files.name},'UniformOutput',false);
-    timepoints = unique([timepoints{:}],'sort');
+    uniq_timepoints = unique([timepoints{:}],'sort');
 
-    app.plates(plate_num).rows = rows;
-    app.plates(plate_num).columns = columns;
-    app.plates(plate_num).fields = fields;
-    app.plates(plate_num).timepoints = timepoints;
-    app.plates(plate_num).channels = channels;
-    app.plates(plate_num).plates = plates;
+    app.plates(plate_num).rows = uniq_rows;
+    app.plates(plate_num).columns = uniq_columns;
+    app.plates(plate_num).fields = uniq_fields;
+    app.plates(plate_num).timepoints = uniq_timepoints;
+    app.plates(plate_num).channels = uniq_channels;
+    app.plates(plate_num).plates = uniq_plates;
+
+    % Set add the row, column, field, etc. values for each file to their struct data in app.plate.img_files
+    for file_num=1:length(app.plates(plate_num).img_files)
+      app.plates(plate_num).img_files(file_num).row = rows(file_num);
+      app.plates(plate_num).img_files(file_num).column = columns(file_num);
+      app.plates(plate_num).img_files(file_num).field = fields(file_num);
+      app.plates(plate_num).img_files(file_num).timepoint = timepoints(file_num);
+      app.plates(plate_num).img_files(file_num).channel = channels(file_num);
+      app.plates(plate_num).img_files(file_num).plate = plates(file_num);
+    end
 
     % Enable by default all channels for display in the figure
     app.plates(plate_num).enabled_channels = logical(app.plates(plate_num).channels);
@@ -73,7 +83,8 @@ function fun(app)
       app.plates(plate_num).chan_names{chan_num} = chan_name;
     end
 
-
+    % Update UI with defaults for row, column, etc. filtering values
+    changed_FilterInput(app, plate_num);
   end
 
   % Build list of channel names across all plotes in app.input_data.channel_names. Ex. {'DAPI'} {'SE'}

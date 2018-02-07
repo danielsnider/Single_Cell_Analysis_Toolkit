@@ -5,12 +5,20 @@ function result = do_segmentation(app, seg_num, algo_name)
     % Create list of algorithm parameter values to be passed to the plugin
     algo_params = {};
     for idx=1:length(app.segment{seg_num}.fields)
+      if isfield(app.segment{seg_num}.fields{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.fields{idx}.UserData.ParamOptionalCheck.Value
+        algo_params(length(algo_params)+1) = {false};
+        continue
+      end
       algo_params(length(algo_params)+1) = {app.segment{seg_num}.fields{idx}.Value};
     end
 
     % Create list of segmentation results to be passed to the plugin
     if isfield(app.segment{seg_num}, 'SegmentDropDown')
       for drop_num=1:length(app.segment{seg_num}.SegmentDropDown)
+        if isfield(app.segment{seg_num}.SegmentDropDown{drop_num}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(length(algo_params)+1) = {false};
+          continue
+        end
         dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
         if isempty(dep_seg_num)
           input_name = app.segment{seg_num}.SegmentLabel{drop_num}.Text;
@@ -26,6 +34,10 @@ function result = do_segmentation(app, seg_num, algo_name)
 
     % Create list of input channels to be passed to the plugin
     for idx=1:length(app.segment{seg_num}.ChannelDropDown)
+      if isfield(app.segment{seg_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.ChannelDropDown{idx}.UserData.Value
+        algo_params(length(algo_params)+1) = {false};
+        continue
+      end
       dep_chan_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
       image_channel = app.image(dep_chan_num).data;
       algo_params(length(algo_params)+1) = {image_channel};

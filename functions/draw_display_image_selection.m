@@ -23,26 +23,21 @@ function fun(app)
   % Populate Experiment Dropdown
   app.ExperimentDropDown.Items = experiments_filtered_names;
   app.ExperimentDropDown.ItemsData = experiments_filtered_nums;
-  app.ExperimentDropDown.Value = app.ExperimentDropDown.ItemsData(1);
 
   % Populate Row Dropdown
   app.RowDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).rows);
   app.RowDropDown.ItemsData = app.plates(plate_num).rows;
-  app.RowDropDown.Value = app.RowDropDown.ItemsData(1);
 
   % Populate Row Dropdown
   app.ColumnDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).columns);
   app.ColumnDropDown.ItemsData = app.plates(plate_num).columns;
-  app.ColumnDropDown.Value = app.ColumnDropDown.ItemsData(1);
 
   % Populate Field Dropdown
   app.FieldDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).fields);
   app.FieldDropDown.ItemsData = app.plates(plate_num).fields;
-  app.FieldDropDown.Value = app.FieldDropDown.ItemsData(1);
 
   % Populate Timepoint Dropdown
   app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).timepoints);
   app.TimepointDropDown.ItemsData = app.plates(plate_num).timepoints;
-  app.TimepointDropDown.Value = app.TimepointDropDown.ItemsData(1);
 
 end

@@ -42,7 +42,7 @@ function fun(app)
 
   function Focus_Callback(uiElem, Update, app, plate_num, chan_num)
     app.display.channel_override = chan_num;
-    % Focus check boxes so that only one is checked
+    % Focus check boxes so that only one channel is checked
     for chan_num_idx = [app.plates(plate_num).channels]
       if chan_num == chan_num_idx
         app.display.channel{chan_num_idx}.checkbox.Value = 1;
@@ -51,6 +51,10 @@ function fun(app)
       end
       app.display.channel{chan_num_idx}.checkbox.Value = 0;
       app.plates(plate_num).enabled_channels(chan_num_idx) = 0;
+    end
+    % Disable all segments
+    for seg_num=1:length(app.display.segment)
+      app.display.segment{seg_num}.checkbox.Value = 0;
     end
     update_figure(app);
   end

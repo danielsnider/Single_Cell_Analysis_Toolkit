@@ -69,13 +69,17 @@ function fun(app)
 
     %% Perform Measurements
     if NumberOfCells > 0
-      iterTable = [];
+      iterTable = table();
       % Loop over each configured measurement and execute the measurement code
       for meas_num=1:length(app.measure)
         algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
         msg = sprintf('Running %s...\n', algo_name);
         app.log_processing_message(app, msg);
         MeasureTable = do_measurement(app, plate, meas_num, algo_name);
+        % Remove duplicate columns, keep the column that got there first
+        new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));
+        MeasureTable = MeasureTable(:,new_col_names);
+        % Store new measurements
         iterTable=[iterTable MeasureTable];
       end
       % Resolve missing table columns, they must all be present in both tables before combining
@@ -85,6 +89,8 @@ function fun(app)
           iterTable = [iterTable array2table(nan(height(iterTable), numel(iterTablecolmissing)), 'VariableNames', iterTablecolmissing)];
           ResultTable = [ResultTable array2table(nan(height(ResultTable), numel(ResultTablecolmissing)), 'VariableNames', ResultTablecolmissing)];
       end
+
+
       % Save result
       ResultTable = [iterTable; ResultTable];
     end

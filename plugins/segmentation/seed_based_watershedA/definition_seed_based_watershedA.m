@@ -12,13 +12,23 @@ function params = fun()
   params(n).default = '';
   params(n).help = 'The seeds to use when watersheding. They will allow the algorithm to seperate touching objects.';
   params(n).type = 'segment_dropdown';
+  params(n).optional = true;
 
   n = n + 1;
-  params(n).name = 'Gaussian Blur';
+  params(n).name = 'Gaussian Blur (for threshold)';
   params(n).default = 0.3;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
   params(n).limits = [0.00001 Inf];
+
+  n = n + 1;
+  params(n).name = 'Gaussian Blur (for watershed)';
+  params(n).default = 5;
+  params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
+  params(n).type = 'numeric';
+  params(n).limits = [0.00001 Inf];
+  params(n).optional = true;
+  params(n).optional_default_state = false;
 
   n = n + 1;
   params(n).name = 'Threshold';

@@ -59,6 +59,14 @@ function NameCallback(app, seg_num)
       for drop_num=1:length(app.measure{n}.SegmentDropDown)
         % Set dropdown data
         app.measure{n}.SegmentDropDown{drop_num}.Items = app.segment_names;
+        app.measure{n}.SegmentDropDown{drop_num}.ItemsData = 1:length(app.segment_names);
+      end
+    end
+    if isfield(app.measure{n},'SegmentListbox')
+      for list_num=1:length(app.measure{n}.SegmentListbox)
+        % Set dropdown data
+        app.measure{n}.SegmentListbox{list_num}.Items = app.segment_names;
+        app.measure{n}.SegmentListbox{list_num}.ItemsData = 1:length(app.segment_names);
       end
     end
   end
