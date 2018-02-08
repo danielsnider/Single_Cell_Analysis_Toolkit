@@ -42,7 +42,7 @@ function fun(app,saved_app,createCallbackFcn)
         for idx=1:length(app.segment{seg_num}.(comp_name)) % loop over each item of this type
           field_names = fieldnames(app.segment{seg_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
-            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition'})
+            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent'})
               continue % skip blacklisted property names that are known to be readonly
             end
             try
