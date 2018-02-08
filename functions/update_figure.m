@@ -112,15 +112,19 @@ function fun(app)
   end
 
   %% Display measure overlay
-  if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
-    measure_name = app.DisplayMeasureDropDown.Value
-    if ismember(measure_name,app.ResultTable.Properties.VariableNames)
-      
-      a=2
+  if app.DisplayMeasureCheckBox.Value
+    PlateName = app.plates(plate_num).metadata.Name;
+    if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
+      measure_name = app.DisplayMeasureDropDown.Value;
+      if ismember(measure_name,app.ResultTable.Properties.VariableNames)
+        selector = ismember(cell2mat(app.ResultTable.row),row) & ismember(cell2mat(app.ResultTable.column),column) & ismember(cell2mat(app.ResultTable.field),field) & ismember(cell2mat(app.ResultTable.timepoint),timepoint) & ismember(app.ResultTable.PlateName,PlateName);
+        data = app.ResultTable(selector,{measure_name,'x_coord','y_coord'});
+        fontsize = app.DisplayMeasureFontSize.Value;
+        fontcolor = app.measure_overlay_color;
+        text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%.2f'),'Color',fontcolor,'FontSize',fontsize);
+      end
     end
   end
-
-
 
   hold off
 

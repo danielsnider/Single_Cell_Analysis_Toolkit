@@ -25,6 +25,7 @@ function fun(app)
   app.display.channel_override = 0;
   app.measure = {};
   app.measure_tabgp = [];
+  app.measure_overlay_color = [0 1 0];
 
 
   app.ProcessingLogTextArea.Value = {''};

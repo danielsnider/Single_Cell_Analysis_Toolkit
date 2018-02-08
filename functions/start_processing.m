@@ -45,6 +45,15 @@ function fun(app)
       app.image(chan_num).data = imread(app.image(chan_num).path);
     end
 
+    % Update the image that is selected in the display tab
+    app.PlateDropDown.Value = plate_num;
+    draw_display_image_selection(app);
+    % app.ExperimentDropDown.Value = experiment;
+    app.RowDropDown.Value = image_file.row{:};
+    app.ColumnDropDown.Value = image_file.column{:};
+    app.FieldDropDown.Value = image_file.field{:};
+    app.TimepointDropDown.Value = image_file.timepoint{:};
+
     %% Perform Segmentation
     % Loop over each configured segment and execute the segmentation algorithm
     for seg_num=1:length(app.segment)
@@ -92,6 +101,16 @@ function fun(app)
         % Store new measurements
         iterTable=[iterTable MeasureTable];
       end
+
+      % Add X and Y coordinates for each primary label
+      stats = regionprops(primary_seg_data,'centroid');
+      centroids = cat(1, stats.Centroid);
+      iterTable.x_coord = floor(centroids(:,1));
+      iterTable.y_coord = floor(centroids(:,2));
+
+      % Add UUID for each row
+      iterTable(:,'ID') = uuid_array(height(iterTable))';
+
       % Add Plate Metadata
       for col_name=fields(plate.metadata)'
         col_value = plate.metadata.(col_name{:});
@@ -149,7 +168,7 @@ function fun(app)
     app.ProgressSlider.Value = progress;
   end
   app.ResultTable = ResultTable;
-  app.log_processing_message(app, 'DONE. Finished measuring all images.');
+  app.log_processing_message(app, 'DONE.');
 
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);
