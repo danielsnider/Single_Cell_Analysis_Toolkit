@@ -50,9 +50,9 @@ function params = fun()
 
   n = n + 1;
   params(n).name = 'Debug Level';
-  params(n).default = 'Result Only';
+  params(n).default = 'Result With Seeds';
   params(n).help = '';
   params(n).type = 'dropdown';
-  params(n).options = {'All','Result Only','Off'};
+  params(n).options = {'All','Result With Seeds','Result Only','Off'};
 
 end

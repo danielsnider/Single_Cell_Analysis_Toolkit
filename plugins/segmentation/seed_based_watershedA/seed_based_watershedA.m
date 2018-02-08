@@ -80,7 +80,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
 
   % Remove segments that don't have a seed
   if ~isequal(seeds,false)
-    reconstruct_img = imreconstruct(seeds,logical(filled_img));
+    reconstruct_img = imreconstruct(logical(seeds),logical(filled_img));
     labelled_img = bwlabel(reconstruct_img);
     if ismember(debug_level,{'All'})
       f = figure(514); clf; set(f,'name','imreconstruct','NumberTitle', 'off')
@@ -108,11 +108,13 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
     labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
     himage = imshow(uint8(labelled_rgb),[]);
     himage.AlphaData = labelled_perim*1;
-    if ~isequal(seeds,false)
-      % Display red dots for seeds
-      [xm,ym]=find(seeds);
-      hold on
-      plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
+    if ismember(debug_level,{'All','Result With Seeds'})
+      if ~isequal(seeds,false)
+        % Display red dots for seeds
+        [xm,ym]=find(seeds);
+        hold on
+        plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
+      end
     end
   end
   
