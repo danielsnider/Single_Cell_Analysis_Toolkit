@@ -2,8 +2,13 @@ function fun(app)
   %% Setup
   app.ProgressSlider.Value = 0; % reset progress bar to 0
   ResultTable = [];
-  NumberOfImages = length(app.image_names);
-  images_to_process = app.image_names;
+  images_to_process = [];
+
+  % Get image names that weren't filtered from all plates
+  for plate_num=1:length(app.plates)
+    images_to_process=[images_to_process app.plates(plate_num).img_files_subset];
+  end
+  NumberOfImages = length(images_to_process);
 
   %% Loop over images performing segmentation and measuring
   while length(images_to_process)
