@@ -4,16 +4,8 @@ function fun(app)
   plate_num = app.PlateDropDown.Value;
 
   % Delete UI components that were there before
-  for seg_num=1:length(app.display.segment)    
-      delete(app.display.segment{seg_num}.checkbox);
-      delete(app.display.segment{seg_num}.label);
-      delete(app.display.segment{seg_num}.gain_slider);
-      delete(app.display.segment{seg_num}.color_picker);
-      delete(app.display.segment{seg_num}.perimeter_toggle);
-      delete(app.display.segment{seg_num}.perimeter_thickness);
-  end
-  app.display.segment = {};
-
+  delete_display_segments(app);
+  
   function CheckCallback(uiElem, Update, app, plate_num, seg_num)
     update_figure(app);
   end

@@ -4,17 +4,7 @@ function fun(app)
   plate_num = app.PlateDropDown.Value;
 
   % Delete UI components that were there before
-  for chan_num=1:length(app.display.channel)    
-      delete(app.display.channel{chan_num}.checkbox);
-      delete(app.display.channel{chan_num}.label);
-      delete(app.display.channel{chan_num}.min_slider);
-      delete(app.display.channel{chan_num}.max_slider);
-      delete(app.display.channel{chan_num}.min_label);
-      delete(app.display.channel{chan_num}.max_label);
-      delete(app.display.channel{chan_num}.color_picker);
-      delete(app.display.channel{chan_num}.focus);
-  end
-  app.display.channel = {};
+  delete_display_channels(app);
 
 
   function CheckCallback(uiElem, Update, app, plate_num, chan_num)

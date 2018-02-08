@@ -2,6 +2,11 @@ function fun(app, createCallbackFcn)
   tabgp = uitabgroup(app.Tab_Input,'Position',[17,20,803,477]);
   app.input_data.tabgp = tabgp;
 
+  app.input_data.channel_map = {app.plates.Ch1; app.plates.Ch2; app.plates.Ch3; app.plates.Ch4};
+  app.input_data.unique_channels = unique(app.input_data.channel_map);
+  app.image_names = [];
+  
+
   %% Filter input data
   function changed_FilterInput_(app, event)
     plate_num = event.Source.UserData;
@@ -48,6 +53,9 @@ function fun(app, createCallbackFcn)
       field = fields{field_num};
       if ~ischar(plate.(field)) & ~isnumeric(plate.(field))
           continue
+      end
+      if ismember(field,{'plate_num', 'fields', 'timepoints', 'channels', 'plates', 'channel_max', 'channel_min', 'channel_colors', 'keep_rows', 'keep_columns', 'keep_fields', 'keep_timepoints', 'enabled_segments'});
+        continue % these are banned names, internal to the app, maybe not the right shape for UI display. TODO: refactor to keep user plate metadata and app plate metadata in different locations.
       end
       val = plate.(field);
       keys{count} = field;

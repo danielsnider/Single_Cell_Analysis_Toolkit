@@ -63,5 +63,6 @@ function func(app, plate_num)
 
   % Update the UI with the subset number of images
   app.plates(plate_num).NumberOfImagesField.Value = num2str(length(app.plates(plate_num).img_files_subset));
+  draw_display_image_selection(app);
 
 end

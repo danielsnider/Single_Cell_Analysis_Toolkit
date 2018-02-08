@@ -7,6 +7,7 @@ function fun(app, createCallbackFcn)
   end
   tabgp = app.segment_tabgp;
   seg_num = length(tabgp.Children)+1;
+  app.segment{seg_num} = {};
 
   % Create new tab
   tab = uitab(tabgp,'Title',sprintf('Segment %i',seg_num), ...
@@ -52,7 +53,7 @@ function fun(app, createCallbackFcn)
 
   %% Initialize display check box for this channel
   plate_num = app.PlateDropDown.Value; % Currently selected plate number
-  app.plates(plate_num).enabled_segments(seg_num) = 1;
+  %app.plates(plate_num).enabled_segments{seg_num} = 1;
   
   % Update the segment list in the display tab
   draw_display_segment_selection(app);

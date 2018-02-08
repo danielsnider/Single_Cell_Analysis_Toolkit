@@ -26,18 +26,18 @@ function fun(app)
 
   % Populate Row Dropdown
   app.RowDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).rows);
-  app.RowDropDown.ItemsData = app.plates(plate_num).rows;
+  app.RowDropDown.ItemsData = app.plates(plate_num).keep_rows;
 
   % Populate Row Dropdown
   app.ColumnDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).columns);
-  app.ColumnDropDown.ItemsData = app.plates(plate_num).columns;
+  app.ColumnDropDown.ItemsData = app.plates(plate_num).keep_columns;
 
   % Populate Field Dropdown
   app.FieldDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).fields);
-  app.FieldDropDown.ItemsData = app.plates(plate_num).fields;
+  app.FieldDropDown.ItemsData = app.plates(plate_num).keep_fields;
 
   % Populate Timepoint Dropdown
   app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).timepoints);
-  app.TimepointDropDown.ItemsData = app.plates(plate_num).timepoints;
+  app.TimepointDropDown.ItemsData = app.plates(plate_num).keep_timepoints;
 
 end

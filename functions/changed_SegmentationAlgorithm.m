@@ -3,24 +3,7 @@ function result = fun(app, seg_num, createCallbackFcn)
   algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
 
   % Delete existing UI components before creating new ones on top
-  component_names = { ...
-    'fields', ...
-    'labels', ...
-    'SegmentDropDown', ...
-    'SegmentLabel', ...
-    'ChannelDropDown', ...
-    'ChannelLabel', ...
-    'ParamOptionalCheck', ...
-  };
-  for cid=1:length(component_names)
-    comp_name = component_names{cid};
-    if isfield(app.segment{seg_num},comp_name)
-      for idx=1:length(app.segment{seg_num}.(comp_name))
-        delete(app.segment{seg_num}.(comp_name){idx});
-      end
-      app.segment{seg_num}.(comp_name) = {};
-    end
-  end
+  delete_segments(app,[seg_num]);
 
   % Setup a function needed later (note that functions cannot be defined in loops)
   function ParamOptionalCheckBoxCallback(uiElem, Update, app)
@@ -164,6 +147,9 @@ function result = fun(app, seg_num, createCallbackFcn)
       param_index = chan_num;
       % Get channel names based on the currently displaying plate
       plate_num = app.PlateDropDown.Value;
+      if ~isnumeric(app.PlateDropDown.Value)
+          plate_num=1; % bad startup value
+      end
       chan_names = app.plates(plate_num).chan_names;
       chan_nums = app.plates(plate_num).channels;
       % Create UI components
