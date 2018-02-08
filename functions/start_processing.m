@@ -23,7 +23,7 @@ function fun(app)
     
     % Get plate for this image
     for plate_num=1:length(app.plates)
-      if strcmp(app.plates(plate_num).ImageDir, image_file.folder)
+      if strcmp(app.plates(plate_num).metadata.ImageDir, image_file.folder)
         plate=app.plates(plate_num);
       end
     end
@@ -31,8 +31,8 @@ function fun(app)
     % Load all image channels
     for chan_num=[plate.channels]
       % Only Operetta Image Naming Scheme is Supported
-      if ~strcmp(plate.ImageNamingScheme, 'Operetta')
-        msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.ImageNamingScheme);
+      if ~strcmp(plate.metadata.ImageNamingScheme, 'Operetta')
+        msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.metadata.ImageNamingScheme);
         uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
       end
       % Build image path
@@ -92,6 +92,28 @@ function fun(app)
         % Store new measurements
         iterTable=[iterTable MeasureTable];
       end
+      % Add Plate Metadata
+      for col_name=fields(plate.metadata)'
+        col_value = plate.metadata.(col_name{:});
+        if strcmp(col_name,'Name')
+          col_name = 'PlateName'; % change this name to be less ambigious
+        end
+        iterTable(:,col_name) = {col_value}; % Add metada
+      end
+
+      % Add Image Metadata
+      for col_name=fields(image_file)'
+        col_value = image_file.(col_name{:});
+        skip_names = {'folder', 'date', 'bytes', 'isdir', 'datenum','channel'};
+        if ismember(col_name,skip_names)
+          continue % skip some info
+        end
+        if strcmp(col_name,'name')
+          col_name = 'ImageName'; % change this name to be less ambigious
+        end
+        iterTable(:,col_name) = {col_value}; % Add metada
+      end
+
       % Resolve missing table columns, they must all be present in both tables before combining
       if ~isempty(ResultTable)
           iterTablecolmissing = setdiff(ResultTable.Properties.VariableNames, iterTable.Properties.VariableNames);
@@ -99,7 +121,6 @@ function fun(app)
           iterTable = [iterTable array2table(nan(height(iterTable), numel(iterTablecolmissing)), 'VariableNames', iterTablecolmissing)];
           ResultTable = [ResultTable array2table(nan(height(ResultTable), numel(ResultTablecolmissing)), 'VariableNames', ResultTablecolmissing)];
       end
-
 
       % Save result
       ResultTable = [iterTable; ResultTable];

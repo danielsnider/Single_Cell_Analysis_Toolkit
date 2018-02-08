@@ -30,6 +30,7 @@ function plates = func(full_path)
     plate.wells = raw(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
 
     %% Load Plate Metadata
+    plate.metadata = {};
     offset = 0;
     while true
       iter_xoffset = startx+1+offset;
@@ -42,19 +43,19 @@ function plates = func(full_path)
         break
       end
       % fprintf('Reading plate metadata: %s = %s\n',key,value);
-      plate.(key) = value;
+      plate.metadata.(key) = value;
       offset = offset + 1;
     end
 
     %% Assert required plate metadata exists
-    assert(isfield(plate, 'Name'), 'Failed to load platemap because required piece of plate metadata "Name" was not found.')
-    assert(isfield(plate, 'Ch1') | isfield(plate, 'Ch2') | isfield(plate, 'Ch3') | isfield(plate, 'Ch4'), 'Failed to load platemap because no channels were set.')
-    assert(isfield(plate, 'ImageDir'), 'Failed to load platemap because required piece of plate metadata "ImageDir" was not found.')
-    assert(isfield(plate, 'ImageNamingScheme'), 'Failed to load platemap because required piece of plate metadata "ImageNamingScheme" was not found.')
-    assert(isfield(plate, 'ImageFormat'), 'Failed to load platemap because required piece of plate metadata "ImageFormat" was not found.')
+    assert(isfield(plate.metadata, 'Name'), 'Failed to load platemap because required piece of plate metadata "Name" was not found.')
+    assert(isfield(plate.metadata, 'Ch1') | isfield(plate.metadata, 'Ch2') | isfield(plate.metadata, 'Ch3') | isfield(plate.metadata, 'Ch4'), 'Failed to load platemap because no channels were set.')
+    assert(isfield(plate.metadata, 'ImageDir'), 'Failed to load platemap because required piece of plate metadata "ImageDir" was not found.')
+    assert(isfield(plate.metadata, 'ImageNamingScheme'), 'Failed to load platemap because required piece of plate metadata "ImageNamingScheme" was not found.')
+    assert(isfield(plate.metadata, 'ImageFormat'), 'Failed to load platemap because required piece of plate metadata "ImageFormat" was not found.')
 
     %% Set default plate number setting. The plate number in the filename of images. For example see "p01" in r05c04f49p01-ch3sk1fk1fl1.tiff. 
-    if strcmp(plate.ImageNamingScheme, 'Operetta')
+    if strcmp(plate.metadata.ImageNamingScheme, 'Operetta')
       if ~isfield(plate, 'PlateNumber')
         plate.plate_num = 1;
       end

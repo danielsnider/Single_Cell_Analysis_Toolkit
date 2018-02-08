@@ -3,7 +3,7 @@ function fun(app)
   plate_num = app.PlateDropDown.Value;
 
   %% Build path to current image from dropdown selections
-  img_dir = app.plates(plate_num).ImageDir;
+  img_dir = app.plates(plate_num).metadata.ImageDir;
   plate_file_num = app.plates(plate_num).plate_num; % The plate number in the filename of images
   row = app.RowDropDown.Value;
   column = app.ColumnDropDown.Value;
@@ -11,7 +11,7 @@ function fun(app)
   timepoint = app.TimepointDropDown.Value;
 
   %% Load Images
-  if strcmp(app.plates(plate_num).ImageNamingScheme, 'Operetta')
+  if strcmp(app.plates(plate_num).metadata.ImageNamingScheme, 'Operetta')
     for chan_num=[app.plates(plate_num).channels]
       app.image(chan_num).path = sprintf(...
         '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
@@ -111,6 +111,18 @@ function fun(app)
     layer.AlphaData = logical(seg)*gain;
   end
 
+  %% Display measure overlay
+  if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
+    measure_name = app.DisplayMeasureDropDown.Value
+    if ismember(measure_name,app.ResultTable.Properties.VariableNames)
+      
+      a=2
+    end
+  end
+
+
+
   hold off
 
 end
+

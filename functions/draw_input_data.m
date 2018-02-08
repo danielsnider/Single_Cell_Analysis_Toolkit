@@ -2,7 +2,9 @@ function fun(app, createCallbackFcn)
   tabgp = uitabgroup(app.Tab_Input,'Position',[17,20,803,477]);
   app.input_data.tabgp = tabgp;
 
-  app.input_data.channel_map = {app.plates.Ch1; app.plates.Ch2; app.plates.Ch3; app.plates.Ch4};
+  
+  metadata = [app.plates.metadata];
+  app.input_data.channel_map = {metadata.Ch1; metadata.Ch2; metadata.Ch3; metadata.Ch4};
   app.input_data.unique_channels = unique(app.input_data.channel_map);
   app.image_names = [];
   
@@ -19,23 +21,23 @@ function fun(app, createCallbackFcn)
     tab = uitab(tabgp,'Title',sprintf('Plate %s', num2str(plate_num)), ...
       'BackgroundColor', [1 1 1]);
 
-    plate_label = uilabel(tab, 'Text', plate.Name, 'Position', [34,413,494,33], 'FontSize', 24, 'FontName', 'Yu Gothic UI Light');
+    plate_label = uilabel(tab, 'Text', plate.metadata.Name, 'Position', [34,413,494,33], 'FontSize', 24, 'FontName', 'Yu Gothic UI Light');
 
-    dirfield = uieditfield(tab, 'Value', plate.ImageDir, 'Position', [636,413,153,22], 'FontSize', 12, 'FontName', 'Helvetica', 'Editable','off');
+    dirfield = uieditfield(tab, 'Value', plate.metadata.ImageDir, 'Position', [636,413,153,22], 'FontSize', 12, 'FontName', 'Helvetica', 'Editable','off');
     dirlabel = uilabel(tab, 'Text', 'Path to Images:', 'Position', [548,413,91,21], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
 
     channel_strings = {};
-    if isfield(plate, 'Ch1')
-        channel_strings{1} = sprintf('Ch1: %s', plate.Ch1);
+    if isfield(plate.metadata, 'Ch1')
+        channel_strings{1} = sprintf('Ch1: %s', plate.metadata.Ch1);
     end
-    if isfield(plate, 'Ch2')
-        channel_strings{2} = sprintf('Ch2: %s', plate.Ch2);
+    if isfield(plate.metadata, 'Ch2')
+        channel_strings{2} = sprintf('Ch2: %s', plate.metadata.Ch2);
     end
-    if isfield(plate, 'Ch3')
-        channel_strings{3} = sprintf('Ch3: %s', plate.Ch3);
+    if isfield(plate.metadata, 'Ch3')
+        channel_strings{3} = sprintf('Ch3: %s', plate.metadata.Ch3);
     end
-    if isfield(plate, 'Ch4')
-        channel_strings{4} = sprintf('Ch4: %s', plate.Ch4);
+    if isfield(plate.metadata, 'Ch4')
+        channel_strings{4} = sprintf('Ch4: %s', plate.metadata.Ch4);
     end
     channel_box = uilistbox(tab, 'Position', [13,305,130,74], 'FontSize', 12, ...
         'FontName', 'Helvetica', 'Items', channel_strings);
@@ -45,19 +47,19 @@ function fun(app, createCallbackFcn)
 
 
     %% Format plate data from struct to two cell arrays for the metadata uitable, one for column names and one for values
-    fields = fieldnames(plate);
+    fields = fieldnames(plate.metadata);
     count = 1;
     keys = {};
     values = {};
     for field_num=1:length(fields)
       field = fields{field_num};
-      if ~ischar(plate.(field)) & ~isnumeric(plate.(field))
+      if ~ischar(plate.metadata.(field)) & ~isnumeric(plate.metadata.(field))
           continue
       end
-      if ismember(field,{'plate_num', 'fields', 'timepoints', 'channels', 'plates', 'channel_max', 'channel_min', 'channel_colors', 'keep_rows', 'keep_columns', 'keep_fields', 'keep_timepoints', 'enabled_segments'});
-        continue % these are banned names, internal to the app, maybe not the right shape for UI display. TODO: refactor to keep user plate metadata and app plate metadata in different locations.
-      end
-      val = plate.(field);
+      % if ismember(field,{'plate_num', 'fields', 'timepoints', 'channels', 'plates', 'channel_max', 'channel_min', 'channel_colors', 'keep_rows', 'keep_columns', 'keep_fields', 'keep_timepoints', 'enabled_segments'});
+      %   continue % these are banned names, internal to the app, maybe not the right shape for UI display. TODO: refactor to keep user plate metadata and app plate metadata in different locations.
+      % end
+      val = plate.metadata.(field);
       keys{count} = field;
       values{count} = val;
       count = count + 1;

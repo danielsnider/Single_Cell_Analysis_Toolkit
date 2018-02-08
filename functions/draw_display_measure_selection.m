@@ -1,6 +1,7 @@
 function fun(app)
-
-  % Currently selected plate number
-  plate_num = app.PlateDropDown.Value;
-
+  if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
+    if ~isempty(app.ResultTable.Properties.VariableNames)
+      app.DisplayMeasureDropDown.Items = app.ResultTable.Properties.VariableNames;
+    end
+  end
 end

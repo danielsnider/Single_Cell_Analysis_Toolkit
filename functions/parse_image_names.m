@@ -2,8 +2,8 @@ function fun(app)
   % images = {'images/example_cells/r02c02f01p01-ch1sk1fk1fl1.tiff', 'images/example_cells/r02c02f01p01-ch2sk1fk1fl1.tiff', 'images/example_cells/r02c02f01p01-ch3sk1fk1fl1.tiff', 'images/example_cells/r02c02f01p01-ch4sk1fk1fl1.tiff', 'images/example_cells/r02c02f02p01-ch1sk1fk1fl1.tiff', 'images/example_cells/r02c02f02p01-ch2sk1fk1fl1.tiff', 'images/example_cells/r02c02f02p01-ch3sk1fk1fl1.tiff', 'images/example_cells/r02c02f02p01-ch4sk1fk1fl1.tiff'};
 
   for plate_num=1:length(app.plates)
-    img_dir = app.plates(plate_num).ImageDir;
-    naming_scheme = app.plates(plate_num).ImageNamingScheme;
+    img_dir = app.plates(plate_num).metadata.ImageDir;
+    naming_scheme = app.plates(plate_num).metadata.ImageNamingScheme;
 
     msg = sprintf('Loading image names for plate %i...', plate_num);
     app.log_startup_message(app, msg);
@@ -80,7 +80,7 @@ function fun(app)
     % Build a list of channel names per plate in app.input_data.plate.chan_names. Ex. {'DAPI'} {'SE'}
     app.plates(plate_num).chan_names = {};
     for chan_num=[app.plates(plate_num).channels]
-      chan_name = getfield(app.plates(plate_num),['Ch' num2str(chan_num)]);
+      chan_name = getfield(app.plates(plate_num).metadata,['Ch' num2str(chan_num)]);
       app.plates(plate_num).chan_names{chan_num} = chan_name;
     end
 

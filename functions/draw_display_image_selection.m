@@ -1,7 +1,8 @@
 function fun(app)
 
   % Populate Plate Dropdown
-  app.PlateDropDown.Items = {app.plates.Name};
+  metadata = [app.plates.metadata];
+  app.PlateDropDown.Items = {metadata.Name};
   app.PlateDropDown.ItemsData = 1:length(app.plates);
 
   % Currently selected plate number
