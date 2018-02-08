@@ -60,6 +60,48 @@ function fun(app,saved_app,createCallbackFcn)
     end
   end
 
+  % Measure Tab
+  component_names = { ...
+    'fields', ...
+    'labels', ...
+    'ChannelDropDown', ...
+    'ChannelLabel', ...
+    'ChannelListbox', ...
+    'ChannelListboxLabel', ...
+    'SegmentListbox', ...
+    'SegmentListboxLabel', ...
+  };
+  for meas_num=1:length(saved_app.measure)
+    add_measure(app,createCallbackFcn);
+
+    app.measure{meas_num}.AlgorithmDropDown.Value = saved_app.measure{meas_num}.AlgorithmDropDown.Value;
+    app.measure{meas_num}.Name.Value = saved_app.measure{meas_num}.Name.Value;
+    app.measure{meas_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update'); % update dynamic param uielems to match the algo name's definition 
+
+    for cid=1:length(component_names) % loop over known ui component types that the app awknowleges
+      comp_name = component_names{cid}; % get known ui component type name
+      if isfield(app.measure{meas_num},comp_name) % only if it exists
+        for idx=1:length(app.measure{meas_num}.(comp_name)) % loop over each item of this type
+          field_names = fieldnames(app.measure{meas_num}.(comp_name){idx}); % get all the value field names on this ui element
+          for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
+            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent'})
+              continue % skip blacklisted property names that are known to be readonly
+            end
+            try
+              % Place the saved value into the app
+              app.measure{meas_num}.(comp_name){idx}.(string(field_name)) = saved_app.measure{meas_num}.(comp_name){idx}.(string(field_name));
+            catch ME
+              if strfind(ME.message,'You cannot set the read-only property')
+                warning(ME.message); % only warn if a read-only error ocures
+                continue
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
 
 
   % Measure Tab
