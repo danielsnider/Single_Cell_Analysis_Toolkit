@@ -98,7 +98,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
   % Return result
   result = labelled_img;
 
-  if ismember(debug_level,{'All','Result Only'})
+  if ismember(debug_level,{'All','Result Only','Result With Seeds'})
     f = figure(743); clf; set(f,'name','watersed result','NumberTitle', 'off')
     % Display original image
     imshow(uint8(img./8),[]);
