@@ -58,7 +58,9 @@ function fun(app, createCallbackFcn)
     % Initialize Measurements Tab
     add_measure(app, createCallbackFcn);
   end
-  % update_figure(app); %annoying pop-up
+
+  % Load the first image into the app!
+  update_figure(app); 
 
   % Initialize Display Tab
   draw_display(app);
