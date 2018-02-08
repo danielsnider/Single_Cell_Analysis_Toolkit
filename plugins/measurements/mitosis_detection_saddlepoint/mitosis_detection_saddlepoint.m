@@ -1,4 +1,4 @@
-function MeasureTable=func(imgs, segments)
+function MeasureTable=func(segments,imgs)
 
   MeasureTable = table();
 
