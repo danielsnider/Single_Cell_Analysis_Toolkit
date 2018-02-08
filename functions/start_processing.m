@@ -6,7 +6,11 @@ function fun(app)
 
   % Get image names that weren't filtered from all plates
   for plate_num=1:length(app.plates)
-    images_to_process=[images_to_process app.plates(plate_num).img_files_subset];
+    if isempty(images_to_process)
+        images_to_process = app.plates(plate_num).img_files_subset;
+    else
+        images_to_process=[images_to_process; app.plates(plate_num).img_files_subset];
+    end
   end
   NumberOfImages = length(images_to_process);
 
@@ -125,5 +129,8 @@ function fun(app)
   end
   app.ResultTable = ResultTable;
   app.log_processing_message(app, 'DONE. Finished measuring all images.');
+
+  % Update list of measurements in the display tab
+  draw_display_measure_selection(app);
 
 end
