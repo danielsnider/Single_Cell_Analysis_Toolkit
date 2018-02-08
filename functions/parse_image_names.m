@@ -10,7 +10,8 @@ function fun(app)
 
     % Only Operetta Image Naming Scheme is Supported
     if ~strcmp(naming_scheme, 'Operetta')
-      errordlg(sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',naming_scheme));
+      msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',naming_scheme);
+      uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
     end
 
     % The plate number in the filename of images
@@ -21,7 +22,7 @@ function fun(app)
     
     if isempty(img_files)
       msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
-      errordlg(msg);
+      uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
       error(msg);
     end
 

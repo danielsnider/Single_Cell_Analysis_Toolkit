@@ -32,9 +32,9 @@ function func(app, plate_num)
       keep_vals = sort(keep_vals); % important for next step
     end
 
-    % When no values were givin that are in the available values, use all available values
+    % When no values were givin that are in the available values, use all available values values
     if isempty(keep_vals)
-      keep_vals = avail_vals
+      keep_vals = avail_vals;
     end
 
     % Set the output text to display in the user interface
@@ -54,9 +54,9 @@ function func(app, plate_num)
   for filt_num = 1:length(filter_names)
     filter_name = filter_names{filt_num}; % get variable name to operate on
     filter_nam = filter_name(1:end-1); % remove 's' due to discrepancy in variable naming 
-    img_vals=cell2mat([app.plates(plate_num).img_files_subset.(filter_nam)]) % the variable value for each image
-    allowed_vals=app.plates(plate_num).(['keep_' filter_name]) % the allowed values
-    selector = ismember(img_vals,allowed_vals) % get a list of which images are allowed
+    img_vals=cell2mat([app.plates(plate_num).img_files_subset.(filter_nam)]); % the variable value for each image
+    allowed_vals=app.plates(plate_num).(['keep_' filter_name]); % the allowed values
+    selector = ismember(img_vals,allowed_vals); % get a list of which images are allowed
     subset=app.plates(plate_num).img_files_subset(selector); % access subset
     app.plates(plate_num).img_files_subset = subset; % save subset
   end

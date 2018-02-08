@@ -188,7 +188,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     else
       msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
-      errordlg(msg);
+      uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');
       error(msg);
     end
 

@@ -23,7 +23,8 @@ function fun(app)
     for chan_num=[plate.channels]
       % Only Operetta Image Naming Scheme is Supported
       if ~strcmp(plate.ImageNamingScheme, 'Operetta')
-        errordlg(sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.ImageNamingScheme));
+        msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.ImageNamingScheme);
+        uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
       end
       % Build image path
       image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff

@@ -22,7 +22,8 @@ function result = do_segmentation(app, seg_num, algo_name)
         dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
         if isempty(dep_seg_num)
           input_name = app.segment{seg_num}.SegmentLabel{drop_num}.Text;
-          errordlg(sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title));
+          msg = sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title);
+          uialert(app.UIFigure,msg,'Missing Input', 'Icon','error');
           result = [];
           return
         end
@@ -49,7 +50,8 @@ function result = do_segmentation(app, seg_num, algo_name)
 
   catch ME
     if strfind(ME.message,'infinite recursion within the program')
-      errordlg('You have configured a circular loop in your segmentation dependencies. For example, A depends on B which depends on A. This causes infinite recursion within the program and matlab has ran out of memory. Please find and remove the dependency loop in your segmentation settings.')
+      msg = 'You have configured a circular loop in your segmentation dependencies. For example, A depends on B which depends on A. This causes infinite recursion within the program and matlab has ran out of memory. Please find and remove the dependency loop in your segmentation settings.';
+      uialert(app.UIFigure,msg,'Boom!', 'Icon','error');
     end
     rethrow(ME)
   end
