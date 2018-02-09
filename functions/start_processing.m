@@ -1,4 +1,10 @@
 function fun(app)
+  if app.processing_running
+    app.processing_running = false;
+    return
+  end
+  app.processing_running = true;
+
   %% Setup
   app.ProgressSlider.Value = 0; % reset progress bar to 0
   ResultTable = [];
@@ -166,10 +172,16 @@ function fun(app)
     %% Update Progress Bar
     progress = (NumberOfImages-length(images_to_process))/NumberOfImages;
     app.ProgressSlider.Value = progress;
+    if ~app.processing_running
+      app.ResultTable = ResultTable;
+      draw_display_measure_selection(app);
+      app.log_processing_message(app, 'STOPPED.');
+      return
+    end
   end
-  app.ResultTable = ResultTable;
   app.log_processing_message(app, 'DONE.');
 
+  app.ResultTable = ResultTable;
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);
 
