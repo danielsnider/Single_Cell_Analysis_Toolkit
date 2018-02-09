@@ -14,7 +14,7 @@ function fun(app)
       bad_names = [plate_meta image_meta other_bad_names];
 
       % Remove bad names
-      names=names(~ismember(names,bad_names))
+      names=names(~ismember(names,bad_names));
 
       % Set new values
       app.DisplayMeasureDropDown.Items = names;

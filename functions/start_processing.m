@@ -4,55 +4,97 @@ function fun(app)
   ResultTable = [];
   images_to_process = [];
 
+  % % Get image names that weren't filtered from all plates
+  % for plate_num=1:length(app.plates)
+  %   if isempty(images_to_process)
+  %       images_to_process = app.plates(plate_num).img_files_subset;
+  %   else
+  %       images_to_process=[images_to_process; app.plates(plate_num).img_files_subset];
+  %   end
+  % end
+  % all_images_to_process = images_to_process;
+  % NumberOfImages = length(images_to_process);
+
+
   % Get image names that weren't filtered from all plates
+  imgs_to_process = [];
   for plate_num=1:length(app.plates)
-    if isempty(images_to_process)
-        images_to_process = app.plates(plate_num).img_files_subset;
-    else
-        images_to_process=[images_to_process; app.plates(plate_num).img_files_subset];
+    plate=app.plates(plate_num);
+    num_channels = length(plate.channels);
+
+    for img_num=1:num_channels:length(app.plates(plate_num).img_files_subset)
+      multi_channel_img = {};
+      multi_channel_img.channel_nums = plate.channels;
+      multi_channel_img.plate_num = plate_num;
+      multi_channel_img.chans = [];
+      image_file = app.plates(plate_num).img_files_subset(img_num);
+      multi_channel_img.row = image_file.row{:};
+      multi_channel_img.column = image_file.column{:};
+      multi_channel_img.field = image_file.field{:};
+      multi_channel_img.timepoint = image_file.timepoint{:};
+      multi_channel_img.ImageName = image_file.name;
+      for chan_num=[plate.channels]
+        image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff
+        if ~strcmp(plate.metadata.ImageNamingScheme, 'Operetta')
+          msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta". Aborting.',plate.metadata.ImageNamingScheme);
+          uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
+          error(msg);
+        end
+        image_filename(16) = num2str(chan_num); % change the channel number
+        multi_channel_img.chans(chan_num).folder = image_file.folder;
+        multi_channel_img.chans(chan_num).name = image_filename;
+        multi_channel_img.chans(chan_num).path = [image_file.folder '\' image_filename];
+      end
+      imgs_to_process = [imgs_to_process; multi_channel_img];
     end
   end
-  NumberOfImages = length(images_to_process);
+
+  NumberOfImages = length(imgs_to_process);
+
+  % all_imgs_to_process = imgs_to_process;
+  % NumberOfImages = length(imgs_to_process);
+  % num_channels = length(plate.channels);
+  % total_loops = floor(NumberOfImages/num_channels);
+
 
   %% Loop over images performing segmentation and measuring
-  while length(images_to_process)
-    msg = sprintf('Processing image %d of %d.',NumberOfImages-length(images_to_process)+1,NumberOfImages);
+  for current_img_number=1:NumberOfImages
+  % while length(images_to_process)
+    msg = sprintf('Processing image %d of %d.',current_img_number,NumberOfImages);
     app.log_processing_message(app, msg);
     
-    image_file = images_to_process(1);
+    image_file = imgs_to_process(current_img_number);
+    plate_num = image_file.plate_num;
+    % current_img_number = current_img_number*num_channels-3;
+    % image_file = all_images_to_process(current_img_number);
     
-    % Get plate for this image
-    for plate_num=1:length(app.plates)
-      if strcmp(app.plates(plate_num).metadata.ImageDir, image_file.folder)
-        plate=app.plates(plate_num);
-      end
-    end
+    % % Get plate for this image
+    % for plate_num=1:length(app.plates)
+    %   if strcmp(app.plates(plate_num).metadata.ImageDir, image_file.folder)
+    %     plate=app.plates(plate_num);
+    %   end
+    % end
 
     % Load all image channels
-    for chan_num=[plate.channels]
+    app.image = [];
+    for chan_num=[image_file.channel_nums]
       % Only Operetta Image Naming Scheme is Supported
       if ~strcmp(plate.metadata.ImageNamingScheme, 'Operetta')
         msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.metadata.ImageNamingScheme);
         uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
       end
-      % Build image path
-      image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff
-      image_filename(16) = num2str(chan_num); % change the channel number
-      app.image(chan_num).folder = image_file.folder;
-      app.image(chan_num).name = image_filename;
-      app.image(chan_num).path = [image_file.folder '\' image_filename];
       % Load Image
-      app.image(chan_num).data = imread(app.image(chan_num).path);
+      app.image(chan_num).data = imread(image_file.chans(chan_num).path);
     end
 
     % Update the image that is selected in the display tab
     app.PlateDropDown.Value = plate_num;
     draw_display_image_selection(app);
     % app.ExperimentDropDown.Value = experiment;
-    app.RowDropDown.Value = image_file.row{:};
-    app.ColumnDropDown.Value = image_file.column{:};
-    app.FieldDropDown.Value = image_file.field{:};
-    app.TimepointDropDown.Value = image_file.timepoint{:};
+    app.RowDropDown.Value = image_file.row;
+    app.ColumnDropDown.Value = image_file.column;
+    app.FieldDropDown.Value = image_file.field;
+    app.TimepointDropDown.Value = image_file.timepoint;
 
     %% Perform Segmentation
     % Loop over each configured segment and execute the segmentation algorithm
@@ -123,7 +165,7 @@ function fun(app)
       % Add Image Metadata
       for col_name=fields(image_file)'
         col_value = image_file.(col_name{:});
-        skip_names = {'folder', 'date', 'bytes', 'isdir', 'datenum','channel'};
+        skip_names = {'channel_nums','chans'};
         if ismember(col_name,skip_names)
           continue % skip some info
         end
@@ -145,26 +187,26 @@ function fun(app)
       ResultTable = [iterTable; ResultTable];
     end
 
-    % Remove image names from list of images to process
-    for chan_num=[plate.channels]
-      % If the next item in the list matches 
-      if strcmp(images_to_process(1).name, app.image(chan_num).name) & strcmp(images_to_process(1).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
-        images_to_process(1) = []; % remove head of list
-        continue
-      end
-      % Unfortunately the file wasn't the next in the list, so go looking for it and remove it
-      fprintf('scanning images_to_process to remove finished file %s.\n',app.image(chan_num).name);
-      for idx=1:length(images_to_process)
-        if strcmp(images_to_process(idx).name, app.image(chan_num).name) & strcmp(images_to_process(idx).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
-          images_to_process(chan_num) = []; % remove from list
-          continue
-        end
-      end
-      error(sprintf('Could not find file "%s" in images_to_process to remove. Seek support.',app.image(chan_num).name))
-    end
+    % % Remove image names from list of images to process
+    % for chan_num=[plate.channels]
+    %   % If the next item in the list matches 
+    %   if strcmp(images_to_process(1).name, app.image(chan_num).name) & strcmp(images_to_process(1).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
+    %     images_to_process(1) = []; % remove head of list
+    %     continue
+    %   end
+    %   % Unfortunately the file wasn't the next in the list, so go looking for it and remove it
+    %   fprintf('scanning images_to_process to remove finished file %s.\n',app.image(chan_num).name);
+    %   for idx=1:length(images_to_process)
+    %     if strcmp(images_to_process(idx).name, app.image(chan_num).name) & strcmp(images_to_process(idx).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
+    %       images_to_process(chan_num) = []; % remove from list
+    %       continue
+    %     end
+    %   end
+    %   error(sprintf('Could not find file "%s" in images_to_process to remove. Seek support.',app.image(chan_num).name))
+    % end
 
     %% Update Progress Bar
-    progress = (NumberOfImages-length(images_to_process))/NumberOfImages;
+    progress = current_img_number/NumberOfImages;
     app.ProgressSlider.Value = progress;
   end
   app.log_processing_message(app, 'DONE.');
