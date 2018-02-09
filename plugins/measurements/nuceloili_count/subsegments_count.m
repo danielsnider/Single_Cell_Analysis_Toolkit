@@ -20,12 +20,13 @@ end
 for prim_field = fields(primary_seg)'
     
     p = primary_seg.(char(prim_field));
-    single_cell_ID=unique(p);
+    tmp=unique(p);
+    single_cell_ID=tmp(unique(p)~=0);
     
     for sub_field = fields(sub_seg)'
         disp(['Current Count Object:' char(prim_field) '_Sub' char(sub_field) '_ObjectCount' ])
         s = sub_seg.(char(sub_field));
-        unique(s)
+%         unique(s)
         list_idx=1;
         for i = single_cell_ID'
             single_subsegment=s;
