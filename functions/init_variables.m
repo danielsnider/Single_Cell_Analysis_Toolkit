@@ -27,8 +27,6 @@ function fun(app)
   app.measure_tabgp = [];
   app.measure_overlay_color = [0 1 0];
 
-  app.processing_running = false;
-
 
   app.ProcessingLogTextArea.Value = {''};
 

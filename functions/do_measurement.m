@@ -61,6 +61,6 @@ end
 
 % Call algorithm
 result = feval(algo_name, algo_params{:});
-app.measure{meas_num}.result = result;
+% app.measure{meas_num}.result = result;
 
 end
