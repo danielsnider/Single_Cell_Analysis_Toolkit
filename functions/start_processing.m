@@ -4,18 +4,6 @@ function fun(app)
   ResultTable = [];
   images_to_process = [];
 
-  % % Get image names that weren't filtered from all plates
-  % for plate_num=1:length(app.plates)
-  %   if isempty(images_to_process)
-  %       images_to_process = app.plates(plate_num).img_files_subset;
-  %   else
-  %       images_to_process=[images_to_process; app.plates(plate_num).img_files_subset];
-  %   end
-  % end
-  % all_images_to_process = images_to_process;
-  % NumberOfImages = length(images_to_process);
-
-
   % Get image names that weren't filtered from all plates
   imgs_to_process = [];
   for plate_num=1:length(app.plates)
@@ -51,12 +39,6 @@ function fun(app)
 
   NumberOfImages = length(imgs_to_process);
 
-  % all_imgs_to_process = imgs_to_process;
-  % NumberOfImages = length(imgs_to_process);
-  % num_channels = length(plate.channels);
-  % total_loops = floor(NumberOfImages/num_channels);
-
-
   %% Loop over images performing segmentation and measuring
   for current_img_number=1:NumberOfImages
   % while length(images_to_process)
@@ -65,15 +47,6 @@ function fun(app)
     
     image_file = imgs_to_process(current_img_number);
     plate_num = image_file.plate_num;
-    % current_img_number = current_img_number*num_channels-3;
-    % image_file = all_images_to_process(current_img_number);
-    
-    % % Get plate for this image
-    % for plate_num=1:length(app.plates)
-    %   if strcmp(app.plates(plate_num).metadata.ImageDir, image_file.folder)
-    %     plate=app.plates(plate_num);
-    %   end
-    % end
 
     % Load all image channels
     app.image = [];
@@ -101,7 +74,6 @@ function fun(app)
     for seg_num=1:length(app.segment)
       app.segment{seg_num}.result = app.segment{seg_num}.do_segmentation(app, 'Update');
     end
-
 
     %% Primary Segment Handling
     % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
@@ -186,24 +158,6 @@ function fun(app)
       % Save result
       ResultTable = [iterTable; ResultTable];
     end
-
-    % % Remove image names from list of images to process
-    % for chan_num=[plate.channels]
-    %   % If the next item in the list matches 
-    %   if strcmp(images_to_process(1).name, app.image(chan_num).name) & strcmp(images_to_process(1).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
-    %     images_to_process(1) = []; % remove head of list
-    %     continue
-    %   end
-    %   % Unfortunately the file wasn't the next in the list, so go looking for it and remove it
-    %   fprintf('scanning images_to_process to remove finished file %s.\n',app.image(chan_num).name);
-    %   for idx=1:length(images_to_process)
-    %     if strcmp(images_to_process(idx).name, app.image(chan_num).name) & strcmp(images_to_process(idx).folder, app.image(chan_num).folder) % note the 1, it remains one because the list is shrinking, rather than being chan_num it would look too far ahead
-    %       images_to_process(chan_num) = []; % remove from list
-    %       continue
-    %     end
-    %   end
-    %   error(sprintf('Could not find file "%s" in images_to_process to remove. Seek support.',app.image(chan_num).name))
-    % end
 
     %% Update Progress Bar
     progress = current_img_number/NumberOfImages;
