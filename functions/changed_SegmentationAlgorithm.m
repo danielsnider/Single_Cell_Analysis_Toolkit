@@ -23,6 +23,12 @@ function result = fun(app, seg_num, createCallbackFcn)
     end
   end
 
+  function Help_Callback(uiElem, Update, app)
+    help_text = uiElem.UserData.help_text;
+    param_name = uiElem.UserData.param_name;
+    uialert(app.UIFigure,help_text,param_name, 'Icon','info');
+  end
+
   function checkbox = MakeOptionalCheckbox(app, seg_num, param, param_index)
     check_pos = [param_pos(1)-20 param_pos(2)+4 25 15];
     userdata = {}; % context to pass to callback
@@ -52,7 +58,8 @@ function result = fun(app, seg_num, createCallbackFcn)
 
 
   % Load parameters of the algorithm plugin
-  params = eval(['definition_' algo_name]);
+  [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+
 
   % Display GUI component for each parameter to the algorithm
   v_offset = 393;
@@ -64,6 +71,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     param_pos = [620 v_offset 125 22];
     label_pos = [400 v_offset-5 200 22];
+    help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
     param_index = NaN;
 
     % Callback for when parameter value is changed by the user
@@ -171,19 +179,35 @@ function result = fun(app, seg_num, createCallbackFcn)
         app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
       end
 
-
     else
       msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
       uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');
       error(msg);
     end
 
-
-
-
-
+    % Question mark help button
+    if isfield(param,'help') && ~isempty(param.help)
+      userdata.help_text = param.help;
+      userdata.param_name = param.name;
+      if ~isfield(app.segment{seg_num},'HelpButton')
+        app.segment{seg_num}.HelpButton = {};
+      end
+      help_num = length(app.segment{seg_num}.HelpButton) + 1;
+      app.segment{seg_num}.HelpButton{help_num} = uibutton(app.segment{seg_num}.tab, ...
+      'Text', '', ... 
+      'Icon', 'question-sign.png', ...
+      'BackgroundColor', [0.5 0.5 0.5], ...
+      'UserData', userdata, ...
+      'ButtonPushedFcn', {@Help_Callback, app}, ...  
+      'Position', help_pos);
+    end
   end
 
+  % Display help information for this algorithm in the GUI
+  algo_help_panel = uipanel(app.segment{seg_num}.tab, ...
+    'Title',['Algorithm Documentation '], ...
+    'Position',[50,60,350,252], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,233],'Editable','off');
 
   % app.segment{seg_num}.do_segmentation(app, seg_name, algo_name) % trigger once
 

@@ -1,4 +1,8 @@
-function params = definition_subsegments_count()
+function [params, algorithm_name, algorithm_help] = fun()
+
+  algorithm_name = 'Count Sub-Segments';
+  algorithm_help = '';
+
   n = 0;
   n = n + 1;
   params(n).name = 'Segments to Measure';

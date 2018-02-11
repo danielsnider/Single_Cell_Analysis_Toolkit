@@ -1,4 +1,8 @@
-function params = fun()
+function [params, algorithm_name, algorithm_help] = fun()
+
+  algorithm_name = 'Mitosis Detection with Saddle Points';
+  algorithm_help = 'See: https://en.wikipedia.org/wiki/Saddle_point';
+
   n = 0;
   n = n + 1;
   params(n).name = 'Channels to Measure';

@@ -6,7 +6,13 @@ function result = fun(app, meas_num, createCallbackFcn)
   delete_measures(app,[meas_num]);
 
   % Load parameters of the algorithm plugin
-  params = eval(['definition_' algo_name]);
+  [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+
+  function Help_Callback(uiElem, Update, app)
+    help_text = uiElem.UserData.help_text;
+    param_name = uiElem.UserData.param_name;
+    uialert(app.UIFigure,help_text,param_name, 'Icon','info');
+  end
 
   % Display GUI component for each parameter to the algorithm
   v_offset = 293;
@@ -18,6 +24,7 @@ function result = fun(app, meas_num, createCallbackFcn)
 
     param_pos = [620 v_offset 125 22];
     label_pos = [400 v_offset-5 200 22];
+    help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
 
     % Correct unavailable user set default value
     if ismember(param.type,{'dropdown','listbox'})
@@ -136,13 +143,33 @@ function result = fun(app, meas_num, createCallbackFcn)
       v_offset = v_offset - 34;
 
 
-
     else
       msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
       uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');
       error(msg);
     end
 
+    % Help question mark button
+    if isfield(param,'help') && ~isempty(param.help)
+      userdata.help_text = param.help;
+      userdata.param_name = param.name;
+      if ~isfield(app.measure{meas_num},'HelpButton')
+        app.measure{meas_num}.HelpButton = {};
+      end
+      help_num = length(app.measure{meas_num}.HelpButton) + 1;
+      app.measure{meas_num}.HelpButton{help_num} = uibutton(app.measure{meas_num}.tab, ...
+      'Text', '', ... 
+      'Icon', 'question-sign.png', ...
+      'BackgroundColor', [0.5 0.5 0.5], ...
+      'UserData', userdata, ...
+      'ButtonPushedFcn', {@Help_Callback, app}, ...  
+      'Position', help_pos);
+    end
   end
+  % Display help information for this algorithm in the GUI
+  algo_help_panel = uipanel(app.measure{meas_num}.tab, ...
+    'Title',['Algorithm Documentation '], ...
+    'Position',[50,20,350,195], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,176],'Editable','off');
 
 end

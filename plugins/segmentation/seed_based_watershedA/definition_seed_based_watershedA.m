@@ -1,6 +1,9 @@
-function params = fun()
-  n = 0;
+function [params, algorithm_name, algorithm_help] = fun()
 
+  algorithm_name = 'Watershed Segmentation';
+  algorithm_help = 'Watershed segmentation is used to separate touching objects in an image. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better if you can identify, or "mark", objects with seeds. ';
+
+  n = 0;
   n = n + 1;
   params(n).name = 'Input Image Channel';
   params(n).default = '';

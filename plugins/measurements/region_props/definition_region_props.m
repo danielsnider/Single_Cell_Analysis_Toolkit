@@ -1,21 +1,25 @@
-function params = fun()
+function [params, algorithm_name, algorithm_help] = fun()
+  
+  algorithm_name = 'Region Properties';
+  algorithm_help = 'Measure properties of image region using Matlab''s built function called ''regionprops''. Regionprops supports a large number of measurements which you can learn more about at https://www.mathworks.com/help/images/ref/regionprops.html. Resulting measurements will be stored in the result table with a name in the following format: SegmentName_ChannelName_MeasurementName. For example: Nucleus_DAPI_TotalIntensity. Each measurement that you select will be computed within each channel for each segement that you choose.';
+
   n = 0;
   n = n + 1;
   params(n).name = 'Channels to Measure';
   params(n).default = '';
-  params(n).help = 'The image to segment';
+  params(n).help = 'The image to channels to measure. Each measurement that you select will be computed within each channel for each segement that you choose.';
   params(n).type = 'image_channel_listbox';
 
   n = n + 1;
   params(n).name = 'Segments to Measure';
   params(n).default = '';
-  params(n).help = 'The image to segment';
+  params(n).help = 'The image to segments to measure. Each measurement that you select will be computed within each channel for each segement that you choose.';
   params(n).type = 'segment_listbox';
 
   n = n + 1;
   params(n).name = 'Measurements per Segment';
   params(n).default = '';
-  params(n).help = 'The image to segment';
+  params(n).help = 'The measurements to compute on every single segment. Each measurement that you select will be computed within each channel for each segement that you choose.';
   params(n).type = 'listbox';
   params(n).options = { ...
     'Area', ...
@@ -37,7 +41,7 @@ function params = fun()
   n = n + 1;
   params(n).name = 'Measurements per Channel';
   params(n).default = '';
-  params(n).help = 'The image to segment';
+  params(n).help = 'Each segment will have a measurement to computed on the pixels of each channel. Here you choose which pixel measurements to perform. ';
   params(n).type = 'listbox';
   params(n).options = { ...
     'TotalIntensity', ...
