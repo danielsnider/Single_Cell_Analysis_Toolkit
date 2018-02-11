@@ -39,9 +39,15 @@ function fun(app)
 
   NumberOfImages = length(imgs_to_process);
 
+  % D = parallel.pool.DataQueue;
+  % h = waitbar(0, 'Please wait ...');
+  % afterEach(D, @nUpdateWaitbar);
+
+
   %% Loop over images performing segmentation and measuring
   for current_img_number=1:NumberOfImages
-    do_a_loop(app,current_img_number,NumberOfImages,imgs_to_process);
+    iterTable = do_a_loop(app,current_img_number,NumberOfImages,imgs_to_process);
+    ResultTable = [iterTable; ResultTable];
   end
   app.log_processing_message(app, 'DONE.');
 
