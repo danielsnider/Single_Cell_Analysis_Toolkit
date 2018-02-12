@@ -42,18 +42,20 @@ function fun(app,saved_app,createCallbackFcn)
         for idx=1:length(app.segment{seg_num}.(comp_name)) % loop over each item of this type
           field_names = fieldnames(app.segment{seg_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
-            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent'})
+            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
               continue % skip blacklisted property names that are known to be readonly
             end
-            try
-              % Place the saved value into the app
-              app.segment{seg_num}.(comp_name){idx}.(string(field_name)) = saved_app.segment{seg_num}.(comp_name){idx}.(string(field_name));
-            catch ME
-              if strfind(ME.message,'You cannot set the read-only property')
-                warning(ME.message); % only warn if a read-only error ocures
-                continue
+            % if ismember(field_name,{'Value','Limit'})
+              try
+                % Place the saved value into the app
+                app.segment{seg_num}.(comp_name){idx}.(string(field_name)) = saved_app.segment{seg_num}.(comp_name){idx}.(string(field_name));
+              catch ME
+                if strfind(ME.message,'You cannot set the read-only property')
+                  warning(ME.message); % only warn if a read-only error ocures
+                  continue
+                end
               end
-            end
+            % end
           end
         end
       end
@@ -102,10 +104,11 @@ function fun(app,saved_app,createCallbackFcn)
     end
   end
 
+  %% Result Table
+  if any(ismember(fields(saved_app),'ResultTable')) && istable(saved_app.ResultTable)
+    app.ResultTable = saved_app.ResultTable
+    app.Button_ViewMeasurements.Visible = 'on';
+    app.Button_ExportMeasurements.Visible = 'on';
+  end
 
-
-  % Measure Tab
-
-  
-  a = 1;
 end

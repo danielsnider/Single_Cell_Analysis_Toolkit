@@ -9,16 +9,16 @@ function fun(app, createCallbackFcn)
 
 
   % Load Daniel and Justin's testing plate maps
-  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
-  if exist(plate_file)
-    app.ChooseplatemapEditField.Value = plate_file;
-    FileName = ''; % just helps testing
-  end
-  plate_file = 'R:\Justin_S\Ceryl_Nucleolus_Plate_Map_20180129.xlsx';
-  if exist(plate_file)
-    app.ChooseplatemapEditField.Value = plate_file;
-    FileName = ''; % just helps testing
-  end
+  % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
+  % if exist(plate_file)
+  %   app.ChooseplatemapEditField.Value = plate_file;
+  %   FileName = ''; % just helps testing
+  % end
+  % plate_file = 'R:\Justin_S\Ceryl_Nucleolus_Plate_Map_20180129.xlsx';
+  % if exist(plate_file)
+  %   app.ChooseplatemapEditField.Value = plate_file;
+  %   FileName = ''; % just helps testing
+  % end
 
   % Browse for path if the testing files don't exist
   if isempty(app.ChooseplatemapEditField.Value)

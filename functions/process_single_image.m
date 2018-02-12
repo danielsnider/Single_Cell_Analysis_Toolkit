@@ -84,7 +84,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
         new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));
         MeasureTable = MeasureTable(:,new_col_names);
         % Store new measurements
-        iterTable=[iterTable MeasureTable];
+        if isempty(iterTable)
+          iterTable=MeasureTable;
+        else
+          iterTable=[iterTable MeasureTable];
+        end
       end
 
       % Add X and Y coordinates for each primary label

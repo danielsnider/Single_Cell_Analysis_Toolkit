@@ -5,6 +5,8 @@ function fun(app)
   ResultTable = [];
   images_to_process = [];
   app.ProcessingLogTextArea.Value = '';
+  app.Button_ViewMeasurements.Visible = 'off';
+  app.Button_ExportMeasurements.Visible = 'off';
 
   % Get image names that weren't filtered from all plates
   imgs_to_process = [];
@@ -91,6 +93,11 @@ function fun(app)
   end
 
   app.log_processing_message(app, 'DONE.');
+
+  % Make buttons visible
+  app.Button_ViewMeasurements.Visible = 'on';
+  app.Button_ExportMeasurements.Visible = 'on';
+  
 
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);

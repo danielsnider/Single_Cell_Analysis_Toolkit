@@ -27,7 +27,8 @@ function fun(app)
   app.measure_tabgp = [];
   app.measure_overlay_color = [0 1 0];
 
-
+  app.Button_ViewMeasurements.Visible = 'off';
+  app.Button_ExportMeasurements.Visible = 'off';
   app.ProcessingLogTextArea.Value = {''};
 
   app.log_processing_message = @log_processing_message;
