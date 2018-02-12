@@ -1,4 +1,4 @@
-function result = do_measurement(app, plate, meas_num, algo_name)
+function result = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs)
 algo_params = {};
 
 % Create list of algorithm parameter values to be passed to the plugin
@@ -20,7 +20,7 @@ if isfield(app.measure{meas_num},'SegmentListbox')
       if strcmp(seg_name,'')
         seg_name = sprintf('Segment %i', seg_num);
       end
-      seg_data = app.segment{seg_num}.result;
+      seg_data = seg_result{seg_num};
       segment_data.(genvarname(seg_name)) = seg_data;
     end
     algo_params(length(algo_params)+1) = {segment_data};
@@ -47,7 +47,7 @@ for param_type=param_types
       for idx=1:length(channels_to_measure)
         chan_name = channels_to_measure{idx};
         chan_num = find(strcmp(plate.chan_names,chan_name));
-        chan_data = app.image(chan_num).data;
+        chan_data = imgs(chan_num).data;
         img_data.(genvarname(chan_name)) = chan_data;
       end
       if ~isempty(img_data)

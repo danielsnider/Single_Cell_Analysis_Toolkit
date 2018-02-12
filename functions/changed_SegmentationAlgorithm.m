@@ -56,6 +56,12 @@ function result = fun(app, seg_num, createCallbackFcn)
     end
   end
 
+  % Callback for when parameter value is changed by the user
+  function do_segmentation_(app, Update)
+    app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
+  end
+
+  app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);
 
   % Load parameters of the algorithm plugin
   [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
@@ -74,8 +80,6 @@ function result = fun(app, seg_num, createCallbackFcn)
     help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
     param_index = NaN;
 
-    % Callback for when parameter value is changed by the user
-    app.segment{seg_num}.do_segmentation = @(app, event) do_segmentation(app, seg_num, algo_name);
 
     % Change spacing if optional parameter to allow space for a checkbox
     if isfield(param,'optional') && ~isempty(param.optional)
@@ -108,7 +112,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
         app.segment{seg_num}.fields{field_num}.Items = param.options;
       end
-      app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true);
+      app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_segmentation_, true);
       app.segment{seg_num}.fields{field_num}.Position = param_pos;
       app.segment{seg_num}.fields{field_num}.Value = param.default;
       app.segment{seg_num}.labels{field_num} = uilabel(app.segment{seg_num}.tab);
@@ -131,7 +135,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       % Create UI components
       dropdown = uidropdown(app.segment{seg_num}.tab, ...
         'Position', param_pos, ...
-        'ValueChangedFcn', createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true), ...
+        'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
         'Items', {} );
       label = uilabel(app.segment{seg_num}.tab, ...
         'Text', param.name, ...
@@ -164,7 +168,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       dropdown = uidropdown(app.segment{seg_num}.tab, ...
         'Items', chan_names, ...
         'ItemsData', chan_nums, ...
-        'ValueChangedFcn', createCallbackFcn(app, app.segment{seg_num}.do_segmentation, true), ...
+        'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
         'Position', param_pos);
         % 'Items', app.input_data.unique_channels, ...
       label = uilabel(app.segment{seg_num}.tab, ...
@@ -209,9 +213,9 @@ function result = fun(app, seg_num, createCallbackFcn)
     'Position',[50,60,350,252], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
   help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,233],'Editable','off');
 
-  % app.segment{seg_num}.do_segmentation(app, seg_name, algo_name) % trigger once
-
-
   % Fill in the names of segments across the GUI
   changed_SegmentName(app, seg_num);
+
+  % Trigger once so that the segment can be displayed
+  % app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
 end

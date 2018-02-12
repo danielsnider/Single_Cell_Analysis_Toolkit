@@ -1,4 +1,4 @@
-function result = do_segmentation(app, seg_num, algo_name)
+function result = do_segmentation(app, seg_num, algo_name, imgs)
   
   try
 
@@ -28,7 +28,7 @@ function result = do_segmentation(app, seg_num, algo_name)
           return
         end
         dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
-        segment_result = do_segmentation(app, dep_seg_num, dep_algo_name); % operate on the last loaded image in app.img
+        segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, imgs); % operate on the last loaded image in app.img
         algo_params(length(algo_params)+1) = {segment_result};
       end
     end
@@ -46,7 +46,7 @@ function result = do_segmentation(app, seg_num, algo_name)
 
     % Call algorithm
      result = feval(algo_name, algo_params{:});
-     app.segment{seg_num}.result = result;
+     % app.segment{seg_num}.result = result;
 
   catch ME
     if strfind(ME.message,'infinite recursion within the program')

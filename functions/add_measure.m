@@ -21,7 +21,7 @@ function fun(app, createCallbackFcn)
     'Position', [162,227,200,22]);
   label = uilabel(tab, ...
     'Text', 'Algorithm', ...
-    'Position', [57,232,90,15]);
+    'Position', [90,232,57,15]);
 
   % Measure name edit field
   function changed_MeasureName(app, event)
@@ -38,7 +38,7 @@ function fun(app, createCallbackFcn)
     'Position', [162,260,200,22]);
   label = uilabel(tab, ...
     'Text', 'Measure Name', ...
-    'Position', [90,265,57,15]);
+    'Position', [57,265,90,15]);
 
   % Create Titles
   label = uilabel(tab, ...

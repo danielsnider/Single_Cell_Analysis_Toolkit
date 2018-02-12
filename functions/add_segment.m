@@ -1,5 +1,15 @@
 function fun(app, createCallbackFcn)
-  segmentation_plugins = {'spotA','seed_based_watershedA'};
+  plugin_definitions = dir('./plugins/segmentation/**/definition*');
+  plugin_names = {};
+  plugin_pretty_names = {};
+  for plugin_num = 1:length(plugin_definitions)
+    plugin = plugin_definitions(plugin_num);
+    plugin_name = plugin.name(1:end-2);
+    [params, algorithm_name, algorithm_help] = eval(plugin_name);
+    plugin_name = strsplit(plugin_name,'definition_');
+    plugin_names{plugin_num} = plugin_name{2};
+    plugin_pretty_names{plugin_num} = algorithm_name;
+  end
 
   % Setup
   if isempty(app.segment_tabgp)
@@ -17,7 +27,8 @@ function fun(app, createCallbackFcn)
   % Create algorithm selection dropdown box
   Callback = @(app, event) changed_SegmentationAlgorithm(app, seg_num, createCallbackFcn);
   app.segment{seg_num}.AlgorithmDropDown = uidropdown(tab, ...
-    'Items', segmentation_plugins, ...
+    'Items', plugin_pretty_names, ...
+    'ItemsData', plugin_names, ...
     'ValueChangedFcn', createCallbackFcn(app, Callback, true), ...
     'Position', [162,327,200,22]);
   label = uilabel(tab, ...

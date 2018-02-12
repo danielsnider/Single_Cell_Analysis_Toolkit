@@ -42,7 +42,7 @@ function fun(app, createCallbackFcn)
   draw_input_data(app, createCallbackFcn);
 
   % Display startup log
-  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,658,614,105]);
+  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,614,105]);
   pause(1); % enough time for the log text area to appear on screen
   % Parse image files (can be slow!)
   parse_image_names(app);
@@ -59,12 +59,13 @@ function fun(app, createCallbackFcn)
     add_measure(app, createCallbackFcn);
   end
 
-  % Load the first image into the app!
-  update_figure(app); 
-
   % Initialize Display Tab
   draw_display(app);
   
+  % Load the first image into the app!
+  update_figure(app);
+
+  % Primary Segment Dropdown
   app.PrimarySegmentDropDown.Items = app.segment_names;
 
 

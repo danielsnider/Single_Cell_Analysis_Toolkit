@@ -83,10 +83,11 @@ function fun(app)
 
   % Display segments as colorized layers
   for seg_num=1:length(app.segment)
-    if ~isfield(app.segment{seg_num},'result')
+    if ~app.display.segment{seg_num}.checkbox.Value
       continue
     end
-    if ~app.display.segment{seg_num}.checkbox.Value
+    if ~isfield(app.segment{seg_num},'result') || isempty(app.segment{seg_num}.result)
+      % app.segment{seg_num}.result = app.segment{seg_num}.do_segmentation(); % trigger if needed. Note(Dan): I disabled this because it trigger on first loading the GUI and a segment may not be configured correctly which will lead to uialert error on startup which is bad
       continue
     end
     seg = app.segment{seg_num}.result;
@@ -105,9 +106,16 @@ function fun(app)
       seg_colors(:,:,2) = logical(seg) .* colour(2) .* 255;
       seg_colors(:,:,3) = logical(seg) .* colour(3) .* 255;
     else
-      seg_colors = label2rgb(uint16(seg), 'jet', [1 1 1], 'shuffle'); % outputs uint8
+      seg_colors = label2rgb(uint16(seg), 'jet', [0 0 0], 'shuffle'); % outputs uint8
     end
-    layer = imshow(seg_colors,[]);
+    % NOPE% Scale colors so they are not 100% brightness but only the maximum value found in the composite image so they don't overpower the composite image
+    % im_norm = normalize0to1(double(seg_colors));
+    %scaled_seg_colors = im2uint16(im_norm.*double(max(composite_img(:))))/2;
+    if min(composite_img(:))==max(composite_img(:)) % imshow doesn't allow this. It must be that the composite_img is totally empty, no channels enabled, black.
+        layer = imshow(seg_colors,[]);
+    else
+        layer = imshow(seg_colors,[min(composite_img(:)) max(composite_img(:))]);
+    end
     layer.AlphaData = logical(seg)*gain;
   end
 
@@ -117,7 +125,7 @@ function fun(app)
     if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
       measure_name = app.DisplayMeasureDropDown.Value;
       if ismember(measure_name,app.ResultTable.Properties.VariableNames)
-        selector = ismember(cell2mat(app.ResultTable.row),row) & ismember(cell2mat(app.ResultTable.column),column) & ismember(cell2mat(app.ResultTable.field),field) & ismember(cell2mat(app.ResultTable.timepoint),timepoint) & ismember(app.ResultTable.PlateName,PlateName);
+        selector = ismember(app.ResultTable.row,row) & ismember(app.ResultTable.column,column) & ismember(app.ResultTable.field,field) & ismember(app.ResultTable.timepoint,timepoint) & ismember(app.ResultTable.PlateName,PlateName);
         data = app.ResultTable(selector,{measure_name,'x_coord','y_coord'});
         fontsize = app.DisplayMeasureFontSize.Value;
         fontcolor = app.measure_overlay_color;

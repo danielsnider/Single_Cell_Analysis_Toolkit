@@ -29,10 +29,10 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
     end
   end
 
-  if isequal(watershed_smooth_param,true)
-    img_smooth2 = imgaussfilt(img,watershed_smooth_param);
-  else
+  if isequal(watershed_smooth_param,false)
     img_smooth2 = img;
+  else
+    img_smooth2 = imgaussfilt(img,watershed_smooth_param);
   end
   if ismember(debug_level,{'All'})
     f = figure(889); clf; set(f,'name','imgaussfilt2','NumberTitle', 'off');
