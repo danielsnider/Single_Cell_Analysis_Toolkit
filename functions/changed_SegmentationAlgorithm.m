@@ -68,7 +68,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
 
   % Display GUI component for each parameter to the algorithm
-  v_offset = 393;
+  v_offset = 419;
   for idx=1:length(params)
     param = params(idx);
 
@@ -210,8 +210,8 @@ function result = fun(app, seg_num, createCallbackFcn)
   % Display help information for this algorithm in the GUI
   algo_help_panel = uipanel(app.segment{seg_num}.tab, ...
     'Title',['Algorithm Documentation '], ...
-    'Position',[50,60,350,252], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,233],'Editable','off');
+    'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
 
   % Fill in the names of segments across the GUI
   changed_SegmentName(app, seg_num);

@@ -20,7 +20,8 @@ function fun(app)
         draw_display(app);
         return
       end
-      app.image(chan_num).data = imread(app.image(chan_num).path);
+      % app.image(chan_num).data = imread(app.image(chan_num).path);
+      app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,app.image(chan_num).path);
     end
   end
   

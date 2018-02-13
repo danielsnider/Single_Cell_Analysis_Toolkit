@@ -3,7 +3,7 @@ function fun(app, createCallbackFcn)
 
   % Setup
   if isempty(app.measure_tabgp)
-    app.measure_tabgp = uitabgroup(app.Tab_Measure,'Position',[18,145,795,371]);
+    app.measure_tabgp = uitabgroup(app.Tab_Measure,'Position',[17,145,803,371]);
   end
   tabgp = app.measure_tabgp;
   meas_num = length(tabgp.Children)+1;

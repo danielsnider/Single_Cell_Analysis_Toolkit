@@ -16,8 +16,6 @@ function result = fun(app, proc_num, createCallbackFcn)
     end
     if ismember(param.type,{'numeric','text','dropdown'})
       app.preprocess{proc_num}.fields{param_index}.Enable = val;
-    elseif strcmp(param.type,'image_channel_dropdown')
-      app.preprocess{proc_num}.ChannelDropDown{param_index}.Enable = val;
     end
   end
 
@@ -47,24 +45,44 @@ function result = fun(app, proc_num, createCallbackFcn)
     'ValueChangedFcn', {@ParamOptionalCheckBoxCallback, app});
     if ismember(param.type,{'numeric','text','dropdown'})
       app.preprocess{proc_num}.fields{param_index}.Enable = default_enable;
-    elseif strcmp(param.type,'image_channel_dropdown')
-      app.preprocess{proc_num}.ChannelDropDown{param_index}.Enable = default_enable;
     end
   end
 
   % Callback for when parameter value is changed by the user
   function do_preprocessing_(app, Update)
-    app.preprocess{proc_num}.result = do_preprocessing(app, proc_num, algo_name, app.image);
+    plate_num = app.PlateDropDown.Value;
+    proc_chan_name = app.preprocess{proc_num}.ChannelDropDown.Value;
+
+    % Convert channel name to it's number in the plate
+    for chan_num = 1:length(app.plates(plate_num).chan_names)
+      if strcmp(proc_chan_name, app.plates(plate_num).chan_names(chan_num));
+        break % found it, the chan_num will be used outside the loop
+      end
+    end
+
+    % Build path to current file
+    img_dir = app.plates(plate_num).metadata.ImageDir;
+    plate_file_num = app.plates(plate_num).plate_num; % The plate number in the filename of images
+    row = app.RowDropDown.Value;
+    column = app.ColumnDropDown.Value;
+    field = app.FieldDropDown.Value;
+    timepoint = app.TimepointDropDown.Value;
+    img_path = sprintf(...
+      '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
+      img_dir,row,column,field,plate_file_num,chan_num,timepoint);
+
+    % Do preprocesing
+    app.preprocess{proc_num}.result = do_preprocessing(app, plate_num, chan_num, img_path);
   end
 
-  app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);
+  % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);
 
   % Load parameters of the algorithm plugin
   [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
 
 
   % Display GUI component for each parameter to the algorithm
-  v_offset = 393;
+  v_offset = 419;
   for idx=1:length(params)
     param = params(idx);
 
@@ -89,7 +107,7 @@ function result = fun(app, proc_num, createCallbackFcn)
       end
     end
     % Parameter Input Box
-    if ismember(param.type,{'numeric','text','dropdown'})
+    if ismember(param.type,{'numeric','text','dropdown','slider'})
       % Set an index number for this component
       if ~isfield(app.preprocess{proc_num},'fields')
         app.preprocess{proc_num}.fields = {};
@@ -107,6 +125,15 @@ function result = fun(app, proc_num, createCallbackFcn)
       elseif strcmp(param.type,'dropdown')
         app.preprocess{proc_num}.fields{field_num} = uidropdown(app.preprocess{proc_num}.tab);
         app.preprocess{proc_num}.fields{field_num}.Items = param.options;
+      elseif strcmp(param.type,'slider')
+        param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
+        app.preprocess{proc_num}.fields{field_num} = uislider(app.preprocess{proc_num}.tab, ...
+          'MajorTicks', [], ...
+          'MajorTickLabels', {}, ...
+          'MinorTicks', []);
+        if isfield(param,'limits') & size(param.limits)==[1 2]
+          app.preprocess{proc_num}.fields{field_num}.Limits = param.limits;
+        end
       end
       app.preprocess{proc_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_preprocessing_, true);
       app.preprocess{proc_num}.fields{field_num}.Position = param_pos;
@@ -118,40 +145,6 @@ function result = fun(app, proc_num, createCallbackFcn)
       % Handle if this parameter is optional 
       if isfield(param,'optional') && ~isempty(param.optional)
         app.preprocess{proc_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, proc_num, param, param_index);
-      end
-
-    % Create input channel selection dropdown box
-    elseif strcmp(param.type,'image_channel_dropdown')
-      % Set an index number for this component
-      if ~isfield(app.preprocess{proc_num},'ChannelDropDown')
-        app.preprocess{proc_num}.ChannelDropDown = {};
-      end
-      chan_num = length(app.preprocess{proc_num}.ChannelDropDown) + 1;
-      param_index = chan_num;
-      % Get channel names based on the currently displaying plate
-      plate_num = app.PlateDropDown.Value;
-      if ~isnumeric(app.PlateDropDown.Value)
-          plate_num=1; % bad startup value
-      end
-      chan_names = app.plates(plate_num).chan_names;
-      chan_nums = app.plates(plate_num).channels;
-      % Create UI components
-      dropdown = uidropdown(app.preprocess{proc_num}.tab, ...
-        'Items', chan_names, ...
-        'ItemsData', chan_nums, ...
-        'ValueChangedFcn', createCallbackFcn(app, @do_preprocessing_, true), ...
-        'Position', param_pos);
-        % 'Items', app.input_data.unique_channels, ...
-      label = uilabel(app.preprocess{proc_num}.tab, ...
-        'Text', param.name, ...
-        'HorizontalAlignment', 'right', ...
-        'Position', label_pos);
-      % Save ui elements
-      app.preprocess{proc_num}.ChannelDropDown{chan_num} = dropdown;
-      app.preprocess{proc_num}.ChannelLabel{chan_num} = label;
-      % Handle if this parameter is optional 
-      if isfield(param,'optional') && ~isempty(param.optional)
-        app.preprocess{proc_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, proc_num, param, param_index);
       end
 
     else
@@ -175,13 +168,13 @@ function result = fun(app, proc_num, createCallbackFcn)
       'UserData', userdata, ...
       'ButtonPushedFcn', {@Help_Callback, app}, ...  
       'Position', help_pos);
-    end
+    end 
   end
 
   % Display help information for this algorithm in the GUI
   algo_help_panel = uipanel(app.preprocess{proc_num}.tab, ...
     'Title',['Algorithm Documentation '], ...
-    'Position',[50,60,350,252], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,233],'Editable','off');
+    'Position',[50,60,350,247], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,228],'Editable','off');
 
 end

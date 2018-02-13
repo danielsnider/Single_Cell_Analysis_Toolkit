@@ -42,7 +42,7 @@ function fun(app, createCallbackFcn)
   draw_input_data(app, createCallbackFcn);
 
   % Display startup log
-  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,614,105]);
+  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
   pause(1); % enough time for the log text area to appear on screen
   % Parse image files (can be slow!)
   parse_image_names(app);

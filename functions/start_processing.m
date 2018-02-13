@@ -92,7 +92,7 @@ function fun(app)
     end
   end
 
-  app.log_processing_message(app, 'DONE.');
+  app.log_processing_message(app, 'Finished.');
 
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'on';

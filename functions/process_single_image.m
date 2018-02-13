@@ -24,7 +24,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
     imgs = [];
     for chan_num=[image_file.channel_nums]
       % Load Image
-      imgs(chan_num).data = imread(image_file.chans(chan_num).path);
+       % imgs(chan_num).data= imread(image_file.chans(chan_num).path);
+      imgs(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_file.chans(chan_num).path);
     end
 
 

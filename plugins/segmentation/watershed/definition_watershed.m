@@ -52,9 +52,9 @@ function [params, algorithm_name, algorithm_help] = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
-  params(n).name = 'Debug Level';
+  params(n).name = 'Display Figures';
   params(n).default = 'Result With Seeds';
-  params(n).help = '';
+  params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';
   params(n).type = 'dropdown';
   params(n).options = {'All','Result With Seeds','Result Only','Off'};
 

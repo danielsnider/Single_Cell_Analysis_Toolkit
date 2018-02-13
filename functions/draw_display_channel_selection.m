@@ -49,7 +49,7 @@ function fun(app)
     update_figure(app);
   end
 
-  v_offset = 325;
+  v_offset = 330;
 
   % Loop over channels
   for chan_num=[app.plates(plate_num).channels]

@@ -34,7 +34,7 @@ function fun(app)
     update_figure(app);
   end
 
-  v_offset = 329;
+  v_offset = 335;
 
   % Loop over segments
   for seg_num=1:length(app.segment)
