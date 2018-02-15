@@ -40,15 +40,15 @@ function plates = func(full_path)
       value = raw{starty+1,iter_xoffset};
       if key == "Ch2" % dealing with empty channels
           if isempty(value)
-              value = 'N/A';
+              value = 'NONE';
           end
       elseif key == "Ch3" % dealing with empty channels
           if isempty(value)
-              value = 'N/A';
+              value = 'NONE';
           end
       elseif key == "Ch4" % dealing with empty channels
           if isempty(value)
-              value = 'N/A';
+              value = 'NONE';
           end    
       elseif isempty(key) | isempty(value) | ismissing(key)==1 % reached empty cell 
         break
@@ -56,7 +56,7 @@ function plates = func(full_path)
       end
 %       fprintf('Reading plate metadata: %s = %s\n',string(key),value);
 %       pause()
-      plate.metadata.(string(key)) = toString(value);
+      plate.metadata.(string(key)) = (value);
       offset = offset + 1;
       
     end
@@ -131,7 +131,7 @@ function plates = func(full_path)
         condition = sprintf('%s %s', key, val);
         % Loop over well info items in this plate row and add the information found in the condition column to each well info
         for xx=1:plate.columns
-          if isnan(plate.wells{yy,xx}) % skip unset wells
+          if any([isnan(plate.wells{yy,xx}) isempty(plate.wells{yy,xx})]) % skip unset wells
             continue
           end
           % Append info seperated by a comma
@@ -155,7 +155,7 @@ function plates = func(full_path)
         condition = sprintf('%s %s', key, val);
         % Loop over well info items in this plate column and add the information found in the condition row to each well info
         for yy=1:plate.rows
-          if isnan(plate.wells{yy,xx}) % skip unset wells
+          if any([isnan(plate.wells{yy,xx}) isempty(plate.wells{yy,xx})]) % skip unset wells
             continue
           end
           % Append info seperated by a comma
