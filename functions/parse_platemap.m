@@ -3,8 +3,7 @@ function plates = func(full_path)
   [num,txt,raw] = xlsread(full_path);
 
   plates = [];
-
-
+  
   % Find locations in csv where "BeginPlate" is present
   plate_start_locs = [];
   for y=1:size(txt,1)
@@ -27,18 +26,18 @@ function plates = func(full_path)
     plate.num_wells = plate.rows*plate.columns;
 
     %% Store specific well information
-    plate.wells = raw(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
+    plate.wells = txt(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
 
     %% Load Plate Metadata
     plate.metadata = {};
     offset = 0;
     while true
       iter_xoffset = startx+1+offset;
-      if iter_xoffset > size(txt,2) % reached end of file
+      if iter_xoffset > size(raw,2) % reached end of file
         break
       end
-      key = txt{starty,iter_xoffset};
-      value = txt{starty+1,iter_xoffset};
+      key = string(raw{starty,iter_xoffset});
+      value = raw{starty+1,iter_xoffset};
       if key == "Ch2" % dealing with empty channels
           if isempty(value)
               value = 'N/A';
@@ -51,12 +50,15 @@ function plates = func(full_path)
           if isempty(value)
               value = 'N/A';
           end    
-      elseif isempty(key) | isempty(value) % reached empty cell 
+      elseif isempty(key) | isempty(value) | ismissing(key)==1 % reached empty cell 
         break
+
       end
-      fprintf('Reading plate metadata: %s = %s\n',key,value);
-      plate.metadata.(key) = value;
+%       fprintf('Reading plate metadata: %s = %s\n',string(key),value);
+%       pause()
+      plate.metadata.(string(key)) = toString(value);
       offset = offset + 1;
+      
     end
 
     %% Assert required plate metadata exists
@@ -81,10 +83,10 @@ function plates = func(full_path)
     count = 0;
     while true
       iter_xoffset = xoffset+count;
-      if iter_xoffset > size(txt,2) % reached end of file
+      if iter_xoffset > size(raw,2) % reached end of file
         break
       end
-      key = txt{yoffset, iter_xoffset};
+      key = raw{yoffset, iter_xoffset};
       if isempty(key) % reached empty cell 
         break
       end
