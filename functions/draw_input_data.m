@@ -5,7 +5,7 @@ function fun(app, createCallbackFcn)
   
   metadata = [app.plates.metadata];
   app.input_data.channel_map = {metadata.Ch1; metadata.Ch2; metadata.Ch3; metadata.Ch4};
-  app.input_data.unique_channels = unique(app.input_data.channel_map);
+  app.input_data.unique_channels = unique(app.input_data.channel_map(cellfun(@(C) ~any(isnan(C)),app.input_data.channel_map)));
   app.image_names = [];
   
 
