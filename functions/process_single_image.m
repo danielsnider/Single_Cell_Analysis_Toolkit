@@ -113,7 +113,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
       % Add Image Metadata
       for col_name=fields(image_file)'
         col_value = image_file.(col_name{:});
-        skip_names = {'channel_nums','chans'};
+        skip_names = {'channel_nums','chans','plate_num'};
         if ismember(col_name,skip_names)
           continue % skip some info
         end

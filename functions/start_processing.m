@@ -2,7 +2,7 @@ function fun(app)
   %% Setup
   app.ProgressSlider.Value = 0; % reset progress bar to 0
   finished_count  = 0; % for progess bar
-  ResultTable = [];
+  app.ResultTable = [];
   images_to_process = [];
   app.ProcessingLogTextArea.Value = '';
   app.Button_ViewMeasurements.Visible = 'off';

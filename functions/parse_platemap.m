@@ -56,7 +56,12 @@ function plates = func(full_path)
       end
 %       fprintf('Reading plate metadata: %s = %s\n',string(key),value);
 %       pause()
-      plate.metadata.(string(key)) = (value);
+      if  isnumeric(value)
+        plate.metadata.(string(key)) = num2str(value);
+      else
+        plate.metadata.(string(key)) = (value);
+      end
+
       offset = offset + 1;
       
     end
