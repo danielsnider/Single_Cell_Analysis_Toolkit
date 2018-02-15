@@ -39,17 +39,29 @@ function plates = func(full_path)
       end
       key = txt{starty,iter_xoffset};
       value = txt{starty+1,iter_xoffset};
-      if isempty(key) | isempty(value) % reached empty cell 
+      if key == "Ch2" % dealing with empty channels
+          if isempty(value)
+              value = 'N/A';
+          end
+      elseif key == "Ch3" % dealing with empty channels
+          if isempty(value)
+              value = 'N/A';
+          end
+      elseif key == "Ch4" % dealing with empty channels
+          if isempty(value)
+              value = 'N/A';
+          end    
+      elseif isempty(key) | isempty(value) % reached empty cell 
         break
       end
-      % fprintf('Reading plate metadata: %s = %s\n',key,value);
+      fprintf('Reading plate metadata: %s = %s\n',key,value);
       plate.metadata.(key) = value;
       offset = offset + 1;
     end
 
     %% Assert required plate metadata exists
     assert(isfield(plate.metadata, 'Name'), 'Failed to load platemap because required piece of plate metadata "Name" was not found.')
-    assert(isfield(plate.metadata, 'Ch1') | isfield(plate.metadata, 'Ch2') | isfield(plate.metadata, 'Ch3') | isfield(plate.metadata, 'Ch4'), 'Failed to load platemap because no channels were set.')
+    assert((isfield(plate.metadata, 'Ch1') | isfield(plate.metadata, 'Ch2') | isfield(plate.metadata, 'Ch3') | isfield(plate.metadata, 'Ch4'))==1, 'Failed to load platemap because no channels were set.')
     assert(isfield(plate.metadata, 'ImageDir'), 'Failed to load platemap because required piece of plate metadata "ImageDir" was not found.')
     assert(isfield(plate.metadata, 'ImageNamingScheme'), 'Failed to load platemap because required piece of plate metadata "ImageNamingScheme" was not found.')
     assert(isfield(plate.metadata, 'ImageFormat'), 'Failed to load platemap because required piece of plate metadata "ImageFormat" was not found.')

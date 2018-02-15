@@ -14,7 +14,8 @@ function fun(app, createCallbackFcn)
     app.ChooseplatemapEditField.Value = plate_file;
     FileName = ''; % just helps testing
   end
-  plate_file = 'R:\Justin_S\Ceryl_Nucleolus_Plate_Map_20180129.xlsx';
+%   plate_file = 'R:\Justin_S\Ceryl_Nucleolus_Plate_Map_20180129.xlsx';
+    plate_file = 'R:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
   if exist(plate_file)
     app.ChooseplatemapEditField.Value = plate_file;
     FileName = ''; % just helps testing
