@@ -89,7 +89,6 @@ function fun(app)
   end
 
   % Build list of channel names across all plotes in app.input_data.channel_names. Ex. {'DAPI'} {'SE'}
-  app.input_data.channel_map = cat(1,app.plates.chan_names);
-  app.input_data.channel_names = unique(app.input_data.channel_map);
+  app.input_data.channel_names = get_unique_channel_names(app);
 
 end

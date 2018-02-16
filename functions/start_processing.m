@@ -95,6 +95,7 @@ function fun(app)
   end
 
   app.log_processing_message(app, 'Finished.');
+  app.ProgressSlider.Value = 100; % set progress bar to 100%
 
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'on';

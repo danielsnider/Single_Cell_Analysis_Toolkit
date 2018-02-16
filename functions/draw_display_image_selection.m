@@ -1,8 +1,7 @@
 function fun(app)
 
   % Populate Plate Dropdown
-  metadata = [app.plates.metadata];
-  app.PlateDropDown.Items = {metadata.Name};
+  app.PlateDropDown.Items = {app.plates.name};
   app.PlateDropDown.ItemsData = 1:length(app.plates);
 
   % Currently selected plate number
@@ -12,11 +11,11 @@ function fun(app)
   experiments = app.plates(plate_num).wells;
   experiments_filtered_names = {};
   experiments_filtered_nums = [];
-  for x=1:size(experiments,1)
-    for y=1:size(experiments,2)
-      if ~isnan(experiments{x,y})
-        experiments_filtered_names{length(experiments_filtered_names)+1} = experiments{x,y};
-        experiments_filtered_nums(length(experiments_filtered_nums)+1) = complex(x, y); % encode x and y positions in a complex number because matlab won't allow two seperate values per DataItem
+  for row_num=app.plates(plate_num).keep_rows
+    for col_num=app.plates(plate_num).keep_columns
+      if ~isnan(experiments{row_num,col_num})
+        experiments_filtered_names{length(experiments_filtered_names)+1} = experiments{row_num,col_num};
+        experiments_filtered_nums(length(experiments_filtered_nums)+1) = complex(row_num, col_num); % encode row and col positions in a complex number because matlab won't allow two seperate values per DataItem
       end
     end
   end
