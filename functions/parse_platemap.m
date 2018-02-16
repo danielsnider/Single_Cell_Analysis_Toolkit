@@ -169,6 +169,8 @@ function plates = func(full_path)
       end
     end
 
+    plate.name = plate.metadata.Name;
+
     %% Store plate information
     plates = [plates; plate];
   end

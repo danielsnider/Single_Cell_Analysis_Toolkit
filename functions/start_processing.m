@@ -90,11 +90,12 @@ function fun(app)
   else
     is_parallel_processing = false;
     for current_img_number = 1:NumberOfImages
-      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultQueueCallback)
+      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultQueueCallback);
     end
   end
 
   app.log_processing_message(app, 'Finished.');
+  app.ProgressSlider.Value = 100; % set progress bar to 100%
 
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'on';

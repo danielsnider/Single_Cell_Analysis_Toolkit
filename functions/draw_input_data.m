@@ -2,10 +2,44 @@ function fun(app, createCallbackFcn)
   tabgp = uitabgroup(app.Tab_Input,'Position',[17,20,803,477]);
   app.input_data.tabgp = tabgp;
 
+  %uniqueFields = unique(char(cellfun(@(x)char(fieldnames(x)),data,...
+ %                   'UniformOutput',false)),'rows')
+
+ %  for k=1:length(data)
+ %     for u=1:size(uniqueFields,1)
+ %         fieldName = strtrim(uniqueFields(u,:));
+ %         if ~isfield(data{k}, fieldName)
+ %             data{k}.(fieldName) = [];
+ %         end
+ %     end
+ % end
+
+ %  mystructarray = [data{:}]
+
+
+
+  % channels = {};
+  % for plate_num=1:length(app.plates)
+  %   metadata = app.plates(plate_num).metadata;
+  %   channels =  {channels; metadata.Ch1 metadata.Ch2 metadata.Ch3 metadata.Ch4};
+  % end
+
+ 
+
+  %   channels =  {channels; cat(1,app.plates..chan_names)};
+  %   channels =  cat(1,app.plates..chan_names);
+  % app.input_data.channel_map = ;
+
+
+  % app.input_data.channel_map = {metadata.Ch1; metadata.Ch2; metadata.Ch3; metadata.Ch4};
   
-  metadata = [app.plates.metadata];
-  app.input_data.channel_map = {metadata.Ch1; metadata.Ch2; metadata.Ch3; metadata.Ch4};
-  app.input_data.unique_channels = unique(app.input_data.channel_map(cellfun(@(C) ~any(isnan(C)),app.input_data.channel_map)));
+  % metadata = [app.plates.metadata];
+
+  % app.input_data.channel_map = {metadata.Ch1; metadata.Ch2; metadata.Ch3; metadata.Ch4};
+  % app.input_data.unique_channels = unique(app.input_data.channel_map(cellfun(@(C) ~any(isnan(C)),app.input_data.channel_map)));
+  
+
+  app.input_data.unique_channels = get_unique_channel_names(app);
   app.image_names = [];
   
 

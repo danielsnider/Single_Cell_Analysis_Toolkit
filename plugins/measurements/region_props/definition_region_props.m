@@ -19,7 +19,7 @@ function [params, algorithm_name, algorithm_help] = fun()
   n = n + 1;
   params(n).name = 'Measurements per Segment';
   params(n).default = '';
-  params(n).help = 'The measurements to compute on every single segment. Each measurement that you select will be computed within each channel for each segement that you choose.';
+  params(n).help = 'The measurements to compute on every single segment. Each measurement that you select will be computed within each channel for each segement that you choose. To learn about the details of each measurement see the Matlab documentation about regionprops: https://www.mathworks.com/help/images/ref/regionprops.html';
   params(n).type = 'listbox';
   params(n).options = { ...
     'Area', ...
@@ -40,7 +40,7 @@ function [params, algorithm_name, algorithm_help] = fun()
   n = n + 1;
   params(n).name = 'Measurements per Channel';
   params(n).default = '';
-  params(n).help = 'Each segment will have a measurement to computed on the pixels of each channel. Here you choose which pixel measurements to perform. ';
+  params(n).help = 'Each segment will have a measurement to computed on the pixels of each channel. Here you choose which pixel measurements to perform. To learn about the details of each measurement see the Matlab documentation about regionprops: https://www.mathworks.com/help/images/ref/regionprops.html ';
   params(n).type = 'listbox';
   params(n).options = { ...
     'TotalIntensity', ...

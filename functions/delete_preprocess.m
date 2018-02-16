@@ -1,5 +1,5 @@
 function fun(app, proc_nums)
-  if ~any(ismember(fields(app),'proprocess'))
+  if ~any(ismember(fields(app),'preprocess'))
     return
   end
 
@@ -12,13 +12,18 @@ function fun(app, proc_nums)
   for proc_num=proc_nums
     for cid=1:length(component_names)
       comp_name = component_names{cid};
-      if isfield(app.proprocess{proc_num},comp_name)
-        for idx=1:length(app.proprocess{proc_num}.(comp_name))
-          delete(app.proprocess{proc_num}.(comp_name){idx});
-          app.proprocess{proc_num}.(comp_name){idx} = [];
+      if isfield(app.preprocess{proc_num},comp_name)
+        for idx=1:length(app.preprocess{proc_num}.(comp_name))
+          delete(app.preprocess{proc_num}.(comp_name){idx});
+          app.preprocess{proc_num}.(comp_name){idx} = [];
         end
-        app.proprocess{proc_num}.(comp_name) = {};
+        app.preprocess{proc_num}.(comp_name) = {};
       end
     end
+    % if isfield(app.preprocess{proc_num},'tab')
+    %   delete(app.preprocess{proc_num}.tab);
+    %   app.preprocess{proc_num}.tab = [];
+    % end
+    % app.preprocess{proc_num} = {};
   end
 end
