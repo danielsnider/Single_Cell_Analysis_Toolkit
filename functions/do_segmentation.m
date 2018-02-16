@@ -40,13 +40,14 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         continue
       end
       dep_chan_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
-      image_channel = app.image(dep_chan_num).data;
+      % image_channel = app.image(dep_chan_num).data;
+      image_channel = imgs(dep_chan_num).data;
       algo_params(length(algo_params)+1) = {image_channel};
     end
 
     % Call algorithm
      result = feval(algo_name, algo_params{:});
-     % app.segment{seg_num}.result = result;
+     app.segment{seg_num}.result = result;
 
   catch ME
     if strfind(ME.message,'infinite recursion within the program')

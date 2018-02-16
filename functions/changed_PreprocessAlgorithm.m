@@ -72,7 +72,7 @@ function result = fun(app, proc_num, createCallbackFcn)
       img_dir,row,column,field,plate_file_num,chan_num,timepoint);
 
     % Do preprocesing
-    app.preprocess{proc_num}.result = do_preprocessing(app, plate_num, chan_num, img_path);
+    app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
   end
 
   % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);

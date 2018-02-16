@@ -81,14 +81,16 @@ function fun(app)
     afterEach(UiAlertQueue, @UiAlertQueueCallback);
     NewResultQueue = parallel.pool.DataQueue;
     afterEach(NewResultQueue, @NewResultQueueCallback);
+    is_parallel_processing = true;
 
     %% PARALLEL LOOP
     parfor current_img_number = 1:NumberOfImages
-      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
+      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
     end
   else
+    is_parallel_processing = false;
     for current_img_number = 1:NumberOfImages
-      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,@NewResultQueueCallback)
+      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultQueueCallback)
     end
   end
 

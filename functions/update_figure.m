@@ -2,29 +2,12 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  %% Build path to current image from dropdown selections
-  img_dir = app.plates(plate_num).metadata.ImageDir;
-  plate_file_num = app.plates(plate_num).plate_num; % The plate number in the filename of images
+  % Currently selected image
   row = app.RowDropDown.Value;
   column = app.ColumnDropDown.Value;
   field = app.FieldDropDown.Value;
   timepoint = app.TimepointDropDown.Value;
 
-  %% Load Images
-  if strcmp(app.plates(plate_num).metadata.ImageNamingScheme, 'Operetta')
-    for chan_num=[app.plates(plate_num).channels]
-      app.image(chan_num).path = sprintf(...
-        '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
-        img_dir,row,column,field,plate_file_num,chan_num,timepoint);
-      if ~exist(app.image(chan_num).path) % If the file doesn't exist, reset the dropdown box values and return to avoid updating the figure
-        draw_display(app);
-        return
-      end
-      % app.image(chan_num).data = imread(app.image(chan_num).path);
-      app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,app.image(chan_num).path);
-    end
-  end
-  
   %% Display Images
   % Initialize image of a composite of one or more channels
   first_chan_num = app.plates(plate_num).channels(1); % may not always be 1 in position 1, it's a crazy world out there

@@ -9,13 +9,13 @@ function fun(app, createCallbackFcn)
 
 
   % Load Daniel and Justin's testing plate maps
-  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
   plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
+  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Nucleolus_Plate_Map_20180129';
+  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
   if exist(plate_file)
     app.ChooseplatemapEditField.Value = plate_file;
     FileName = ''; % just helps testing
   end
-%   plate_file = 'R:\Justin_S\Ceryl_Nucleolus_Plate_Map_20180129.xlsx';
     plate_file = 'R:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
   if exist(plate_file)
     app.ChooseplatemapEditField.Value = plate_file;
@@ -63,6 +63,9 @@ function fun(app, createCallbackFcn)
 
   % Initialize Display Tab
   draw_display(app);
+
+  % Process one image
+  start_processing_of_one_image(app);
   
   % Load the first image into the app!
   update_figure(app);

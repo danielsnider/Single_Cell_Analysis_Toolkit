@@ -1,6 +1,6 @@
-function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
+function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultCallback,ProcessingLogQueue,UiAlertQueue)
     msg = sprintf('Processing image %d of %d.',current_img_number,NumberOfImages);
-    if app.CheckBox_Parallel.Value
+    if is_parallel_processing
       send(ProcessingLogQueue,msg);
     else
       app.log_processing_message(app, msg);
@@ -35,7 +35,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
     for seg_num=1:length(app.segment)
       algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
       msg = sprintf('Running segmentation algorithm "%s" on image %d...\n', algo_name, current_img_number);
-      if app.CheckBox_Parallel.Value
+      if is_parallel_processing
         send(ProcessingLogQueue,msg);
       else
         app.log_processing_message(app, msg);
@@ -75,7 +75,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
       for meas_num=1:length(app.measure)
         algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
         msg = sprintf('Running measurement algorithm "%s" on image %d...\n', algo_name, current_img_number);
-        if app.CheckBox_Parallel.Value
+        if is_parallel_processing
           send(ProcessingLogQueue,msg);
         else
           app.log_processing_message(app, msg);
@@ -130,9 +130,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,NewResultQueu
     % send(D2,current_img_number/2);
     % iterTable = table();
     % ResultTable = [iterTable; ResultTable];
-    if app.CheckBox_Parallel.Value
-      send(NewResultQueue,iterTable);
+    if is_parallel_processing
+      send(NewResultCallback,iterTable);
     else
-      NewResultQueue(iterTable);
+      NewResultCallback(iterTable);
     end
   end
