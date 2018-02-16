@@ -122,7 +122,37 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         end
         iterTable(:,col_name) = {col_value}; % Add metada
       end
+      
+      % Add Well Condition Metadata
+      iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
+      
+      
+%       for col_name=1:size(plate,1)'
+%         col_value = app.plates(col_name).wells;
+%         
+%         for condition_row = 2:size(col_value,1)-1
+%             for condition_col = 2:size(col_value,2)-1
+%                 
+%                 
+%                 
+%                 col_value(image_file.row==condition_row,image_file.column==condition_col)
+%                 
+%                 
+%             end
+%         end
+%         
+%         if ismember(col_name,skip_names)
+%           continue % skip some info
+%         end
+%         if strcmp(col_name,'name')
+%           col_name = 'Well_Conditions'; % change this name to be less ambigious
+%         end
+%         iterTable(:,col_name) = {col_value}; % Add metada
+%       end
+%       
+%     
 
+        
 
 
 
