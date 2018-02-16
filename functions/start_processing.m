@@ -90,7 +90,7 @@ function fun(app)
   else
     is_parallel_processing = false;
     for current_img_number = 1:NumberOfImages
-      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultQueueCallback)
+      process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultQueueCallback);
     end
   end
 

@@ -50,7 +50,7 @@ function start_processing_of_one_image(app)
   current_img_number = 1;
   NumberOfImages = 1;
   is_parallel_processing = false;
-  process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback)
+  process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
 
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);

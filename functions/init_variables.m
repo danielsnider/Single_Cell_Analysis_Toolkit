@@ -13,6 +13,11 @@ function fun(app)
 
   delete_segments(app, [1:length(app.segment)]);
   delete_measures(app, [1:length(app.measure)]);
+  if any(ismember(fields(app),'preprocess_tabgp'))
+    delete(app.preprocess_tabgp);
+    app.preprocess_tabgp = [];
+    app.preprocess = [];
+  end
 
 
   app.input_data = {};
