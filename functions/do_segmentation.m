@@ -39,7 +39,10 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         algo_params(length(algo_params)+1) = {false};
         continue
       end
-      dep_chan_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
+      drop_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
+      chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData(drop_num);
+      plate_num = app.PlateDropDown.Value;
+      dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
       % image_channel = app.image(dep_chan_num).data;
       image_channel = imgs(dep_chan_num).data;
       algo_params(length(algo_params)+1) = {image_channel};
