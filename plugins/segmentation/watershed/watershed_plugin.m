@@ -101,7 +101,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
     f = figure(743); clf; set(f,'name','watersed result','NumberTitle', 'off')
     % Display original image
-    imshow(uint8(img./8),[]);
+    imshow(im2uint8(img),[]);
     hold on
     % Display color overlay
     labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
@@ -116,6 +116,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
         plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
       end
     end
+    hold off
   end
   
 end
