@@ -65,7 +65,6 @@ function fun(app)
       continue
     end
     if ~isfield(app.segment{seg_num},'result') || isempty(app.segment{seg_num}.result)
-      % app.segment{seg_num}.result = app.segment{seg_num}.do_segmentation(); % trigger if needed. Note(Dan): I disabled this because it trigger on first loading the GUI and a segment may not be configured correctly which will lead to uialert error on startup which is bad
       continue
     end
     seg = app.segment{seg_num}.result;
@@ -86,9 +85,6 @@ function fun(app)
     else
       seg_colors = label2rgb(uint16(seg), 'jet', [0 0 0], 'shuffle'); % outputs uint8
     end
-    % NOPE% Scale colors so they are not 100% brightness but only the maximum value found in the composite image so they don't overpower the composite image
-    % im_norm = normalize0to1(double(seg_colors));
-    %scaled_seg_colors = im2uint16(im_norm.*double(max(composite_img(:))))/2;
     if min(composite_img(:))==max(composite_img(:)) % imshow doesn't allow this. It must be that the composite_img is totally empty, no channels enabled, black.
         layer = imshow(seg_colors,[]);
     else

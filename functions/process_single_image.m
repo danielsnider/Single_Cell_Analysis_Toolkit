@@ -9,17 +9,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     plate_num = image_file.plate_num;
     plate=app.plates(plate_num);
 
-    % % Only OperettaSplitTiffs Image Naming Scheme is Supported
-    % if ~strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
-    %   body = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "OperettaSplitTiffs".',plate.metadata.ImageFileFormat);
-    %   msg={};
-    %   msg.body = body;
-    %   msg.title = 'Unkown image naming scheme';
-    %   msg.type = 'error';
-    %   send(UiAlertQueue,msg);
-    %   error(msg);
-    % end
-
     % Load all image channels
     imgs = [];
     for chan_num=[image_file.channel_nums]
@@ -128,39 +117,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
       end
       
-%       for col_name=1:size(plate,1)'
-%         col_value = app.plates(col_name).wells;
-%         
-%         for condition_row = 2:size(col_value,1)-1
-%             for condition_col = 2:size(col_value,2)-1
-%                 
-%                 
-%                 
-%                 col_value(image_file.row==condition_row,image_file.column==condition_col)
-%                 
-%                 
-%             end
-%         end
-%         
-%         if ismember(col_name,skip_names)
-%           continue % skip some info
-%         end
-%         if strcmp(col_name,'name')
-%           col_name = 'Well_Conditions'; % change this name to be less ambigious
-%         end
-%         iterTable(:,col_name) = {col_value}; % Add metada
-%       end
-%       
-%     
-
-        
-
-
-
     end
-    % send(D2,current_img_number/2);
-    % iterTable = table();
-    % ResultTable = [iterTable; ResultTable];
     if is_parallel_processing
       send(NewResultCallback,iterTable);
     else

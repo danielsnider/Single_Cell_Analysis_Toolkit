@@ -20,10 +20,5 @@ function fun(app, proc_nums)
         app.preprocess{proc_num}.(comp_name) = {};
       end
     end
-    % if isfield(app.preprocess{proc_num},'tab')
-    %   delete(app.preprocess{proc_num}.tab);
-    %   app.preprocess{proc_num}.tab = [];
-    % end
-    % app.preprocess{proc_num} = {};
   end
 end

@@ -218,6 +218,4 @@ function result = fun(app, seg_num, createCallbackFcn)
   % Fill in the names of segments across the GUI
   changed_SegmentName(app);
 
-  % Trigger once so that the segment can be displayed
-  % app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
 end

@@ -1,8 +1,4 @@
 function fun(app,saved_app,createCallbackFcn)
-
-  % tabgp = uitabgroup(app.Tab_Input,'Position',saved_app.input_data.tabgp.Position)
-  % app.input_data.tabgp = uitabgroup(app.Tab_Input,'Position',saved_app.input_data.tabgp.Position)
-
   % Input Tab
   filter_names = { ...
     'rows', ...
@@ -17,7 +13,6 @@ function fun(app,saved_app,createCallbackFcn)
     end
     changed_FilterInput(app,plate_num);
   end
-
 
   % Preprocess Tab
   component_names = { ...
@@ -83,7 +78,6 @@ function fun(app,saved_app,createCallbackFcn)
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
               continue % skip blacklisted property names that are known to be readonly
             end
-            % if ismember(field_name,{'Value','Limit'})
               try
                 % Place the saved value into the app
                 app.segment{seg_num}.(comp_name){idx}.(string(field_name)) = saved_app.segment{seg_num}.(comp_name){idx}.(string(field_name));

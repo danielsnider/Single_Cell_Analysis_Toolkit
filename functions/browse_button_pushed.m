@@ -1,12 +1,7 @@
 function fun(app, createCallbackFcn)
   if ~isempty(app.ChooseplatemapEditField.Value)
-    % uialert(app.UIFigure,'Sorry, changing plate map is not yet implemented. Please close and re-open this application to change plate map.','Cannot Change Plate Map',...
-    %     'Icon','error');
-    % return
     init_variables(app);
   end
-
-
 
   % Load Daniel and Justin's testing plate maps
     plate_file = 'Z:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
@@ -38,7 +33,6 @@ function fun(app, createCallbackFcn)
     app.plates = saved_app.plates;
   else
     app.plates = parse_platemap(app.ChooseplatemapEditField.Value);
-
   end
 
   % Draw Plates
@@ -52,14 +46,9 @@ function fun(app, createCallbackFcn)
   % Delete startup log
   delete(app.StartupLogTextArea);
 
+  % Load saved state
   if strfind(FileName,'.mat')
     load_saved_state(app,saved_app,createCallbackFcn);
-  else
-    % Initialize Segmentation Tab
-    % add_segment(app, createCallbackFcn);
-
-    % Initialize Measurements Tab
-    % add_measure(app, createCallbackFcn);
   end
 
   % Initialize Display Tab
@@ -70,9 +59,5 @@ function fun(app, createCallbackFcn)
   
   % Load the first image into the app!
   update_figure(app);
-
-  % Primary Segment Dropdown
-  %app.PrimarySegmentDropDown.Items = app.segment_names;
-
 
 end
