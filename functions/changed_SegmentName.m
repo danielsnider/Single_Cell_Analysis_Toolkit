@@ -1,4 +1,4 @@
-function NameCallback(app, seg_num)
+function fun(app)
   %% Save list of segment names in app.segment_names
   segment_names = {};
   for n=1:length(app.segment)
@@ -6,6 +6,13 @@ function NameCallback(app, seg_num)
     if strcmp(segment_names{n},'')
       segment_names{n} = sprintf('Segment %i', n);
     end
+    %% Update tab title
+    if strcmp(app.segment{n}.Name.Value,'')
+      app.segment{n}.tab.Title = sprintf('Segment %i', n);
+    else
+      app.segment{n}.tab.Title = sprintf('Segment %i: %s', n, segment_names{n});
+    end
+
   end
   % Fix matlab one element things differently
   if length(segment_names) == 1 
@@ -13,13 +20,6 @@ function NameCallback(app, seg_num)
   end
   % Save
   app.segment_names = segment_names;
-
-  %% Update tab title
-  if strcmp(app.segment{seg_num}.Name.Value,'')
-    app.segment{seg_num}.tab.Title = sprintf('Segment %i', seg_num);
-  else
-    app.segment{seg_num}.tab.Title = sprintf('Segment %i: %s', seg_num, app.segment{seg_num}.Name.Value);
-  end
 
   %% Update the segmentation tab with available segment values in dropdown section boxes for algorithms
   for n=1:length(app.segment)

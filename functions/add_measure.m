@@ -69,6 +69,22 @@ function fun(app, createCallbackFcn)
     'FontSize', 28, ...
     'Position', [480,296,218,41]);
 
+  % Delete button
+  function Delete_Callback(app, event)
+    delete_measures(app, meas_num);
+    app.measure(meas_num) = [];
+    delete(tab);
+    if length(app.measure) == 0
+      delete(app.measure_tabgp);
+      app.measure_tabgp = [];
+    end
+  end
+  delete_button = uibutton(tab, ...
+    'Text', [app.Delete_Unicode.Text ''], ...
+    'BackgroundColor', [.95 .95 .95], ...
+    'ButtonPushedFcn', createCallbackFcn(app, @Delete_Callback, true), ...
+    'Position', [369,260,26,23]);
+
   
   % Update the segment list in the display tab
   draw_display_measure_selection(app);

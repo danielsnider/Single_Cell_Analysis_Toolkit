@@ -18,6 +18,17 @@ function fun(app)
     app.preprocess_tabgp = [];
     app.preprocess = [];
   end
+  if any(ismember(fields(app),'segment_tabgp'))
+    delete(app.segment_tabgp);
+    app.segment_tabgp = [];
+    app.segment = [];
+  end
+
+  if any(ismember(fields(app),'measure_tabgp'))
+    delete(app.measure_tabgp);
+    app.measure_tabgp = [];
+    app.measure = [];
+  end
 
 
   app.input_data = {};

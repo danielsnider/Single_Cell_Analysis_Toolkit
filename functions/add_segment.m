@@ -28,7 +28,7 @@ function fun(app, createCallbackFcn)
 
   % Segment name edit field
   function changed_SegmentName_(app, event)
-    changed_SegmentName(app, seg_num);
+    changed_SegmentName(app);
   end
   app.segment{seg_num}.Name = uieditfield(tab, ...
     'Value', '', ...
@@ -62,6 +62,23 @@ function fun(app, createCallbackFcn)
     'FontName', 'Yu Gothic UI Light', ...
     'FontSize', 28, ...
     'Position', [480,421,218,41]);
+
+  % Delete button
+  function Delete_Callback(app, event)
+    delete_segments(app, seg_num);
+    app.segment(seg_num) = [];
+    delete(tab);
+    if length(app.segment) == 0
+      delete(app.segment_tabgp);
+      app.segment_tabgp = [];
+    end
+    changed_SegmentName(app)
+  end
+  delete_button = uibutton(tab, ...
+    'Text', [app.Delete_Unicode.Text ''], ...
+    'BackgroundColor', [.95 .95 .95], ...
+    'ButtonPushedFcn', createCallbackFcn(app, @Delete_Callback, true), ...
+    'Position', [369,385,26,23]);
 
   %% Set a display color to see in the figure
   app.segment{seg_num}.display_color = [];

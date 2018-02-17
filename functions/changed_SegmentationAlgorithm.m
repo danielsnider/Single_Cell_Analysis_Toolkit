@@ -216,7 +216,7 @@ function result = fun(app, seg_num, createCallbackFcn)
   help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
 
   % Fill in the names of segments across the GUI
-  changed_SegmentName(app, seg_num);
+  changed_SegmentName(app);
 
   % Trigger once so that the segment can be displayed
   % app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);

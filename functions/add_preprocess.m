@@ -77,6 +77,22 @@ function fun(app, createCallbackFcn)
     'FontSize', 28, ...
     'Position', [480,421,218,41]);
 
+  % Delete button
+  function Delete_Callback(app, event)
+    delete_preprocess(app, proc_num);
+    app.preprocess(proc_num) = [];
+    delete(tab);
+    if length(app.preprocess) == 0
+      delete(app.preprocess_tabgp);
+      app.preprocess_tabgp = [];
+    end
+  end
+  delete_button = uibutton(tab, ...
+    'Text', [app.Delete_Unicode.Text ''], ...
+    'BackgroundColor', [.95 .95 .95], ...
+    'ButtonPushedFcn', createCallbackFcn(app, @Delete_Callback, true), ...
+    'Position', [369,385,26,23]);
+
   % Switch to new tab
   app.preprocess_tabgp.SelectedTab = app.preprocess{proc_num}.tab;
 
