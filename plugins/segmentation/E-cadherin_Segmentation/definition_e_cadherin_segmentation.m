@@ -12,11 +12,25 @@ function [params, algorithm_name, algorithm_help] = fun()
   params(n).type = 'image_channel_dropdown';
 
   n = n + 1;
-  params(n).name = 'Gaussian Blur';
+  params(n).name = 'Gaussian Blur (for threshold)';
+  params(n).default = 3;
+  params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
+  params(n).type = 'numeric';
+  params(n).limits = [0.00001 Inf];
+
+  n = n + 1;
+  params(n).name = 'Gaussian Blur (for watershed)';
   params(n).default = 7;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
   params(n).limits = [0.00001 Inf];
+
+  n = n + 1;
+  params(n).name = 'Threshold';
+  params(n).default = 2750;
+  params(n).help = 'Remove segments of the image that are less than the threshold.';
+  params(n).type = 'numeric';
+  params(n).optional = true;
 
   n = n + 1;
   params(n).name = 'Suppresses Minima';
@@ -27,13 +41,13 @@ function [params, algorithm_name, algorithm_help] = fun()
   n = n + 1;
   params(n).name = 'Min Area';
   params(n).default = 10;
-  params(n).help = '';
+  params(n).help = 'Remove segments that are smaller than the min area.';
   params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Max Area';
   params(n).default = 100000;
-  params(n).help = '';
+  params(n).help = 'Remove segments that are larger than the max area.';
   params(n).type = 'numeric';
 
   n = n + 1;

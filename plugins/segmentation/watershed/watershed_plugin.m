@@ -3,7 +3,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
   % Smooth
   img_smooth = imgaussfilt(img,threshold_smooth_param);
   if ismember(debug_level,{'All'})
-    f = figure(886); clf; set(f,'name','imgaussfilt','NumberTitle', 'off');
+    f = figure(886); clf; set(f,'name','smooth for threshold','NumberTitle', 'off');
     imshow(img_smooth,[]);
   end
 
@@ -35,7 +35,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
     img_smooth2 = imgaussfilt(img,watershed_smooth_param);
   end
   if ismember(debug_level,{'All'})
-    f = figure(889); clf; set(f,'name','imgaussfilt2','NumberTitle', 'off');
+    f = figure(889); clf; set(f,'name','smooth for watershed','NumberTitle', 'off');
     imshow(img_smooth2,[]);
   end
 

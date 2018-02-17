@@ -1,9 +1,9 @@
-function result = fun(smooth_param, imhmin_param, min_area, max_area, debug_level, img)
+function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_param, imhmin_param, min_area, max_area, debug_level, img)
 
   % Smooth
-  img_smooth = imgaussfilt(img,smooth_param);
+  img_smooth = imgaussfilt(img,watershed_smooth_param);
   if ismember(debug_level,{'All'})
-    f = figure(681); clf; set(f,'name','imgaussfilt','NumberTitle', 'off');
+    f = figure(681); clf; set(f,'name','smooth for watershed','NumberTitle', 'off');
     imshow(img_smooth,[]);
   end
 
@@ -35,6 +35,24 @@ function result = fun(smooth_param, imhmin_param, min_area, max_area, debug_leve
     imshow(img_ws,[]);
   end
 
+  if ~isequal(thresh_param,false)
+    % Smooth
+    img_smooth = imgaussfilt(img,threshold_smooth_param);
+    if ismember(debug_level,{'All'})
+      f = figure(680); clf; set(f,'name','smooth for watershed','NumberTitle', 'off');
+      imshow(img_smooth,[]);
+    end
+
+    % Threshold
+    img_thresh = img_smooth < thresh_param;
+    img_ws(img_thresh)=0;
+    seeds(img_thresh)=0;
+    if ismember(debug_level,{'All'})
+      f = figure(679); clf; set(f,'name','threshold','NumberTitle', 'off');
+      imshow(img_ws,[]);
+    end
+  end
+
   % Clear cells touching the boarder
   bordercleared_img = imclearborder(img_ws);
   if ismember(debug_level,{'All'})
@@ -43,6 +61,7 @@ function result = fun(smooth_param, imhmin_param, min_area, max_area, debug_leve
   end
 
   labelled_img = bwlabel(bordercleared_img);
+  seeds(labelled_img<1)=0;
 
   % Remove objects that are too small or too large
   stats = regionprops(labelled_img,'area');

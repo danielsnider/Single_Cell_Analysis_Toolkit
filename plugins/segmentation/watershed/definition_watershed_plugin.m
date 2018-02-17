@@ -36,19 +36,19 @@ function [params, algorithm_name, algorithm_help] = fun()
   n = n + 1;
   params(n).name = 'Threshold';
   params(n).default = 275;
-  params(n).help = '';
+  params(n).help = 'Remove segments of the image that are less than the threshold.';
   params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Min Area';
   params(n).default = 200;
-  params(n).help = '';
+  params(n).help = 'Remove segments that are smaller than the min area.';
   params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Max Area';
   params(n).default = 100000;
-  params(n).help = '';
+  params(n).help = 'Remove segments that are larger than the max area.';
   params(n).type = 'numeric';
 
   n = n + 1;
