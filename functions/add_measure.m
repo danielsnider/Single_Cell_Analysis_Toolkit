@@ -1,5 +1,21 @@
 function fun(app, createCallbackFcn)
-  measure_plugins = {'region_props','subsegments_count','mitosis_detection_saddlepoint'};
+  if isempty(app.segment)
+    msg = sprintf('Cannot add measurement because no segments have been configured. Please add a segment before measuring it.');
+    uialert(app.UIFigure,msg,'Missing Segments', 'Icon','info');
+    return
+  end
+
+  plugin_definitions = dir('./plugins/measurements/**/definition*');
+  plugin_names = {};
+  plugin_pretty_names = {};
+  for plugin_num = 1:length(plugin_definitions)
+    plugin = plugin_definitions(plugin_num);
+    plugin_name = plugin.name(1:end-2);
+    [params, algorithm_name, algorithm_help] = eval(plugin_name);
+    plugin_name = strsplit(plugin_name,'definition_');
+    plugin_names{plugin_num} = plugin_name{2};
+    plugin_pretty_names{plugin_num} = algorithm_name;
+  end
 
   % Setup
   if isempty(app.measure_tabgp)
@@ -16,7 +32,8 @@ function fun(app, createCallbackFcn)
   % Create algorithm selection dropdown box
   Callback = @(app, event) changed_MeasureAlgorithm(app, meas_num, createCallbackFcn);
   app.measure{meas_num}.AlgorithmDropDown = uidropdown(tab, ...
-    'Items', measure_plugins, ...
+    'Items', plugin_pretty_names, ...
+    'ItemsData', plugin_names, ...
     'ValueChangedFcn', createCallbackFcn(app, Callback, true), ...
     'Position', [162,227,200,22]);
   label = uilabel(tab, ...

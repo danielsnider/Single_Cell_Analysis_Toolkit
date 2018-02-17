@@ -52,13 +52,15 @@ function start_processing_of_one_image(app)
     end
   end
 
-  % Compute all processing for this new image
-  imgs_to_process = [multi_channel_img];
-  current_img_number = 1;
-  NumberOfImages = 1;
-  is_parallel_processing = false;
-  process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
+  if ~isempty(app.segment)
+    % Compute all processing for this new image
+    imgs_to_process = [multi_channel_img];
+    current_img_number = 1;
+    NumberOfImages = 1;
+    is_parallel_processing = false;
+    process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
 
-  % Update list of measurements in the display tab
-  draw_display_measure_selection(app);
+    % Update list of measurements in the display tab
+    draw_display_measure_selection(app);
+  end
 end

@@ -56,10 +56,10 @@ function fun(app, createCallbackFcn)
     load_saved_state(app,saved_app,createCallbackFcn);
   else
     % Initialize Segmentation Tab
-    add_segment(app, createCallbackFcn);
+    % add_segment(app, createCallbackFcn);
 
     % Initialize Measurements Tab
-    add_measure(app, createCallbackFcn);
+    % add_measure(app, createCallbackFcn);
   end
 
   % Initialize Display Tab
@@ -72,7 +72,7 @@ function fun(app, createCallbackFcn)
   update_figure(app);
 
   % Primary Segment Dropdown
-  app.PrimarySegmentDropDown.Items = app.segment_names;
+  %app.PrimarySegmentDropDown.Items = app.segment_names;
 
 
 end
