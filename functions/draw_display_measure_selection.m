@@ -2,9 +2,9 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
-    if ~isempty(app.ResultTable.Properties.VariableNames)
-      names = app.ResultTable.Properties.VariableNames;
+  if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
+    if ~isempty(app.ResultTable_for_display.Properties.VariableNames)
+      names = app.ResultTable_for_display.Properties.VariableNames;
 
       % Remove column names that are got into the table because it is image or plate metadata
       % NOTE: this may remove actual measure names where there is a name collision? there is a trade off here between clean UI and unintentional confusion, I'm choosing clean UI (fewer items in the measures dropdown list)

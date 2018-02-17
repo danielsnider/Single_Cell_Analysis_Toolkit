@@ -3,59 +3,111 @@ function fun(app)
 
   for plate_num=1:length(app.plates)
     img_dir = app.plates(plate_num).metadata.ImageDir;
-    naming_scheme = app.plates(plate_num).metadata.ImageNamingScheme;
+    naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
 
     msg = sprintf('Loading image names for plate %i...', plate_num);
     app.log_startup_message(app, msg);
 
-    % Only Operetta Image Naming Scheme is Supported
-    if ~strcmp(naming_scheme, 'Operetta')
-      msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',naming_scheme);
-      uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
+    % Only OperettaSplitTiffs Image Naming Scheme is Supported
+    if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs'})
+      msg = sprintf('Could not load image file names. Unkown image file format "%s". Please see your plate map spreadsheet.',naming_scheme);
+      uialert(app.UIFigure,msg,'Unkown Image File Format', 'Icon','error');
     end
 
-    % The plate number in the filename of images
-    plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
-    img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
-    app.plates(plate_num).img_files = img_files;
-    app.image_names = [app.image_names; img_files];
-    
-    if isempty(img_files)
-      msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
-      uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
-      error(msg);
-    end
+    if strcmp(naming_scheme, 'OperettaSplitTiffs')
+      % The plate number in the filename of images
+      plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
 
-    % Get unique row, column, etc. values from all the image names
-    rows = cellfun(@(x) str2num(x(2:3)), {img_files.name},'UniformOutput',false);
-    uniq_rows = unique([rows{:}],'sort');
-    columns = cellfun(@(x) str2num(x(5:6)), {img_files.name},'UniformOutput',false);
-    uniq_columns = unique([columns{:}],'sort');
-    fields = cellfun(@(x) str2num(x(8:9)), {img_files.name},'UniformOutput',false);
-    uniq_fields = unique([fields{:}],'sort');
-    plates = cellfun(@(x) str2num(x(11:12)), {img_files.name},'UniformOutput',false);
-    uniq_plates = unique([plates{:}],'sort');
-    channels = cellfun(@(x) str2num(x(16)), {img_files.name},'UniformOutput',false);
-    uniq_channels = unique([channels{:}],'sort');
-    paren = @(x, varargin) str2num(x{varargin{:}}); % helper to extract value from array in one line
-    timepoints = cellfun(@(x) paren(strsplit(x,{'sk','fk'}),2), {img_files.name},'UniformOutput',false);
-    uniq_timepoints = unique([timepoints{:}],'sort');
+      % List Image Files
+      img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
+      app.plates(plate_num).img_files = img_files;
+      
+      if isempty(img_files)
+        msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+        uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
+        error(msg);
+      end
 
-    app.plates(plate_num).rows = uniq_rows;
-    app.plates(plate_num).columns = uniq_columns;
-    app.plates(plate_num).fields = uniq_fields;
-    app.plates(plate_num).timepoints = uniq_timepoints;
-    app.plates(plate_num).channels = uniq_channels;
-    app.plates(plate_num).plates = uniq_plates;
+      % Get unique row, column, etc. values from all the image names
+      rows = cellfun(@(x) str2num(x(2:3)), {img_files.name},'UniformOutput',false);
+      uniq_rows = unique([rows{:}],'sort');
+      columns = cellfun(@(x) str2num(x(5:6)), {img_files.name},'UniformOutput',false);
+      uniq_columns = unique([columns{:}],'sort');
+      fields = cellfun(@(x) str2num(x(8:9)), {img_files.name},'UniformOutput',false);
+      uniq_fields = unique([fields{:}],'sort');
+      plates = cellfun(@(x) str2num(x(11:12)), {img_files.name},'UniformOutput',false);
+      uniq_plates = unique([plates{:}],'sort');
+      channels = cellfun(@(x) str2num(x(16)), {img_files.name},'UniformOutput',false);
+      uniq_channels = unique([channels{:}],'sort');
+      paren = @(x, varargin) str2num(x{varargin{:}}); % helper to extract value from array in one line
+      timepoints = cellfun(@(x) paren(strsplit(x,{'sk','fk'}),2), {img_files.name},'UniformOutput',false);
+      uniq_timepoints = unique([timepoints{:}],'sort');
 
-    % Set add the row, column, field, etc. values for each file to their struct data in app.plate.img_files
-    for file_num=1:length(app.plates(plate_num).img_files)
-      app.plates(plate_num).img_files(file_num).row = rows(file_num);
-      app.plates(plate_num).img_files(file_num).column = columns(file_num);
-      app.plates(plate_num).img_files(file_num).field = fields(file_num);
-      app.plates(plate_num).img_files(file_num).timepoint = timepoints(file_num);
-      app.plates(plate_num).img_files(file_num).channel = channels(file_num);
-      app.plates(plate_num).img_files(file_num).plate = plates(file_num);
+      app.plates(plate_num).rows = uniq_rows;
+      app.plates(plate_num).columns = uniq_columns;
+      app.plates(plate_num).fields = uniq_fields;
+      app.plates(plate_num).timepoints = uniq_timepoints;
+      app.plates(plate_num).channels = uniq_channels;
+      app.plates(plate_num).plates = uniq_plates;
+
+      % Set add the row, column, field, etc. values for each file to their struct data in app.plate.img_files
+      for file_num=1:length(app.plates(plate_num).img_files)
+        app.plates(plate_num).img_files(file_num).row = rows(file_num);
+        app.plates(plate_num).img_files(file_num).column = columns(file_num);
+        app.plates(plate_num).img_files(file_num).field = fields(file_num);
+        app.plates(plate_num).img_files(file_num).timepoint = timepoints(file_num);
+        app.plates(plate_num).img_files(file_num).channel = channels(file_num);
+        app.plates(plate_num).img_files(file_num).plate = plates(file_num);
+      end
+
+    elseif strcmp(naming_scheme, 'ZeissSplitTiffs')
+
+      % List Image Files
+      img_files = dir([img_dir '\*.tif*']);
+      
+      if isempty(img_files)
+        msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+        uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
+        error(msg);
+      end
+
+      % Parse image names
+      for img_num=1:length(img_files)
+        patterns = regexp(img_files(img_num).name,'(?<filepart1>.*)_C0(?<chan_num>\d)(?<filepart2>.*)','names');
+        img_files(img_num).filepart1 = patterns.filepart1;
+        img_files(img_num).filepart2 = patterns.filepart2;
+        img_files(img_num).chan_num = str2num(patterns.chan_num)+1; % Zeiss starts channel nums at 0
+      end
+
+      % Store unique values
+      app.plates(plate_num).experiments = unique({img_files.filepart1});
+      app.plates(plate_num).channels = unique([img_files.chan_num]);
+
+      % Combine split image filenames (multiple items in the list per image, 1 for each channel) to a structure that is one list item per image (with multiple channels nested)
+      multi_channel_imgs = [];
+      chan_nums = app.plates(plate_num).channels;
+      number_of_channels = length(app.plates(plate_num).channels);
+      for img_num=1:number_of_channels:length(img_files)
+        multi_channel_img = {};
+        multi_channel_img.channel_nums = chan_nums;
+        multi_channel_img.plate_num = plate_num;
+        multi_channel_img.chans = [];
+        image_file = img_files(img_num);
+        multi_channel_img.filepart1 = image_file.filepart1;
+        multi_channel_img.filepart2 = image_file.filepart2;
+        multi_channel_img.ImageName = image_file.name;
+        for chan_num=[chan_nums]
+          image_file = img_files(img_num+chan_num-1);
+          multi_channel_img.chans(chan_num).folder = image_file.folder;
+          multi_channel_img.chans(chan_num).name = ...
+          [image_file.filepart1 '_C0' num2str(chan_num-1) ...
+           image_file.filepart2]; % ex. jerboa_pancreas-09_C00(DAPI)_ORG.tif NOTE: Zeiss starts channel nums at 0
+          multi_channel_img.chans(chan_num).path = fullfile(image_file.folder, image_file.name);
+        end
+        multi_channel_imgs = [multi_channel_imgs; multi_channel_img];
+      end
+
+      app.plates(plate_num).img_files = multi_channel_imgs;
     end
 
     % Enable by default all channels for display in the figure

@@ -2,12 +2,6 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  % Currently selected image
-  row = app.RowDropDown.Value;
-  column = app.ColumnDropDown.Value;
-  field = app.FieldDropDown.Value;
-  timepoint = app.TimepointDropDown.Value;
-
   %% Display Images
   % Initialize image of a composite of one or more channels
   first_chan_num = app.plates(plate_num).channels(1); % may not always be 1 in position 1, it's a crazy world out there
@@ -106,11 +100,23 @@ function fun(app)
   %% Display measure overlay
   if app.DisplayMeasureCheckBox.Value
     PlateName = app.plates(plate_num).metadata.Name;
-    if any(ismember(fields(app),'ResultTable')) && istable(app.ResultTable)
+    if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
       measure_name = app.DisplayMeasureDropDown.Value;
-      if ismember(measure_name,app.ResultTable.Properties.VariableNames)
-        selector = ismember(app.ResultTable.row,row) & ismember(app.ResultTable.column,column) & ismember(app.ResultTable.field,field) & ismember(app.ResultTable.timepoint,timepoint) & ismember(app.ResultTable.PlateName,PlateName);
-        data = app.ResultTable(selector,{measure_name,'x_coord','y_coord'});
+      if ismember(measure_name,app.ResultTable_for_display.Properties.VariableNames)
+        if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+          % Currently selected image is uniquely identified by row, column, field, and timepoint
+          row = app.RowDropDown.Value;
+          column = app.ColumnDropDown.Value;
+          field = app.FieldDropDown.Value;
+          timepoint = app.TimepointDropDown.Value;
+          selector = ismember(app.ResultTable_for_display.row,row) & ismember(app.ResultTable_for_display.column,column) & ismember(app.ResultTable_for_display.field,field) & ismember(app.ResultTable_for_display.timepoint,timepoint) & ismember(app.ResultTable_for_display.PlateName,PlateName);
+        elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
+          % Currently selected image is uniquely identified by the first part of the filename
+          img_num = app.ExperimentDropDown.Value;
+          filepart1 = app.plates(plate_num).img_files_subset(img_num).filepart1;
+          selector = ismember(app.ResultTable_for_display.filepart1,filepart1);
+        end
+        data = app.ResultTable_for_display(selector,{measure_name,'x_coord','y_coord'});
         fontsize = app.DisplayMeasureFontSize.Value;
         fontcolor = app.measure_overlay_color;
         text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%.2f'),'Color',fontcolor,'FontSize',fontsize);

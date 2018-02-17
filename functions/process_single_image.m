@@ -9,9 +9,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     plate_num = image_file.plate_num;
     plate=app.plates(plate_num);
 
-    % % Only Operetta Image Naming Scheme is Supported
-    % if ~strcmp(plate.metadata.ImageNamingScheme, 'Operetta')
-    %   body = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "Operetta".',plate.metadata.ImageNamingScheme);
+    % % Only OperettaSplitTiffs Image Naming Scheme is Supported
+    % if ~strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    %   body = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "OperettaSplitTiffs".',plate.metadata.ImageFileFormat);
     %   msg={};
     %   msg.body = body;
     %   msg.title = 'Unkown image naming scheme';
