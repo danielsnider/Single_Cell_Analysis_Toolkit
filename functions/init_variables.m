@@ -11,8 +11,8 @@ function fun(app)
   delete_display_segments(app);
   delete_display_channels(app);
 
-  delete_segments(app, [1:length(app.segment)]);
-  delete_measures(app, [1:length(app.measure)]);
+  % delete_segments(app, [1:length(app.segment)]);
+  % delete_measures(app, [1:length(app.measure)]);
   if any(ismember(fields(app),'preprocess_tabgp'))
     delete(app.preprocess_tabgp);
     app.preprocess_tabgp = [];
@@ -23,11 +23,15 @@ function fun(app)
     app.segment_tabgp = [];
     app.segment = [];
   end
-
   if any(ismember(fields(app),'measure_tabgp'))
     delete(app.measure_tabgp);
     app.measure_tabgp = [];
     app.measure = [];
+  end
+  if any(ismember(fields(app),'analyze_tabgp'))
+    delete(app.analyze_tabgp);
+    app.analyze_tabgp = [];
+    app.analyze = [];
   end
 
 
@@ -42,7 +46,10 @@ function fun(app)
   app.measure = {};
   app.measure_tabgp = [];
   app.measure_overlay_color = [0 1 0];
+  app.analyze = {};
+  app.analyze_tabgp = [];
 
+  app.Button_RunAllAnalysis.Visible = 'off';
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
   app.ProcessingLogTextArea.Value = {''};
