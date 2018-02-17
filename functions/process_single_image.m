@@ -124,8 +124,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       end
       
       % Add Well Condition Metadata
-      iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
-      
+      if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
+        iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
+      end
       
 %       for col_name=1:size(plate,1)'
 %         col_value = app.plates(col_name).wells;
