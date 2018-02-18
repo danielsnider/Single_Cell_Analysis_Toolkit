@@ -88,6 +88,6 @@ function func(app, plate_num)
   app.plates(plate_num).NumberOfImagesField.Value = num2str(length(app.plates(plate_num).img_files_subset));
 
   % Update Display UI 
-  draw_display_image_selection(app);
+  % draw_display_image_selection(app);
 
 end

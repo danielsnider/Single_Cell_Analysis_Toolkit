@@ -45,6 +45,7 @@ function result = fun(app, meas_num, createCallbackFcn)
         if isfield(param,'limits') & size(param.limits)==[1 2]
           app.measure{meas_num}.fields{param_num}.Limits = param.limits;
         end
+        app.measure{meas_num}.fields{param_num}.ValueDisplayFormat = '%g';
       elseif strcmp(param.type,'text')
         app.measure{meas_num}.fields{param_num} = uieditfield(app.measure{meas_num}.tab);
       elseif strcmp(param.type,'dropdown')

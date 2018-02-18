@@ -127,6 +127,7 @@ function result = fun(app, proc_num, createCallbackFcn)
         if isfield(param,'limits') & size(param.limits)==[1 2]
           app.preprocess{proc_num}.fields{field_num}.Limits = param.limits;
         end
+        app.preprocess{proc_num}.fields{field_num}.ValueDisplayFormat = '%g';
       elseif strcmp(param.type,'text')
         app.preprocess{proc_num}.fields{field_num} = uieditfield(app.preprocess{proc_num}.tab);
       elseif strcmp(param.type,'dropdown')

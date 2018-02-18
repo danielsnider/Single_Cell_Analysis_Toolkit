@@ -101,6 +101,7 @@ function result = fun(app, an_num, createCallbackFcn)
         if isfield(param,'limits') & size(param.limits)==[1 2]
           app.analyze{an_num}.fields{field_num}.Limits = param.limits;
         end
+        app.analyze{an_num}.fields{field_num}.ValueDisplayFormat = '%g';
       elseif strcmp(param.type,'text')
         app.analyze{an_num}.fields{field_num} = uieditfield(app.analyze{an_num}.tab);
       elseif strcmp(param.type,'dropdown')
@@ -174,6 +175,7 @@ function result = fun(app, an_num, createCallbackFcn)
     'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
   help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
 
+  % Update list of measurements in the analyze tab
   changed_MeasurementNames(app);
 
 end

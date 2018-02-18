@@ -109,4 +109,7 @@ function fun(app)
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);
 
+  % Update list of measurements in the analyze tab
+  changed_MeasurementNames(app);
+
 end

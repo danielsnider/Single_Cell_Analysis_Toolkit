@@ -62,5 +62,8 @@ function start_processing_of_one_image(app)
 
     % Update list of measurements in the display tab
     draw_display_measure_selection(app);
+
+    % Update list of measurements in the analyze tab
+    changed_MeasurementNames(app);
   end
 end

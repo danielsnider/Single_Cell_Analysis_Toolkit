@@ -1,5 +1,6 @@
-function function fun(app, an_num)
+function fun(app, an_num)
   algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
+  algo_params = {};
 
   if ~isempty(app.ResultTable)
     ResultTable = app.ResultTable;
@@ -12,13 +13,27 @@ function function fun(app, an_num)
   end
 
   % Create list of algorithm parameter values to be passed to the plugin
-  algo_params = {};
-  for idx=1:length(app.analyze{an_num}.fields)
-    if isfield(app.analyze{an_num}.fields{idx}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.fields{idx}.UserData.ParamOptionalCheck.Value
-      algo_params(length(algo_params)+1) = {false};
-      continue
+  if isfield(app.analyze{an_num},'fields')
+    for field_num=1:length(app.analyze{an_num}.fields)
+      if isfield(app.analyze{an_num}.fields{field_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.fields{field_num}.UserData.ParamOptionalCheck.Value
+        algo_params(length(algo_params)+1) = {false};
+        continue
+      end
+      algo_params(length(algo_params)+1) = {app.analyze{an_num}.fields{field_num}.Value};
     end
-    algo_params(length(algo_params)+1) = {app.analyze{an_num}.fields{idx}.Value};
+  end
+
+  % Create list of measurements to be passed to the plugin
+  if isfield(app.analyze{an_num},'MeasurementDropDown')
+    for drop_num=1:length(app.analyze{an_num}.MeasurementDropDown)
+      if isfield(app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+        algo_params(length(algo_params)+1) = {false};
+        continue
+      end
+      meas_name = app.analyze{an_num}.MeasurementDropDown{drop_num}.Value;
+      meas_data = {ResultTable{:,meas_name}};
+      algo_params(length(algo_params)+1) = meas_data;
+    end
   end
 
   % Call algorithm

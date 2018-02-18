@@ -107,6 +107,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         if isfield(param,'limits') & size(param.limits)==[1 2]
           app.segment{seg_num}.fields{field_num}.Limits = param.limits;
         end
+        app.segment{seg_num}.fields{field_num}.ValueDisplayFormat = '%g';
       elseif strcmp(param.type,'text')
         app.segment{seg_num}.fields{field_num} = uieditfield(app.segment{seg_num}.tab);
       elseif strcmp(param.type,'dropdown')
