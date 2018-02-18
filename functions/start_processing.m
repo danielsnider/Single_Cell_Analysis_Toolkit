@@ -8,6 +8,10 @@ function fun(app)
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
 
+  % Display log
+  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+  pause(0.1); % enough time for the log text area to appear on screen
+
   % Get image names that weren't filtered from all plates
   imgs_to_process = get_images_to_process(app);
 
@@ -70,7 +74,6 @@ function fun(app)
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'on';
   app.Button_ExportMeasurements.Visible = 'on';
-  
 
   % Update list of measurements in the display tab
   draw_display_measure_selection(app);
@@ -78,4 +81,6 @@ function fun(app)
   % Update list of measurements in the analyze tab
   changed_MeasurementNames(app);
 
+  % Delete log
+  delete(app.StartupLogTextArea);
 end

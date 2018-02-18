@@ -4,11 +4,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   if is_parallel_processing
     send(ProcessingLogQueue,msg);
   else
-    if NumberOfImages > 1
-      app.log_processing_message(app, msg);
-      if isvalid(app.StartupLogTextArea)
-        app.log_startup_message(app, msg);
-      end
+    app.log_processing_message(app, msg);
+    if isvalid(app.StartupLogTextArea)
+      app.log_startup_message(app, msg);
     end
   end
   image_file = imgs_to_process(current_img_number);
@@ -32,7 +30,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   seg_result = {};
   for seg_num=1:length(app.segment)
     algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
-    msg = sprintf('Running segmentation algorithm "%s" on image %d...\n', algo_name, current_img_number);
+    msg = sprintf('Running segmentation algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
     if is_parallel_processing
       send(ProcessingLogQueue,msg);
     else
@@ -75,7 +73,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     % Loop over each configured measurement and execute the measurement code
     for meas_num=1:length(app.measure)
       algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
-      msg = sprintf('Running measurement algorithm "%s" on image %d...\n', algo_name, current_img_number);
+      msg = sprintf('Running measurement algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
       if is_parallel_processing
         send(ProcessingLogQueue,msg);
       else

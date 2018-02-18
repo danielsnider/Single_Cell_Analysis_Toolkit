@@ -38,9 +38,9 @@ function fun(app, createCallbackFcn)
   % Draw Plates
   draw_input_data(app, createCallbackFcn);
 
-  % Display startup log
+  % Display log
   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
-  pause(0.5); % enough time for the log text area to appear on screen
+  pause(0.1); % enough time for the log text area to appear on screen
   % Parse image files (can be slow!)
   parse_image_names(app);
 
@@ -58,7 +58,7 @@ function fun(app, createCallbackFcn)
   % Load the first image into the app!
   update_figure(app);
 
-  % Delete startup log
+  % Delete log
   delete(app.StartupLogTextArea);
 
 end
