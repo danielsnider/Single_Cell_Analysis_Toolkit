@@ -99,7 +99,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
   result = labelled_img;
 
   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
-    f = figure(743); clf; set(f,'name','watersed result','NumberTitle', 'off')
+    f = figure(743); clf; set(f,'name','watershed result','NumberTitle', 'off')
     % Display original image
     imshow(im2uint8(img),[]);
     hold on
