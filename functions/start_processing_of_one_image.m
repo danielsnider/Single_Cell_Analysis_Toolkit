@@ -1,4 +1,5 @@
 function start_processing_of_one_image(app)
+
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
@@ -7,6 +8,7 @@ function start_processing_of_one_image(app)
   function NewResultCallback(iterTable)
     app.ResultTable_for_display = iterTable;
   end
+
 
   %% Load Images
   if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
@@ -37,22 +39,24 @@ function start_processing_of_one_image(app)
         return
       end
       % app.image(chan_num).data = imread(app.image(chan_num).path);
-      app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_path);
+
       multi_channel_img.ImageName = image_name;
       multi_channel_img.chans(chan_num).folder = image_dir;
       multi_channel_img.chans(chan_num).name = image_name;
       multi_channel_img.chans(chan_num).path = image_path;
+      % app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_path);
     end
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
     for chan_num=[app.plates(plate_num).channels]
       img_num = app.ExperimentDropDown.Value;
       multi_channel_img = app.ExperimentDropDown.UserData(img_num);
-      img_path = multi_channel_img.chans(chan_num).path;
-      app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,img_path);
+      % image_path = multi_channel_img.chans(chan_num).path;
+      % app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_path);
     end
   end
 
-  if ~isempty(app.segment)
+
+  % if ~isempty(app.segment)
     % Compute all processing for this new image
     imgs_to_process = [multi_channel_img];
     current_img_number = 1;
@@ -65,5 +69,5 @@ function start_processing_of_one_image(app)
 
     % Update list of measurements in the analyze tab
     changed_MeasurementNames(app);
-  end
+  % end
 end

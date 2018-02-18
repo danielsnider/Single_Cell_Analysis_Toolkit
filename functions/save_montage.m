@@ -31,8 +31,8 @@ function fun(app)
       filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
 
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
-      app.ExperimentDropDown.Value = img.experiment;
-      filename = sprintf('%s/montage_%s_%s.png', date_str, save_dir, experiment);
+      app.ExperimentDropDown.Value = img.experiment_num;
+      filename = sprintf('%s/montage_%s_%s.png', save_dir, date_str, img.experiment);
     end
 
     start_processing_of_one_image(app); % process image and display

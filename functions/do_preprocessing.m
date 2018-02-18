@@ -5,6 +5,14 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     error(msg);
   end
 
+  [filepath,name,ext] = fileparts(img_path);
+  if isvalid(app.StartupLogTextArea)
+    msg = sprintf('Loading image %s', [name ext]);
+    app.log_startup_message(app, msg);
+  end
+
+
+
   img = imread(img_path);
   
   % Return if no preprocessing is configured
@@ -35,6 +43,12 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
 
     % Call algorithm
     algo_name = app.preprocess{proc_num}.AlgorithmDropDown.Value;
+
+    if isvalid(app.StartupLogTextArea)
+      msg = sprintf('Preprocessing ''%s'' with image %s', algo_name, [name ext]);
+      app.log_startup_message(app, msg);
+    end
+
     img = feval(algo_name, img, algo_params{:});
 
   end

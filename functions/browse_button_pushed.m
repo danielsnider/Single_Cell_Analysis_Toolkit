@@ -6,8 +6,8 @@ function fun(app, createCallbackFcn)
   % Load Daniel and Justin's testing plate maps
     plate_file = 'Z:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
   plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Nucleolus_Plate_Map_20180129';
-  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Tissue_Plate_Map.xlsx';
   plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
+  plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Tissue_Plate_Map.xlsx';
   if exist(plate_file)
     app.ChooseplatemapEditField.Value = plate_file;
     FileName = ''; % just helps testing
@@ -40,11 +40,9 @@ function fun(app, createCallbackFcn)
 
   % Display startup log
   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
-  pause(1); % enough time for the log text area to appear on screen
+  pause(0.5); % enough time for the log text area to appear on screen
   % Parse image files (can be slow!)
   parse_image_names(app);
-  % Delete startup log
-  delete(app.StartupLogTextArea);
 
   % Load saved state
   if strfind(FileName,'.mat')
@@ -59,5 +57,8 @@ function fun(app, createCallbackFcn)
   
   % Load the first image into the app!
   update_figure(app);
+
+  % Delete startup log
+  delete(app.StartupLogTextArea);
 
 end

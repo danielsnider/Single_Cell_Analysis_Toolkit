@@ -2,6 +2,11 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
+  if isvalid(app.StartupLogTextArea)
+    msg = sprintf('Displaying image.');
+    app.log_startup_message(app, msg);
+  end
+
   %% Display Images
   % Initialize image of a composite of one or more channels
   first_chan_num = app.plates(plate_num).channels(1); % may not always be 1 in position 1, it's a crazy world out there
