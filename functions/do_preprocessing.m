@@ -45,7 +45,8 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     algo_name = app.preprocess{proc_num}.AlgorithmDropDown.Value;
 
     if isvalid(app.StartupLogTextArea)
-      msg = sprintf('Preprocessing ''%s'' with image %s', algo_name, [name ext]);
+      preprocess_name = app.preprocess{proc_num}.tab.Title;
+      msg = sprintf('%s ''%s.m'' with image %s', preprocess_name, algo_name, [name ext]);
       app.log_startup_message(app, msg);
     end
 

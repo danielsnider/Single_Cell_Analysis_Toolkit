@@ -59,7 +59,28 @@ function result = fun(app, seg_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_segmentation_(app, Update)
+    % Display log
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    pause(0.1); % enough time for the log text area to appear on screen
+
+    % Preprocess list of input channels to be passed to the plugin
+    for idx=1:length(app.segment{seg_num}.ChannelDropDown)
+      if isfield(app.segment{seg_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.ChannelDropDown{idx}.UserData.Value
+        algo_params(length(algo_params)+1) = {false};
+        continue
+      end
+      drop_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
+      chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData(drop_num);
+      plate_num = app.PlateDropDown.Value;
+      dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
+      image_path = app.image_info.chans(dep_chan_num).path;
+      image_data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
+    end
+
     app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
+
+    % Delete log
+    delete(app.StartupLogTextArea);
   end
 
   app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);

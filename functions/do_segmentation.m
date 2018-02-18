@@ -43,10 +43,15 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
       chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData(drop_num);
       plate_num = app.PlateDropDown.Value;
       dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
-      % image_channel = app.image(dep_chan_num).data;
-      image_channel = imgs(dep_chan_num).data;
-      algo_params(length(algo_params)+1) = {image_channel};
+      image_data = imgs(dep_chan_num).data;
+      algo_params(length(algo_params)+1) = {image_data};
     end
+
+     if isvalid(app.StartupLogTextArea)
+       segment_name = app.segment{seg_num}.tab.Title;
+       msg = sprintf('%s ''%s.m''', segment_name, algo_name);
+       app.log_startup_message(app, msg);
+     end
 
     % Call algorithm
      result = feval(algo_name, algo_params{:});

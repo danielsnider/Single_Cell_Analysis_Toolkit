@@ -4,8 +4,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   if is_parallel_processing
     send(ProcessingLogQueue,msg);
   else
-    app.log_processing_message(app, msg);
     if NumberOfImages > 1
+      app.log_processing_message(app, msg);
       if isvalid(app.StartupLogTextArea)
         app.log_startup_message(app, msg);
       end

@@ -1,4 +1,4 @@
-function fun(app, createCallbackFcn)
+    function fun(app, createCallbackFcn)
   plugin_definitions = dir('./plugins/segmentation/**/definition*');
   plugin_names = {};
   plugin_pretty_names = {};

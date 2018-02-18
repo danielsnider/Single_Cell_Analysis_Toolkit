@@ -50,6 +50,10 @@ function result = fun(app, proc_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_preprocessing_(app, Update)
+    % Display log
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    pause(0.1); % enough time for the log text area to appear on screen
+
     plate_num = app.PlateDropDown.Value;
     proc_chan_name = app.preprocess{proc_num}.ChannelDropDown.Value;
 
@@ -80,6 +84,9 @@ function result = fun(app, proc_num, createCallbackFcn)
 
     % Do preprocesing
     app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
+
+    % Delete log
+    delete(app.StartupLogTextArea);
   end
 
   % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);

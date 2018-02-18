@@ -58,6 +58,7 @@ function start_processing_of_one_image(app)
 
   % if ~isempty(app.segment)
     % Compute all processing for this new image
+    app.image_info = multi_channel_img;
     imgs_to_process = [multi_channel_img];
     current_img_number = 1;
     NumberOfImages = 1;
