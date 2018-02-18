@@ -3,7 +3,10 @@ function fun(app)
   imgs_to_process = get_images_to_process(app);
   save_dir = uigetdir(app.ChooseplatemapEditField.Value,'Select Directory to Save Montage In');
   mag = num2str(app.AtMagnificationSpinner.Value);
+  fps = app.MovieatFPSSpinner.Value;
   date_str = datestr(now,'yyyymmddTHHMMSS');
+  gif_filename = sprintf('%s/montage_%s.gif', save_dir, date_str);
+  count = 1;
 
   % Display log
   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
@@ -16,7 +19,7 @@ function fun(app)
       continue % only operate on the currently selected plate
     end
 
-    msg = sprintf('Generating montage for image %s...', img.ImageName);
+    msg = sprintf('Processing montage for image %s...', img.ImageName);
     app.log_startup_message(app, msg);
 
     if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
@@ -34,13 +37,34 @@ function fun(app)
 
     start_processing_of_one_image(app); % process image and display
     update_figure(app);
-    figure(111); % set focus to display figure
-    export_fig(filename, ['-m' mag]); % save figure as image
+    h = figure(111); % set focus to display figure
+    if ~is_movie
+      export_fig(filename, ['-m' mag]); % save figure as image
+    end
+    if is_movie
+      [imageData, alpha] = export_fig(filename, ['-m' mag]); % save figure as image
+      % Capture the plot as an image
+      % frame = getframe(h); 
+      % im = frame2im(frame); 
+      % [imind,cm] = rgb2ind(im,256);
+      % Write to GIF File 
+      %imwrite(imind, cm, filename, 'gif', 'DelayTime',0.5, 'WriteMode', 'append'); 
+      [imind,cm] = rgb2ind(imageData,256);
+      if count == 1
+          imwrite(imind, cm, gif_filename, 'gif', 'DelayTime',1/fps, 'Loopcount', inf); 
+      else 
+          imwrite(imind, cm, gif_filename, 'gif', 'DelayTime',1/fps, 'WriteMode', 'append'); 
+      end 
+      count = count + 1;
+    end
+
   end
+
 
   % Delete log
   app.log_startup_message(app, 'Finished');
   delete(app.StartupLogTextArea);
+  % pause(0.5);
   % msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "OperettaSplitTiffs". Aborting.',plate.metadata.ImageFileFormat);
   % uialert(app.UIFigure,msg,'Saved Montage', 'Icon','success');
 
