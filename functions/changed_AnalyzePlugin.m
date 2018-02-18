@@ -61,7 +61,7 @@ function result = fun(app, an_num, createCallbackFcn)
   end
 
   % Load parameters of the algorithm plugin
-  [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+  [params, algorithm] = eval(['definition_' algo_name]);
 
   % Display GUI component for each parameter to the algorithm
   v_offset = 419;
@@ -169,11 +169,26 @@ function result = fun(app, an_num, createCallbackFcn)
     end
   end
 
+  % Example image
+  if isfield(algorithm,'image')
+    algo_image = uibutton(app.analyze{an_num}.tab, ...
+      'Text', '', ...
+      'Icon', algorithm.image, ...
+      'BackgroundColor', [1 1 1 ], ...
+      'Position', [50,105,350,235]);
+    help_box_pos = [50,24,350,80];
+    help_text_pos = [0,0,350,61];
+  else
+    help_box_pos = [50,60,350,280];
+    help_text_pos = [0,0,350,261];
+  end
+  
+
   % Display help information for this algorithm in the GUI
   algo_help_panel = uipanel(app.analyze{an_num}.tab, ...
     'Title',['Plugin Documentation '], ...
-    'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
+    'Position',help_box_pos, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+  help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',help_text_pos,'Editable','off');
 
   % Update list of measurements in the analyze tab
   changed_MeasurementNames(app);

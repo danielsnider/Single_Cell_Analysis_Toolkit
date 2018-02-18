@@ -5,10 +5,10 @@ function fun(app, createCallbackFcn)
   for plugin_num = 1:length(plugin_definitions)
     plugin = plugin_definitions(plugin_num);
     plugin_name = plugin.name(1:end-2);
-    [params, algorithm_name, algorithm_help] = eval(plugin_name);
+    [params, algorithm] = eval(plugin_name);
     plugin_name = strsplit(plugin_name,'definition_');
     plugin_names{plugin_num} = plugin_name{2};
-    plugin_pretty_names{plugin_num} = algorithm_name;
+    plugin_pretty_names{plugin_num} = algorithm.name;
   end
 
   % Setup
@@ -97,32 +97,6 @@ function fun(app, createCallbackFcn)
 
   % Populate GUI components in new tab
   app.analyze{an_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
-
-
-  % % Create new tab
-  % tab = uitab(app.Tab_Analyze,'Title',plugin_pretty_name, ...
-  %   'BackgroundColor', [1 1 1]);
-  % app.analyze{an_num}.tab = tab;
-
-  % v_offset = 385;
-
-  % % Create Titles
-  % label = uilabel(tab, ...
-  %   'Text', plugin_pretty_name, ...
-  %   'FontName', 'Yu Gothic UI Light', ...
-  %   'FontSize', 28, ...
-  %   'Position', [70,421,218,41]);
-  % label = uilabel(tab, ...
-  %   'Text', 'Parameters', ...
-  %   'FontName', 'Yu Gothic UI Light', ...
-  %   'FontSize', 28, ...
-  %   'Position', [480,421,218,41]);
-
-  % % Load parameters of the plugin
-  % [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
-
-  % % Draw plugin
-  % draw_analyze_plugin(app, params, algorithm_name, createCallbackFcn);
 
 
 end

@@ -136,11 +136,55 @@ function fun(app,saved_app,createCallbackFcn)
     end
   end
 
-  %% Result Table
+  % Analyze Tab
+  component_names = { ...
+    'fields', ...
+    'labels', ...
+    'MeasurementDropDown', ...
+    'MeasurementLabel', ...
+    'ParamOptionalCheck', ...
+  };
+  for an_num=1:length(saved_app.analyze)
+    add_analyze(app,createCallbackFcn);
+
+    app.analyze{an_num}.AlgorithmDropDown.Value = saved_app.analyze{an_num}.AlgorithmDropDown.Value;
+    app.analyze{an_num}.Name.Value = saved_app.analyze{an_num}.Name.Value;
+    app.analyze{an_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update'); % update dynamic param uielems to match the algo name's definition 
+
+    for cid=1:length(component_names) % loop over known ui component types that the app awknowleges
+      comp_name = component_names{cid}; % get known ui component type name
+      if isfield(app.analyze{an_num},comp_name) % only if it exists
+        for idx=1:length(app.analyze{an_num}.(comp_name)) % loop over each item of this type
+          field_names = fieldnames(app.analyze{an_num}.(comp_name){idx}); % get all the value field names on this ui element
+          for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
+            if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
+              continue % skip blacklisted property names that are known to be readonly
+            end
+            try
+              % Place the saved value into the app
+              app.analyze{an_num}.(comp_name){idx}.(string(field_name)) = saved_app.analyze{an_num}.(comp_name){idx}.(string(field_name));
+            catch ME
+              if strfind(ME.message,'You cannot set the read-only property')
+                warning(ME.message); % only warn if a read-only error ocures
+                continue
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  %% ResultTable
   if any(ismember(fields(saved_app),'ResultTable')) && istable(saved_app.ResultTable)
     app.ResultTable = saved_app.ResultTable
     app.Button_ViewMeasurements.Visible = 'on';
     app.Button_ExportMeasurements.Visible = 'on';
+  end
+
+  %% ResultTable_for_display
+  if any(ismember(fields(saved_app),'ResultTable_for_display')) && istable(saved_app.ResultTable_for_display)
+    app.ResultTable_for_display = saved_app.ResultTable_for_display
   end
 
 end

@@ -31,13 +31,14 @@ function fun(app, an_num)
         continue
       end
       meas_name = app.analyze{an_num}.MeasurementDropDown{drop_num}.Value;
-      meas_data = {ResultTable{:,meas_name}};
-      algo_params(length(algo_params)+1) = meas_data;
+      meas_data = ResultTable{:,meas_name};
+      algo_params(length(algo_params)+1) = {meas_data};
+      algo_params(length(algo_params)+1) = {strrep(meas_name, '_', ' ')}; % replace underscores with spaces for added prettyness
     end
   end
 
   % Call algorithm
-  img = feval(algo_name, algo_params{:});
+  feval(algo_name, algo_params{:});
 
 
 end
