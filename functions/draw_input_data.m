@@ -9,12 +9,17 @@ function fun(app, createCallbackFcn)
     changed_FilterInput(app, plate_num);
   end
 
+  function CheckCallback(app, event)
+    changed_EnabledPlates(app);
+  end
+
   for plate_num=1:length(app.plates)
     plate = app.plates(plate_num);
 
     tab = uitab(tabgp,'Title',sprintf('Plate %s', num2str(plate_num)), ...
       'BackgroundColor', [1 1 1]);
 
+    % Plate Name
     plate_label = uilabel(tab, 'Text', plate.metadata.Name, 'Position', [34,413,494,33], 'FontSize', 24, 'FontName', 'Yu Gothic UI Light');
 
     dirfield = uieditfield(tab, 'Value', plate.metadata.ImageDir, 'Position', [636,413,153,22], 'FontSize', 12, 'FontName', 'Helvetica', 'Editable','off');
@@ -83,6 +88,13 @@ function fun(app, createCallbackFcn)
       end
     end
 
+    % Add Plate Checkbox
+    app.plates(plate_num).checkbox = uicheckbox(tab, ...
+      'Position', [15,419,25,15], ...
+      'Value', true, ...
+      'Text', '', ...
+      'ValueChangedFcn', createCallbackFcn(app, @CheckCallback, true));
+
     visibility = 'on';
     if strcmp(plate.metadata.ImageFileFormat, 'ZeissSplitTiffs')
       pos = numimages_label.Position;
@@ -106,18 +118,21 @@ function fun(app, createCallbackFcn)
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
+    % Filter Columns
     columns_label = uilabel(tab, 'Text', 'Columns:', 'Visible', visibility, 'Position', [26,219,56,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
     app.plates(plate_num).filter_columns = uieditfield(tab, 'Visible', visibility, 'Position', [87,218,56,22], ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
+    % Filter Fields
     fields_label = uilabel(tab, 'Text', 'Fields:', 'Visible', visibility, 'Position', [43,190,39,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
     app.plates(plate_num).filter_fields = uieditfield(tab, 'Visible', visibility, 'Position', [87,189,56,22], ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
+    % Filter Timepoints
     timepoints_label = uilabel(tab, 'Text', 'Timepoints:', 'Visible', visibility, 'Position', [15,161,67,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
     app.plates(plate_num).filter_timepoints = uieditfield(tab, 'Visible', visibility, 'Position', [87,160,56,22], ...
       'UserData', plate_num, ...

@@ -1,4 +1,4 @@
-function result = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs)
+function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs)
   algo_params = {};
 
   % Create list of algorithm parameter values to be passed to the plugin
@@ -68,8 +68,16 @@ function result = do_measurement(app, plate, meas_num, algo_name, seg_result, im
   end
 
   % Call algorithm
-  result = feval(algo_name, algo_params{:});
-  % app.measure{meas_num}.result = result;
+  iterTable = feval(algo_name, algo_params{:});
 
-  
+  if isvalid(app.StartupLogTextArea)
+    new_measurements = strjoin(iterTable.Properties.VariableNames,', ');
+    msg = sprintf('%s ''%s.m'' produced columns: %s', measure_name, algo_name, new_measurements);
+    if app.CheckBox_Parallel.Value && app.processing_running
+      send(app.ProcessingLogQueue, msg);
+    else
+      app.log_processing_message(app, msg);
+    end
+  end
+
 end

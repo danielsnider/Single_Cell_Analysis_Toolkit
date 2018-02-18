@@ -3,13 +3,13 @@ function MeasureTable = func(stats_per_label, stats_per_channel, segments, imgs)
   MeasureTable = table();
 
   % Nothing to do if no segments are given
-  if isempty(segments)
+  if exist('segments') && isempty(segments)
     return;
   end
   seg_names = fields(segments);
 
   % Get channel names if there are any
-  if ~isempty(imgs)
+  if exist('imgs') && ~isempty(imgs)
     chan_names = fields(imgs);
   end
 
@@ -43,7 +43,7 @@ function MeasureTable = func(stats_per_label, stats_per_channel, segments, imgs)
     end
 
     % Skip image measurements if no images
-    if isempty(imgs)
+    if ~exist('imgs') || isempty(imgs)
       continue;
     end
     % Calculate intensity stats for each channel

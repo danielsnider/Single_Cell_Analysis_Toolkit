@@ -1,8 +1,16 @@
 function fun(app)
 
-  % Populate Plate Dropdown
-  app.PlateDropDown.Items = {app.plates.name};
-  app.PlateDropDown.ItemsData = 1:length(app.plates);
+  % Populate Plate Dropdown With Enabled Plates
+  plate_names = {};
+  plate_nums = [];
+  for plate_num=1:length(app.plates)
+    if app.plates(plate_num).checkbox.Value
+      plate_names{length(plate_names)+1} = app.plates(plate_num).name;
+      plate_nums = [plate_nums plate_num];
+    end
+  end
+  app.PlateDropDown.Items = plate_names;
+  app.PlateDropDown.ItemsData = plate_nums;
 
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;

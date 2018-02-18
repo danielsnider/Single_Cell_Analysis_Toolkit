@@ -80,7 +80,7 @@ function fun(app)
       seg = bwperim(seg);
       seg = bwlabel(seg);
     end
-    seg = imdilate(seg,strel('disk',thickness));
+    seg = imdilate(seg,strel('disk',thickness-1));
     colour = app.segment{seg_num}.display_color;
     if any(colour)
       seg_colors = uint8(zeros(size(composite_img)));

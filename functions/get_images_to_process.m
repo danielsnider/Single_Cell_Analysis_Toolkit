@@ -3,6 +3,9 @@ function imgs_to_process = fun(app)
   
   for plate_num=1:length(app.plates)
     plate=app.plates(plate_num);
+    if ~plate.checkbox.Value
+      continue % skip if a disabled plate
+    end
     num_channels = length(plate.channels);
 
     if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
