@@ -57,7 +57,14 @@ function result = fun(app, an_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_analyze_(app, Update)
+    % Display log
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    pause(0.1); % enough time for the log text area to appear on screen
+
     do_analyze(app, an_num);
+
+    % Delete log
+    delete(app.StartupLogTextArea);
   end
 
   % Load parameters of the algorithm plugin

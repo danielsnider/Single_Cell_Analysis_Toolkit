@@ -6,8 +6,6 @@ function images = fun(app, new_msg)
   else
     log_ = {char(new_msg)};
   end
-  if isvalid(app.StartupLogTextArea)
-    app.StartupLogTextArea.Value = log_;
-  end
+  app.StartupLogTextArea.Value = log_;
   app.ProcessingLogTextArea.Value = log_;
 end
