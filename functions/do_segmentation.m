@@ -50,7 +50,11 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
      if isvalid(app.StartupLogTextArea)
        segment_name = app.segment{seg_num}.tab.Title;
        msg = sprintf('%s ''%s.m''', segment_name, algo_name);
-       app.log_startup_message(app, msg);
+       if app.CheckBox_Parallel.Value && app.processing_running
+         send(app.ProcessingLogQueue, msg);
+       else
+         app.log_processing_message(app, msg);
+       end
      end
 
     % Call algorithm

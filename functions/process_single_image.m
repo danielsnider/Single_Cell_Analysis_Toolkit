@@ -1,13 +1,10 @@
 function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultCallback,ProcessingLogQueue,UiAlertQueue)
   
-  msg = sprintf('Processing image %d of %d.',current_img_number,NumberOfImages);
+  msg = sprintf('Processing image %d of %d',current_img_number,NumberOfImages);
   if is_parallel_processing
     send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
-    if isvalid(app.StartupLogTextArea)
-      app.log_startup_message(app, msg);
-    end
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
@@ -30,15 +27,15 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   seg_result = {};
   for seg_num=1:length(app.segment)
     algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
-    msg = sprintf('Running segmentation algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
-    if is_parallel_processing
-      send(ProcessingLogQueue,msg);
-    else
-      app.log_processing_message(app, msg);
-      if isvalid(app.StartupLogTextArea)
-        app.log_startup_message(app, msg);
-      end
-    end
+    % msg = sprintf('Running segmentation algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
+    % if is_parallel_processing
+    %   send(ProcessingLogQueue,msg);
+    % else
+    %   app.log_processing_message(app, msg);
+    %   if isvalid(app.StartupLogTextArea)
+    %     app.log_processing_message(app, msg);
+    %   end
+    % end
     seg_result{seg_num} = do_segmentation(app, seg_num, algo_name, imgs);
   end
 
@@ -73,15 +70,15 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     % Loop over each configured measurement and execute the measurement code
     for meas_num=1:length(app.measure)
       algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
-      msg = sprintf('Running measurement algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
-      if is_parallel_processing
-        send(ProcessingLogQueue,msg);
-      else
-        app.log_processing_message(app, msg);
-        if isvalid(app.StartupLogTextArea)
-          app.log_startup_message(app, msg);
-        end
-      end
+      % msg = sprintf('Running measurement algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
+      % if is_parallel_processing
+      %   send(ProcessingLogQueue,msg);
+      % else
+      %   app.log_processing_message(app, msg);
+      %   if isvalid(app.StartupLogTextArea)
+      %     app.log_processing_message(app, msg);
+      %   end
+      % end
       MeasureTable = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs);
       % Remove duplicate columns, keep the column that got there first
       new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));

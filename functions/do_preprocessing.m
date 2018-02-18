@@ -8,7 +8,11 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
   [filepath,name,ext] = fileparts(img_path);
   if isvalid(app.StartupLogTextArea)
     msg = sprintf('Loading image %s', [name ext]);
-    app.log_startup_message(app, msg);
+    if app.CheckBox_Parallel.Value && app.processing_running
+      send(app.ProcessingLogQueue, msg);
+    else
+      app.log_processing_message(app, msg);
+    end
   end
 
 
@@ -46,8 +50,12 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
 
     if isvalid(app.StartupLogTextArea)
       preprocess_name = app.preprocess{proc_num}.tab.Title;
-      msg = sprintf('%s ''%s.m'' with image %s', preprocess_name, algo_name, [name ext]);
-      app.log_startup_message(app, msg);
+      msg = sprintf('%s ''%s.m''', preprocess_name, algo_name);
+      if app.CheckBox_Parallel.Value && app.processing_running
+        send(app.ProcessingLogQueue, msg);
+      else
+        app.log_processing_message(app, msg);
+      end
     end
 
     img = feval(algo_name, img, algo_params{:});

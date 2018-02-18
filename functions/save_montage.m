@@ -10,7 +10,7 @@ function fun(app)
 
   % Display log
   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
-  app.log_startup_message(app, 'Starting Montage.');
+  app.log_processing_message(app, 'Starting Montage.');
   pause(0.5); % enough time for the log text area to appear on screen
 
   for img=imgs_to_process'
@@ -20,7 +20,7 @@ function fun(app)
     end
 
     msg = sprintf('Processing montage for image %s...', img.ImageName);
-    app.log_startup_message(app, msg);
+    app.log_processing_message(app, msg);
 
     if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
       app.RowDropDown.Value = img.row;
@@ -62,7 +62,7 @@ function fun(app)
 
 
   % Delete log
-  app.log_startup_message(app, 'Finished');
+  app.log_processing_message(app, 'Finished');
   delete(app.StartupLogTextArea);
   % pause(0.5);
   % msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "OperettaSplitTiffs". Aborting.',plate.metadata.ImageFileFormat);

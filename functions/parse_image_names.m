@@ -6,7 +6,7 @@ function fun(app)
     naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
 
     msg = sprintf('Loading image names for plate %i...', plate_num);
-    app.log_startup_message(app, msg);
+    app.log_processing_message(app, msg);
 
     % Only OperettaSplitTiffs Image Naming Scheme is Supported
     if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs'})

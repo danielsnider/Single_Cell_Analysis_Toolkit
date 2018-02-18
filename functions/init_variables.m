@@ -55,8 +55,6 @@ function fun(app)
   app.ProcessingLogTextArea.Value = {''};
 
   app.log_processing_message = @log_processing_message;
-  app.log_startup_message = @log_startup_message;
-
 
   app.ChooseplatemapEditField.Value = '';
 end

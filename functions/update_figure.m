@@ -4,7 +4,7 @@ function fun(app)
 
   if isvalid(app.StartupLogTextArea)
     msg = sprintf('Displaying image.');
-    app.log_startup_message(app, msg);
+    app.log_processing_message(app, msg);
   end
 
   %% Display Images

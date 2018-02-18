@@ -37,6 +37,16 @@ function fun(app, an_num)
     end
   end
 
+  if isvalid(app.StartupLogTextArea)
+    analyze_name = app.analyze{an_num}.tab.Title;
+    msg = sprintf('%s ''%s.m''', analyze_name, algo_name);
+    if app.CheckBox_Parallel.Value && app.processing_running
+      send(app.ProcessingLogQueue, msg);
+    else
+      app.log_processing_message(app, msg);
+    end
+  end
+
   % Call algorithm
   feval(algo_name, algo_params{:});
 

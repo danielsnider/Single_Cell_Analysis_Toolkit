@@ -7,6 +7,7 @@ function fun(app)
   app.ProcessingLogTextArea.Value = '';
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
+  app.processing_running = true;
 
   % Display log
   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
@@ -50,6 +51,7 @@ function fun(app)
   if app.CheckBox_Parallel.Value
     app.log_processing_message(app, 'Starting parallel processing pool.');
     ProcessingLogQueue = parallel.pool.DataQueue;
+    app.ProcessingLogQueue = ProcessingLogQueue;
     afterEach(ProcessingLogQueue, @ProcessingLogQueueCallback);
     UiAlertQueue = parallel.pool.DataQueue;
     afterEach(UiAlertQueue, @UiAlertQueueCallback);
@@ -83,4 +85,6 @@ function fun(app)
 
   % Delete log
   delete(app.StartupLogTextArea);
+
+  app.processing_running = false;
 end
