@@ -95,6 +95,7 @@ function fun(app)
         image_file = img_files(img_num);
         multi_channel_img.filepart1 = image_file.filepart1;
         multi_channel_img.filepart2 = image_file.filepart2;
+        multi_channel_img.experiment = image_file.filepart1;
         multi_channel_img.ImageName = image_file.name;
         for chan_num=[chan_nums]
           image_file = img_files(img_num+chan_num-1);
