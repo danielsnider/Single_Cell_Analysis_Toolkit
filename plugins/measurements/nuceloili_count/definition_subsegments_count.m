@@ -1,7 +1,7 @@
-function [params, algorithm_name, algorithm_help] = fun()
+function [params, algorithm] = fun()
 
-  algorithm_name = 'Count Sub-Segments';
-  algorithm_help = '';
+  algorithm.name = 'Count Sub-Segments';
+  algorithm.help = '';
   algorithm.maintainer = 'Justin Sing <justincsing@gmail.com>';
 
   n = 0;

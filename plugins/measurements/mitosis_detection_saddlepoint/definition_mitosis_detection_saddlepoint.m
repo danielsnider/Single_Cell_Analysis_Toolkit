@@ -1,7 +1,7 @@
-function [params, algorithm_name, algorithm_help] = fun()
+function [params, algorithm] = fun()
 
-  algorithm_name = 'Mitosis Detection with Saddle Points';
-  algorithm_help = 'See: https://en.wikipedia.org/wiki/Saddle_point';
+  algorithm.name = 'Mitosis Detection with Saddle Points';
+  algorithm.help = 'See: https://en.wikipedia.org/wiki/Saddle_point';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

@@ -14,7 +14,7 @@ function result = fun(app, meas_num, createCallbackFcn)
     delete_measures(app,[meas_num]);
 
     % Load parameters of the algorithm plugin
-    [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+    [params, algorithm] = eval(['definition_' algo_name]);
 
 
     % Display GUI component for each parameter to the algorithm
@@ -174,7 +174,7 @@ function result = fun(app, meas_num, createCallbackFcn)
     algo_help_panel = uipanel(app.measure{meas_num}.tab, ...
       'Title',['Algorithm Documentation '], ...
       'Position',[50,20,350,195], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,176],'Editable','off');
+    help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',[0,0,350,176],'Editable','off');
 
   % Catch Application Error
   catch ME

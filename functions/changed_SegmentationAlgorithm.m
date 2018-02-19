@@ -89,7 +89,7 @@ function result = fun(app, seg_num, createCallbackFcn)
     app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);
 
     % Load parameters of the algorithm plugin
-    [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+    [params, algorithm] = eval(['definition_' algo_name]);
 
 
     % Display GUI component for each parameter to the algorithm
@@ -237,7 +237,7 @@ function result = fun(app, seg_num, createCallbackFcn)
     algo_help_panel = uipanel(app.segment{seg_num}.tab, ...
       'Title',['Algorithm Documentation '], ...
       'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
+    help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',[0,0,350,261],'Editable','off');
 
     % Fill in the names of segments across the GUI
     changed_SegmentName(app);

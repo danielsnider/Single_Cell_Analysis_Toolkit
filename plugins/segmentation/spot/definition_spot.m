@@ -1,7 +1,7 @@
-function [params, algorithm_name, algorithm_help] = fun()
+function [params, algorithm] = fun()
 
-  algorithm_name = 'Spot';
-  algorithm_help = 'Spotting objects using gaussian blurring then finding all maximum intensity peaks.';
+  algorithm.name = 'Spot';
+  algorithm.help = 'Spotting objects using gaussian blurring then finding all maximum intensity peaks.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

@@ -1,7 +1,7 @@
-function [params, algorithm_name, algorithm_help] = fun()
+function [params, algorithm] = fun()
   
-  algorithm_name = 'Region Properties';
-  algorithm_help = 'Measure properties of image region using Matlab''s built function called ''regionprops''. Regionprops supports a large number of measurements which you can learn more about at https://www.mathworks.com/help/images/ref/regionprops.html. Resulting measurements will be stored in the result table with a name in the following format: SegmentName_ChannelName_MeasurementName. For example: Nucleus_DAPI_TotalIntensity. Each measurement that you select will be computed within each channel for each segement that you choose.';
+  algorithm.name = 'Region Properties';
+  algorithm.help = 'Measure properties of image region using Matlab''s built function called ''regionprops''. Regionprops supports a large number of measurements which you can learn more about at https://www.mathworks.com/help/images/ref/regionprops.html. Resulting measurements will be stored in the result table with a name in the following format: SegmentName_ChannelName_MeasurementName. For example: Nucleus_DAPI_TotalIntensity. Each measurement that you select will be computed within each channel for each segement that you choose.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

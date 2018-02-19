@@ -1,7 +1,7 @@
-function [params, algorithm_name, algorithm_help] = fun()
+function [params, algorithm] = fun()
 
-  algorithm_name = 'Open Close Illumination Correction';
-  algorithm_help = 'Correct uneven illumination using morphological open and close operations.';
+  algorithm.name = 'Open Close Illumination Correction';
+  algorithm.help = 'Correct uneven illumination using morphological open and close operations.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

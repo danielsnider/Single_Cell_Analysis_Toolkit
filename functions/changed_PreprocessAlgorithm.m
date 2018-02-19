@@ -95,7 +95,7 @@ function result = fun(app, proc_num, createCallbackFcn)
     % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);
 
     % Load parameters of the algorithm plugin
-    [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+    [params, algorithm] = eval(['definition_' algo_name]);
 
 
     % Display GUI component for each parameter to the algorithm
@@ -193,7 +193,7 @@ function result = fun(app, proc_num, createCallbackFcn)
     algo_help_panel = uipanel(app.preprocess{proc_num}.tab, ...
       'Title',['Algorithm Documentation '], ...
       'Position',[50,60,350,247], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,228],'Editable','off');
+    help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',[0,0,350,228],'Editable','off');
 
   % Catch Application Error
   catch ME
