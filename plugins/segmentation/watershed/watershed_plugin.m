@@ -1,6 +1,5 @@
-function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, debug_level, seeds, img)
+function result = fun(plugin_name, plugin_num, threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, debug_level)
 
-  eou
   % Smooth
   img_smooth = imgaussfilt(img,threshold_smooth_param);
   if ismember(debug_level,{'All'})

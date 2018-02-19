@@ -5,7 +5,7 @@ The Following function takes in two arguments:
 1. primary_seg - The main parent segment
 2. sub_seg - Child segments within the parent segment
 %}
-function MeasureTable = subsegments_count(primary_seg, sub_seg)
+function MeasureTable = subsegments_count(plugin_name, plugin_num, primary_seg, sub_seg)
 
 MeasureTable = table();
 

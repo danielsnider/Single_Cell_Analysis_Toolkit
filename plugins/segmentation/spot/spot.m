@@ -1,4 +1,4 @@
-function seeds = spotA(thresh_param, smooth_param, debug_level, img)
+function seeds = spot(plugin_name, plugin_num, img, thresh_param, smooth_param, debug_level)
   % Find intensity peaks
   img_smooth = imgaussfilt(img,smooth_param);
   if ismember(debug_level,{'All'})

@@ -3,6 +3,7 @@ function fun(app, an_nums)
     return
   end
 
+
   component_names = { ...
     'fields', ...
     'labels', ...
@@ -11,6 +12,17 @@ function fun(app, an_nums)
     'HelpButton', ...
   };
   for an_num=an_nums
+    % Delete Image
+    if isfield(app.analyze{an_num},'ExampleImage')
+      delete(app.analyze{an_num}.ExampleImage);
+      app.analyze{an_num}.ExampleImage = [];
+    end
+    % Delete Documentation
+    if isfield(app.analyze{an_num},'ExampleImage')
+      delete(app.analyze{an_num}.DocumentationBox);
+      app.analyze{an_num}.DocumentationBox = [];
+    end
+    % Delete Parameters
     for cid=1:length(component_names)
       comp_name = component_names{cid};
       if isfield(app.analyze{an_num},comp_name)

@@ -1,4 +1,4 @@
-function MeasureTable = func(stats_per_label, stats_per_channel, segments, imgs)
+function MeasureTable = func(plugin_name, plugin_num, segments, stats_per_label, imgs, stats_per_channel)
 
   MeasureTable = table();
 

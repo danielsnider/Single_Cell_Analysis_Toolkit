@@ -36,7 +36,7 @@ function result = fun(app, meas_num, createCallbackFcn)
         end
       end
       % Parameter Input Box
-      if ismember(param.type,{'numeric','text','dropdown','listbox'})
+      if ismember(param.type,{'numeric','text','dropdown','listbox','slider','checkbox'})
         % Set an index number for this component
         if ~isfield(app.measure{meas_num},'fields')
           app.measure{meas_num}.fields = {};
@@ -54,15 +54,30 @@ function result = fun(app, meas_num, createCallbackFcn)
         elseif strcmp(param.type,'dropdown')
           app.measure{meas_num}.fields{param_num} = uidropdown(app.measure{meas_num}.tab);
           app.measure{meas_num}.fields{param_num}.Items = param.options;
+        elseif strcmp(param.type,'checkbox')
+          app.measure{meas_num}.fields{param_num} = uicheckbox(app.measure{meas_num}.tab);
+          app.measure{meas_num}.fields{param_num}.Text = '';
+          param_pos = [param_pos(1) param_pos(2)+4 25 15];
         elseif strcmp(param.type,'listbox')
           app.measure{meas_num}.fields{param_num} = uilistbox(app.measure{meas_num}.tab, ...
             'Items', param.options, ...
             'Multiselect', 'on');
           v_offset = v_offset - 34;
           param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
+        elseif strcmp(param.type,'slider')
+          param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
+          app.measure{meas_num}.fields{param_num} = uislider(app.measure{meas_num}.tab, ...
+            'MajorTicks', [], ...
+            'MajorTickLabels', {}, ...
+            'MinorTicks', []);
+          if isfield(param,'limits') & size(param.limits)==[1 2]
+            app.measure{meas_num}.fields{param_num}.Limits = param.limits;
+          end
         end
         app.measure{meas_num}.fields{param_num}.Position = param_pos;
         app.measure{meas_num}.fields{param_num}.Value = param.default;
+        app.measure{meas_num}.fields{param_num}.UserData.param_idx = idx;
+
         app.measure{meas_num}.labels{param_num} = uilabel(app.measure{meas_num}.tab);
         app.measure{meas_num}.labels{param_num}.HorizontalAlignment = 'right';
         app.measure{meas_num}.labels{param_num}.Position = label_pos;
@@ -85,6 +100,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
         app.measure{meas_num}.SegmentDropDown{drop_num} = dropdown;
+        app.measure{meas_num}.SegmentDropDown{drop_num}.UserData.param_idx = idx;
         app.measure{meas_num}.SegmentLabel{drop_num} = label;
 
       % Create input channel selection dropdown box
@@ -103,6 +119,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
         app.measure{meas_num}.ChannelDropDown{ui_elem_num} = dropdown;
+        app.measure{meas_num}.ChannelDropDown{ui_elem_num}.UserData.param_idx = idx;
         app.measure{meas_num}.ChannelLabel{ui_elem_num} = label;
 
       % Create input channel selection list box
@@ -122,6 +139,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
         app.measure{meas_num}.ChannelListbox{ui_elem_num} = listbox;
+        app.measure{meas_num}.ChannelListbox{ui_elem_num}.UserData.param_idx = idx;
         app.measure{meas_num}.ChannelListboxLabel{ui_elem_num} = label;
         v_offset = v_offset - 34;
 
@@ -143,6 +161,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
         app.measure{meas_num}.SegmentListbox{ui_elem_num} = listbox;
+        app.measure{meas_num}.SegmentListbox{ui_elem_num}.UserData.param_idx = idx;
         app.measure{meas_num}.SegmentListboxLabel{ui_elem_num} = label;
         v_offset = v_offset - 34;
 

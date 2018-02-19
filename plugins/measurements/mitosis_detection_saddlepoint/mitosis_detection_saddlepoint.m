@@ -1,4 +1,4 @@
-function MeasureTable=func(segments,imgs)
+function MeasureTable=func(plugin_name, plugin_num, segments, imgs)
 
   MeasureTable = table();
 

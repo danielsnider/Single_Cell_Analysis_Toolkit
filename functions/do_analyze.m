@@ -16,25 +16,28 @@ function fun(app, an_num)
     % Create list of algorithm parameter values to be passed to the plugin
     if isfield(app.analyze{an_num},'fields')
       for field_num=1:length(app.analyze{an_num}.fields)
+        param_idx = app.analyze{an_num}.fields{field_num}.UserData.param_idx;
         if isfield(app.analyze{an_num}.fields{field_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.fields{field_num}.UserData.ParamOptionalCheck.Value
-          algo_params(length(algo_params)+1) = {false};
+          algo_params(param_idx) = {false};
           continue
         end
-        algo_params(length(algo_params)+1) = {app.analyze{an_num}.fields{field_num}.Value};
+        algo_params(param_idx) = {app.analyze{an_num}.fields{field_num}.Value};
       end
     end
 
     % Create list of measurements to be passed to the plugin
     if isfield(app.analyze{an_num},'MeasurementDropDown')
       for drop_num=1:length(app.analyze{an_num}.MeasurementDropDown)
+        param_idx = app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.param_idx;
         if isfield(app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
-          algo_params(length(algo_params)+1) = {false};
+          algo_params(param_idx) = {false};
           continue
         end
+        meas = {}
         meas_name = app.analyze{an_num}.MeasurementDropDown{drop_num}.Value;
-        meas_data = ResultTable{:,meas_name};
-        algo_params(length(algo_params)+1) = {meas_data};
-        algo_params(length(algo_params)+1) = {strrep(meas_name, '_', ' ')}; % replace underscores with spaces for added prettyness
+        meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
+        meas.data = ResultTable{:,meas_name};
+        algo_params(param_idx) = {meas};
       end
     end
 
@@ -48,9 +51,7 @@ function fun(app, an_num)
       end
     end
 
-    % Unique figure number of this analysis
-    fig_num = an_num + 214748364;
-    fig_name = app.analyze{an_num}.tab.Title;
+    plugin_name = app.analyze{an_num}.tab.Title;
 
   % Catch Application Error
   catch ME
@@ -59,7 +60,7 @@ function fun(app, an_num)
 
   try
     % Call algorithm
-    feval(algo_name, fig_name, fig_num, algo_params{:});
+    feval(algo_name, plugin_name, an_num, algo_params{:});
 
   % Catch Plugin Error
   catch ME

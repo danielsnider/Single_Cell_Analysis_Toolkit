@@ -97,7 +97,7 @@ function result = fun(app, an_num, createCallbackFcn)
         end
       end
       % Parameter Input Box
-      if ismember(param.type,{'numeric','text','dropdown','checkbox'})
+      if ismember(param.type,{'numeric','text','dropdown','checkbox','slider','listbox'})
         % Set an index number for this component
         if ~isfield(app.analyze{an_num},'fields')
           app.analyze{an_num}.fields = {};
@@ -120,10 +120,26 @@ function result = fun(app, an_num, createCallbackFcn)
           app.analyze{an_num}.fields{field_num} = uicheckbox(app.analyze{an_num}.tab);
           app.analyze{an_num}.fields{field_num}.Text = '';
           param_pos = [param_pos(1) param_pos(2)+4 25 15];
+        elseif strcmp(param.type,'listbox')
+          app.analyze{an_num}.fields{field_num} = uilistbox(app.analyze{an_num}.tab, ...
+            'Items', param.options, ...
+            'Multiselect', 'on');
+          v_offset = v_offset - 34;
+          param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
+        elseif strcmp(param.type,'slider')
+          param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
+          app.analyze{an_num}.fields{field_num} = uislider(app.analyze{an_num}.tab, ...
+            'MajorTicks', [], ...
+            'MajorTickLabels', {}, ...
+            'MinorTicks', []);
+          if isfield(param,'limits') & size(param.limits)==[1 2]
+            app.analyze{an_num}.fields{field_num}.Limits = param.limits;
+          end
         end
         app.analyze{an_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_analyze_, true);
         app.analyze{an_num}.fields{field_num}.Position = param_pos;
         app.analyze{an_num}.fields{field_num}.Value = param.default;
+        app.analyze{an_num}.fields{field_num}.UserData.param_idx = idx;
         app.analyze{an_num}.labels{field_num} = uilabel(app.analyze{an_num}.tab);
         app.analyze{an_num}.labels{field_num}.HorizontalAlignment = 'right';
         app.analyze{an_num}.labels{field_num}.Position = label_pos;
@@ -152,6 +168,7 @@ function result = fun(app, an_num, createCallbackFcn)
           'Position', label_pos);
         % Save ui elements
         app.analyze{an_num}.MeasurementDropDown{drop_num} = dropdown;
+        app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.param_idx = idx;
         app.analyze{an_num}.MeasurementLabel{drop_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
@@ -184,7 +201,7 @@ function result = fun(app, an_num, createCallbackFcn)
 
     % Example image
     if isfield(algorithm,'image')
-      algo_image = uibutton(app.analyze{an_num}.tab, ...
+      app.analyze{an_num}.ExampleImage = uibutton(app.analyze{an_num}.tab, ...
         'Text', '', ...
         'Icon', algorithm.image, ...
         'BackgroundColor', [1 1 1 ], ...
@@ -198,10 +215,10 @@ function result = fun(app, an_num, createCallbackFcn)
     
 
     % Display help information for this algorithm in the GUI
-    algo_help_panel = uipanel(app.analyze{an_num}.tab, ...
+    app.analyze{an_num}.DocumentationBox = uipanel(app.analyze{an_num}.tab, ...
       'Title',['Plugin Documentation '], ...
       'Position',help_box_pos, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',help_text_pos,'Editable','off');
+    help_text = uitextarea(app.analyze{an_num}.DocumentationBox,'Value',algorithm.help, 'Position',help_text_pos,'Editable','off');
 
     % Update list of measurements in the analyze tab
     changed_MeasurementNames(app);

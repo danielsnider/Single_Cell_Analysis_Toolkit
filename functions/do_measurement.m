@@ -5,13 +5,15 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     % Create list of algorithm parameter values to be passed to the plugin
     if isfield(app.measure{meas_num},'fields')
       for idx=1:length(app.measure{meas_num}.fields)
-        algo_params(length(algo_params)+1) = {app.measure{meas_num}.fields{idx}.Value};
+        param_idx = app.measure{meas_num}.fields{idx}.UserData.param_idx;
+        algo_params(param_idx) = {app.measure{meas_num}.fields{idx}.Value};
       end
     end
 
     % Collect numbers of segments to measure
     if isfield(app.measure{meas_num},'SegmentListbox')
       for param_num=1:length(app.measure{meas_num}.SegmentListbox)
+        param_idx = app.measure{meas_num}.SegmentListbox{param_num}.UserData.param_idx;
         segments_to_measure = app.measure{meas_num}.SegmentListbox{param_num}.Value;
 
         % Create struct of input segments to be passed to the plugin. Where the key is the name of the segment and value is the image content.
@@ -24,7 +26,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
           seg_data = seg_result{seg_num};
           segment_data.(genvarname(seg_name)) = seg_data;
         end
-        algo_params(length(algo_params)+1) = {segment_data};
+        algo_params(param_idx) = {segment_data};
       end
     end
 
@@ -36,6 +38,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     for param_type=param_types
       if isfield(app.measure{meas_num},param_type)
         for param_num=1:length(app.measure{meas_num}.(param_type{:}))
+          param_idx = app.measure{meas_num}.(param_type{:}){param_num}.UserData.param_idx;
           channels_to_measure = app.measure{meas_num}.(param_type{:}){param_num}.Value;
 
           % Keep only the channels which exist in the plate
@@ -52,7 +55,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
             img_data.(genvarname(chan_name)) = chan_data;
           end
           if ~isempty(img_data)
-            algo_params(length(algo_params)+1) = {img_data};
+            algo_params(param_idx) = {img_data};
           end
         end
       end
@@ -72,9 +75,11 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     handle_application_error(app,ME);
   end
 
+  plugin_name = app.segment{seg_num}.tab.Title;
+
   try
     % Call algorithm
-    iterTable = feval(algo_name, algo_params{:});
+    iterTable = feval(algo_name, plugin_name, seg_num, algo_params{:});
 
   % Catch Plugin Error
   catch ME

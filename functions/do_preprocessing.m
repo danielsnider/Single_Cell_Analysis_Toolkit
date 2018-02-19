@@ -38,12 +38,13 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
 
       % Create list of algorithm parameter values to be passed to the plugin
       algo_params = {};
-      for idx=1:length(app.preprocess{proc_num}.fields)
-        if isfield(app.preprocess{proc_num}.fields{idx}.UserData,'ParamOptionalCheck') && ~app.preprocess{proc_num}.fields{idx}.UserData.ParamOptionalCheck.Value
-          algo_params(length(algo_params)+1) = {false};
+      for field_num=1:length(app.preprocess{proc_num}.fields)
+        param_idx = app.preprocess{proc_num}.fields{field_num}.UserData.param_idx;
+        if isfield(app.preprocess{proc_num}.fields{field_num}.UserData,'ParamOptionalCheck') && ~app.preprocess{proc_num}.fields{field_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
           continue
         end
-        algo_params(length(algo_params)+1) = {app.preprocess{proc_num}.fields{idx}.Value};
+        algo_params(param_idx) = {app.preprocess{proc_num}.fields{field_num}.Value};
       end
 
       % Call algorithm
@@ -59,8 +60,10 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
         end
       end
 
+      plugin_name = app.preprocess{proc_num}.tab.Title;
+
       try
-        img = feval(algo_name, img, algo_params{:});
+        img = feval(algo_name, plugin_name, proc_num, img, algo_params{:});
 
       % Catch Plugin Error
       catch ME

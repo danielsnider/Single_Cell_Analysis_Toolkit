@@ -1,4 +1,4 @@
-function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_param, imhmin_param, min_area, max_area, debug_level, img)
+function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, watershed_smooth_param, thresh_param, imhmin_param, min_area, max_area, debug_level)
 
   % Smooth
   img_smooth = imgaussfilt(img,watershed_smooth_param);

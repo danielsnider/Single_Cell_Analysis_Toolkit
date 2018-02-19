@@ -1,4 +1,4 @@
-function img = fun(img, close_param, open_param, line_scan, debug_level)
+function img = fun(plugin_name, plugin_num, img, close_param, open_param, line_scan, debug_level)
 
   line_scan = uint16((line_scan/100)*size(img,2)); % convert 0-100% to number of pixels for this image
 

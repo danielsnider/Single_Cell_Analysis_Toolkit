@@ -124,7 +124,7 @@ function result = fun(app, proc_num, createCallbackFcn)
         end
       end
       % Parameter Input Box
-      if ismember(param.type,{'numeric','text','dropdown','slider'})
+      if ismember(param.type,{'numeric','text','dropdown','slider','listbox','checkbox'})
         % Set an index number for this component
         if ~isfield(app.preprocess{proc_num},'fields')
           app.preprocess{proc_num}.fields = {};
@@ -143,6 +143,16 @@ function result = fun(app, proc_num, createCallbackFcn)
         elseif strcmp(param.type,'dropdown')
           app.preprocess{proc_num}.fields{field_num} = uidropdown(app.preprocess{proc_num}.tab);
           app.preprocess{proc_num}.fields{field_num}.Items = param.options;
+        elseif strcmp(param.type,'checkbox')
+          app.preprocess{proc_num}.fields{field_num} = uicheckbox(app.preprocess{proc_num}.tab);
+          app.preprocess{proc_num}.fields{field_num}.Text = '';
+          param_pos = [param_pos(1) param_pos(2)+4 25 15];
+        elseif strcmp(param.type,'listbox')
+          app.preprocess{proc_num}.fields{field_num} = uilistbox(app.preprocess{proc_num}.tab, ...
+            'Items', param.options, ...
+            'Multiselect', 'on');
+          v_offset = v_offset - 34;
+          param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
         elseif strcmp(param.type,'slider')
           param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
           app.preprocess{proc_num}.fields{field_num} = uislider(app.preprocess{proc_num}.tab, ...
@@ -156,6 +166,7 @@ function result = fun(app, proc_num, createCallbackFcn)
         app.preprocess{proc_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_preprocessing_, true);
         app.preprocess{proc_num}.fields{field_num}.Position = param_pos;
         app.preprocess{proc_num}.fields{field_num}.Value = param.default;
+        app.preprocess{proc_num}.fields{field_num}.UserData.param_idx = idx;
         app.preprocess{proc_num}.labels{field_num} = uilabel(app.preprocess{proc_num}.tab);
         app.preprocess{proc_num}.labels{field_num}.HorizontalAlignment = 'right';
         app.preprocess{proc_num}.labels{field_num}.Position = label_pos;

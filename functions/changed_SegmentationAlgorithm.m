@@ -65,7 +65,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         continue
       end
       drop_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
-      chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData(drop_num);
+      chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData.chan_names(drop_num);
       plate_num = app.PlateDropDown.Value;
       dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
       image_path = app.image_info.chans(dep_chan_num).path;
@@ -118,7 +118,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         end
       end
       % Parameter Input Box
-      if ismember(param.type,{'numeric','text','dropdown'})
+      if ismember(param.type,{'numeric','text','dropdown','slider','listbox','checkbox'})
         % Set an index number for this component
         if ~isfield(app.segment{seg_num},'fields')
           app.segment{seg_num}.fields = {};
@@ -137,10 +137,31 @@ function result = fun(app, seg_num, createCallbackFcn)
         elseif strcmp(param.type,'dropdown')
           app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
           app.segment{seg_num}.fields{field_num}.Items = param.options;
+        elseif strcmp(param.type,'checkbox')
+          app.segment{seg_num}.fields{field_num} = uicheckbox(app.segment{seg_num}.tab);
+          app.segment{seg_num}.fields{field_num}.Text = '';
+          param_pos = [param_pos(1) param_pos(2)+4 25 15];
+        elseif strcmp(param.type,'listbox')
+          app.segment{seg_num}.fields{field_num} = uilistbox(app.segment{seg_num}.tab, ...
+            'Items', param.options, ...
+            'Multiselect', 'on');
+          v_offset = v_offset - 34;
+          param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
+        elseif strcmp(param.type,'slider')
+          param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
+          app.segment{seg_num}.fields{field_num} = uislider(app.segment{seg_num}.tab, ...
+            'MajorTicks', [], ...
+            'MajorTickLabels', {}, ...
+            'MinorTicks', []);
+          if isfield(param,'limits') & size(param.limits)==[1 2]
+            app.segment{seg_num}.fields{field_num}.Limits = param.limits;
+          end
         end
         app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_segmentation_, true);
         app.segment{seg_num}.fields{field_num}.Position = param_pos;
         app.segment{seg_num}.fields{field_num}.Value = param.default;
+        app.segment{seg_num}.fields{field_num}.UserData.param_idx = idx;
+
         app.segment{seg_num}.labels{field_num} = uilabel(app.segment{seg_num}.tab);
         app.segment{seg_num}.labels{field_num}.HorizontalAlignment = 'right';
         app.segment{seg_num}.labels{field_num}.Position = label_pos;
@@ -169,6 +190,7 @@ function result = fun(app, seg_num, createCallbackFcn)
           'Position', label_pos);
         % Save ui elements
         app.segment{seg_num}.SegmentDropDown{drop_num} = dropdown;
+        app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.param_idx = idx;
         app.segment{seg_num}.SegmentLabel{drop_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
@@ -194,7 +216,6 @@ function result = fun(app, seg_num, createCallbackFcn)
         dropdown = uidropdown(app.segment{seg_num}.tab, ...
           'Items', chan_names, ...
           'ItemsData', chan_nums, ...
-          'UserData', chan_names, ...
           'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
           'Position', param_pos);
         label = uilabel(app.segment{seg_num}.tab, ...
@@ -203,6 +224,8 @@ function result = fun(app, seg_num, createCallbackFcn)
           'Position', label_pos);
         % Save ui elements
         app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
+        app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.param_idx = idx;
+        app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.chan_names = chan_names;
         app.segment{seg_num}.ChannelLabel{chan_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
