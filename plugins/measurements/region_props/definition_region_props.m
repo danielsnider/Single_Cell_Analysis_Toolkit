@@ -4,11 +4,6 @@ function [params, algorithm_name, algorithm_help] = fun()
   algorithm_help = 'Measure properties of image region using Matlab''s built function called ''regionprops''. Regionprops supports a large number of measurements which you can learn more about at https://www.mathworks.com/help/images/ref/regionprops.html. Resulting measurements will be stored in the result table with a name in the following format: SegmentName_ChannelName_MeasurementName. For example: Nucleus_DAPI_TotalIntensity. Each measurement that you select will be computed within each channel for each segement that you choose.';
 
   n = 0;
-  n = n + 1;
-  params(n).name = 'Channels to Measure';
-  params(n).default = '';
-  params(n).help = 'The image to channels to measure. Each measurement that you select will be computed within each channel for each segement that you choose.';
-  params(n).type = 'image_channel_listbox';
 
   n = n + 1;
   params(n).name = 'Segments to Measure';
@@ -17,7 +12,7 @@ function [params, algorithm_name, algorithm_help] = fun()
   params(n).type = 'segment_listbox';
 
   n = n + 1;
-  params(n).name = 'Measurements \n(per Segment)';
+  params(n).name = 'Measurements (per Segment)';
   params(n).default = '';
   params(n).help = 'The measurements to compute on every single segment. Each measurement that you select will be computed within each channel for each segement that you choose. To learn about the details of each measurement see the Matlab documentation about regionprops: https://www.mathworks.com/help/images/ref/regionprops.html';
   params(n).type = 'listbox';
@@ -36,6 +31,12 @@ function [params, algorithm_name, algorithm_help] = fun()
     'Perimeter', ...
     'Solidity', ...
   };
+
+  n = n + 1;
+  params(n).name = 'Channels to Measure';
+  params(n).default = '';
+  params(n).help = 'The image to channels to measure. Each measurement that you select will be computed within each channel for each segement that you choose.';
+  params(n).type = 'image_channel_listbox';
 
   n = n + 1;
   params(n).name = 'Measurements (per Channel)';
