@@ -120,7 +120,7 @@ function fun(app)
         data = app.ResultTable_for_display(selector,{measure_name,'x_coord','y_coord'});
         fontsize = app.DisplayMeasureFontSize.Value;
         fontcolor = app.measure_overlay_color;
-        text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%.2f'),'Color',fontcolor,'FontSize',fontsize);
+        text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%g'),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
       end
     end
   end

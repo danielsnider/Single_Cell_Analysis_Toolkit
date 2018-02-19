@@ -61,7 +61,6 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
   end
 
   labelled_img = bwlabel(bordercleared_img);
-  seeds(labelled_img<1)=0;
 
   % Remove objects that are too small or too large
   stats = regionprops(labelled_img,'area');
@@ -83,6 +82,7 @@ function result = fun(threshold_smooth_param, watershed_smooth_param, thresh_par
     himage = imshow(uint8(labelled_rgb),[min(img8(:)) prctile(img8(:),99.5)]);
     himage.AlphaData = labelled_perim*1;
     if ismember(debug_level,{'All','Result With Seeds'})
+      seeds(labelled_img<1)=0;
       % Display red dots for seeds
       [xm,ym]=find(seeds);
       hold on

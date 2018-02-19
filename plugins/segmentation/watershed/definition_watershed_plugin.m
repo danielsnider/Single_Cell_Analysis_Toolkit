@@ -16,6 +16,7 @@ function [params, algorithm_name, algorithm_help] = fun()
   params(n).help = 'The seeds to use when watersheding. They will allow the algorithm to seperate touching objects.';
   params(n).type = 'segment_dropdown';
   params(n).optional = true;
+  params(n).optional_default_state = false;
 
   n = n + 1;
   params(n).name = 'Gaussian Blur (for threshold)';

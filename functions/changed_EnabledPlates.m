@@ -12,7 +12,7 @@ function changed_EnabledPlates(app)
         cur_plate_num = new_plate_num;
         app.PlateDropDown.Value = new_plate_num; % set new plate number
         changed_PlateDropDown(app); % tigger plate change function
-
+        break
       end
     end
     % If no other plate is enabled keep plate the same

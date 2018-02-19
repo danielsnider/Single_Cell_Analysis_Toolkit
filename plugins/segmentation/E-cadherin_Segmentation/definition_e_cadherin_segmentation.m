@@ -31,6 +31,7 @@ function [params, algorithm_name, algorithm_help] = fun()
   params(n).help = 'Remove segments of the image that are less than the threshold.';
   params(n).type = 'numeric';
   params(n).optional = true;
+  params(n).optional_default_state = false;
 
   n = n + 1;
   params(n).name = 'Suppresses Minima';

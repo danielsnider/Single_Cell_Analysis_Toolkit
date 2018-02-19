@@ -40,6 +40,7 @@ function fun(app)
 
       % Save result
       app.ResultTable = [iterTable; app.ResultTable];
+      app.ResultTable_for_display = app.ResultTable;
 
       %% Update Progress Bar
       finished_count = finished_count + 1;
