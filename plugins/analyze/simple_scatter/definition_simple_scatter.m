@@ -30,5 +30,25 @@ function [params, algorithm] = fun()
   params(n).help = 'Sets the title of the figure to this parameter.';
   params(n).type = 'text';
 
+  n = n + 1;
+  params(n).name = 'Font Size';
+  params(n).default = 14;
+  params(n).help = 'Sets the font size for the title and axis labels.';
+  params(n).type = 'numeric';
+
+  n = n + 1;
+  params(n).name = 'Trend Line';
+  params(n).default = true;
+  params(n).help = 'Adds a trend line.';
+  params(n).type = 'checkbox';
+
+  n = n + 1;
+  params(n).name = 'Display Correlation';
+  params(n).default = 'Pearson';
+  params(n).help = 'Adds the p-value and correlation coefficient it the figure title.';
+  params(n).type = 'dropdown';
+  params(n).options = {'Pearson', 'Kendall', 'Spearman'};
+  params(n).optional = true;
+
 
 end

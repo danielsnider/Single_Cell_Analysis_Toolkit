@@ -38,37 +38,31 @@ function start_processing_of_one_image(app)
         draw_display(app);
         return
       end
-      % app.image(chan_num).data = imread(app.image(chan_num).path);
 
       multi_channel_img.ImageName = image_name;
       multi_channel_img.chans(chan_num).folder = image_dir;
       multi_channel_img.chans(chan_num).name = image_name;
       multi_channel_img.chans(chan_num).path = image_path;
-      % app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_path);
     end
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
     for chan_num=[app.plates(plate_num).channels]
       img_num = app.ExperimentDropDown.Value;
       multi_channel_img = app.ExperimentDropDown.UserData(img_num);
-      % image_path = multi_channel_img.chans(chan_num).path;
-      % app.image(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_path);
     end
   end
 
+  % Compute all processing for this new image
+  app.image_info = multi_channel_img;
+  imgs_to_process = [multi_channel_img];
+  current_img_number = 1;
+  NumberOfImages = 1;
+  is_parallel_processing = false;
+  process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
 
-  % if ~isempty(app.segment)
-    % Compute all processing for this new image
-    app.image_info = multi_channel_img;
-    imgs_to_process = [multi_channel_img];
-    current_img_number = 1;
-    NumberOfImages = 1;
-    is_parallel_processing = false;
-    process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
+  % Update list of measurements in the display tab
+  draw_display_measure_selection(app);
 
-    % Update list of measurements in the display tab
-    draw_display_measure_selection(app);
+  % Update list of measurements in the analyze tab
+  changed_MeasurementNames(app);
 
-    % Update list of measurements in the analyze tab
-    changed_MeasurementNames(app);
-  % end
 end

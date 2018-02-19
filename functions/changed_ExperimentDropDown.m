@@ -15,6 +15,7 @@ function fun(app)
 
   start_processing_of_one_image(app);
   update_figure(app);
+  app.log_processing_message(app, 'Finished.');
 
   % Delete log
   delete(app.StartupLogTextArea);

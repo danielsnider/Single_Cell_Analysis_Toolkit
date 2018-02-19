@@ -95,7 +95,7 @@ function result = fun(app, an_num, createCallbackFcn)
       end
     end
     % Parameter Input Box
-    if ismember(param.type,{'numeric','text','dropdown'})
+    if ismember(param.type,{'numeric','text','dropdown','checkbox'})
       % Set an index number for this component
       if ~isfield(app.analyze{an_num},'fields')
         app.analyze{an_num}.fields = {};
@@ -114,6 +114,10 @@ function result = fun(app, an_num, createCallbackFcn)
       elseif strcmp(param.type,'dropdown')
         app.analyze{an_num}.fields{field_num} = uidropdown(app.analyze{an_num}.tab);
         app.analyze{an_num}.fields{field_num}.Items = param.options;
+      elseif strcmp(param.type,'checkbox')
+        app.analyze{an_num}.fields{field_num} = uicheckbox(app.analyze{an_num}.tab);
+        app.analyze{an_num}.fields{field_num}.Text = '';
+        param_pos = [param_pos(1) param_pos(2)+4 25 15];
       end
       app.analyze{an_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_analyze_, true);
       app.analyze{an_num}.fields{field_num}.Position = param_pos;
