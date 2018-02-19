@@ -29,6 +29,11 @@ function fun(app, createCallbackFcn)
       app.ChooseplatemapEditField.Value = [PathName FileName];
     end
 
+    % Display log
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    app.log_processing_message(app, 'Starting...');
+    pause(0.1); % enough time for the log text area to appear on screen
+
     % Load plate info
     if strfind(FileName,'.mat')
       load(app.ChooseplatemapEditField.Value);
@@ -40,9 +45,6 @@ function fun(app, createCallbackFcn)
     % Draw Plates
     draw_input_data(app, createCallbackFcn);
 
-    % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
-    pause(0.1); % enough time for the log text area to appear on screen
    
     % Parse image files (can be slow!)
     parse_image_names(app);

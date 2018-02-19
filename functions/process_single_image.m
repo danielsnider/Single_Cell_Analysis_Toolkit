@@ -52,14 +52,10 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       if seg_num==primary_seg_num % skip primary segment, only operate on subcomponents
         continue
       end
-      sub_seg_data = seg_result{seg_num};
-      new_sub_seg_data = zeros(size(sub_seg_data));
-      % Loop over each segment in the primary segment and update the subcomponent value
-      for primary_seg_id=1:NumberOfCells
-        % Set the subcomponent single segment value to be equal to the primary segment where the primary segment and subcomponent overlay.
-        new_sub_seg_data(primary_seg_data==primary_seg_id) = primary_seg_id;
-        new_sub_seg_data(sub_seg_data==0)=0;
-      end
+      sub_seg_data = seg_result{seg_num}; 
+      new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
+      logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
+      new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
       seg_result{seg_num} = new_sub_seg_data;
     end
   end
