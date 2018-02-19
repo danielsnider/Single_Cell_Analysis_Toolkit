@@ -1,9 +1,4 @@
 function result = fun(app, seg_num, createCallbackFcn)
-  % Get new selection of algorithm
-  algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
-
-  % Delete existing UI components before creating new ones on top
-  delete_segments(app,[seg_num]);
 
   % Setup a function needed later (note that functions cannot be defined in loops)
   function ParamOptionalCheckBoxCallback(uiElem, Update, app)
@@ -83,160 +78,173 @@ function result = fun(app, seg_num, createCallbackFcn)
     delete(app.StartupLogTextArea);
   end
 
-  app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);
+  try
+    % Get new selection of algorithm
+    algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
 
-  % Load parameters of the algorithm plugin
-  [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
-
-
-  % Display GUI component for each parameter to the algorithm
-  v_offset = 419;
-  for idx=1:length(params)
-    param = params(idx);
-
-    % Location of GUI component
-    v_offset = v_offset - 33;
-
-    param_pos = [620 v_offset 125 22];
-    label_pos = [400 v_offset-5 200 22];
-    help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
-    param_index = NaN;
+    % Delete existing UI components before creating new ones on top
+    delete_segments(app,[seg_num]);
 
 
-    % Change spacing if optional parameter to allow space for a checkbox
-    if isfield(param,'optional') && ~isempty(param.optional)
-      param_pos = [param_pos(1)+20 param_pos(2) param_pos(3)-20 param_pos(4)];
-    end
+    app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);
 
-    % Correct unavailable user set default value
-    if ismember(param.type,{'dropdown','listbox'})
-      if ~ismember(param.default, param.options) 
-          param.default = param.options{1};
+    % Load parameters of the algorithm plugin
+    [params, algorithm_name, algorithm_help] = eval(['definition_' algo_name]);
+
+
+    % Display GUI component for each parameter to the algorithm
+    v_offset = 419;
+    for idx=1:length(params)
+      param = params(idx);
+
+      % Location of GUI component
+      v_offset = v_offset - 33;
+
+      param_pos = [620 v_offset 125 22];
+      label_pos = [400 v_offset-5 200 22];
+      help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
+      param_index = NaN;
+
+
+      % Change spacing if optional parameter to allow space for a checkbox
+      if isfield(param,'optional') && ~isempty(param.optional)
+        param_pos = [param_pos(1)+20 param_pos(2) param_pos(3)-20 param_pos(4)];
       end
-    end
-    % Parameter Input Box
-    if ismember(param.type,{'numeric','text','dropdown'})
-      % Set an index number for this component
-      if ~isfield(app.segment{seg_num},'fields')
-        app.segment{seg_num}.fields = {};
-      end
-      field_num = length(app.segment{seg_num}.fields) + 1;
-      param_index = field_num;
-      % Create UI components
-      if strcmp(param.type,'numeric')
-        app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
-        if isfield(param,'limits') & size(param.limits)==[1 2]
-          app.segment{seg_num}.fields{field_num}.Limits = param.limits;
+
+      % Correct unavailable user set default value
+      if ismember(param.type,{'dropdown','listbox'})
+        if ~ismember(param.default, param.options) 
+            param.default = param.options{1};
         end
-        app.segment{seg_num}.fields{field_num}.ValueDisplayFormat = '%g';
-      elseif strcmp(param.type,'text')
-        app.segment{seg_num}.fields{field_num} = uieditfield(app.segment{seg_num}.tab);
-      elseif strcmp(param.type,'dropdown')
-        app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
-        app.segment{seg_num}.fields{field_num}.Items = param.options;
       end
-      app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_segmentation_, true);
-      app.segment{seg_num}.fields{field_num}.Position = param_pos;
-      app.segment{seg_num}.fields{field_num}.Value = param.default;
-      app.segment{seg_num}.labels{field_num} = uilabel(app.segment{seg_num}.tab);
-      app.segment{seg_num}.labels{field_num}.HorizontalAlignment = 'right';
-      app.segment{seg_num}.labels{field_num}.Position = label_pos;
-      app.segment{seg_num}.labels{field_num}.Text = param.name;
-      % Handle if this parameter is optional 
-      if isfield(param,'optional') && ~isempty(param.optional)
-        app.segment{seg_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
+      % Parameter Input Box
+      if ismember(param.type,{'numeric','text','dropdown'})
+        % Set an index number for this component
+        if ~isfield(app.segment{seg_num},'fields')
+          app.segment{seg_num}.fields = {};
+        end
+        field_num = length(app.segment{seg_num}.fields) + 1;
+        param_index = field_num;
+        % Create UI components
+        if strcmp(param.type,'numeric')
+          app.segment{seg_num}.fields{field_num} = uispinner(app.segment{seg_num}.tab);
+          if isfield(param,'limits') & size(param.limits)==[1 2]
+            app.segment{seg_num}.fields{field_num}.Limits = param.limits;
+          end
+          app.segment{seg_num}.fields{field_num}.ValueDisplayFormat = '%g';
+        elseif strcmp(param.type,'text')
+          app.segment{seg_num}.fields{field_num} = uieditfield(app.segment{seg_num}.tab);
+        elseif strcmp(param.type,'dropdown')
+          app.segment{seg_num}.fields{field_num} = uidropdown(app.segment{seg_num}.tab);
+          app.segment{seg_num}.fields{field_num}.Items = param.options;
+        end
+        app.segment{seg_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_segmentation_, true);
+        app.segment{seg_num}.fields{field_num}.Position = param_pos;
+        app.segment{seg_num}.fields{field_num}.Value = param.default;
+        app.segment{seg_num}.labels{field_num} = uilabel(app.segment{seg_num}.tab);
+        app.segment{seg_num}.labels{field_num}.HorizontalAlignment = 'right';
+        app.segment{seg_num}.labels{field_num}.Position = label_pos;
+        app.segment{seg_num}.labels{field_num}.Text = param.name;
+        % Handle if this parameter is optional 
+        if isfield(param,'optional') && ~isempty(param.optional)
+          app.segment{seg_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
+        end
+
+      % Create segment selection dropdown box
+      elseif strcmp(param.type,'segment_dropdown')
+        % Set an index number for this component
+        if ~isfield(app.segment{seg_num},'SegmentDropDown')
+          app.segment{seg_num}.SegmentDropDown = {};
+        end
+        drop_num = length(app.segment{seg_num}.SegmentDropDown) + 1;
+        param_index = drop_num;
+        % Create UI components
+        dropdown = uidropdown(app.segment{seg_num}.tab, ...
+          'Position', param_pos, ...
+          'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
+          'Items', {} );
+        label = uilabel(app.segment{seg_num}.tab, ...
+          'Text', param.name, ...
+          'HorizontalAlignment', 'right', ...
+          'Position', label_pos);
+        % Save ui elements
+        app.segment{seg_num}.SegmentDropDown{drop_num} = dropdown;
+        app.segment{seg_num}.SegmentLabel{drop_num} = label;
+        % Handle if this parameter is optional 
+        if isfield(param,'optional') && ~isempty(param.optional)
+          app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
+        end
+
+      % Create input channel selection dropdown box
+      elseif strcmp(param.type,'image_channel_dropdown')
+        % Set an index number for this component
+        if ~isfield(app.segment{seg_num},'ChannelDropDown')
+          app.segment{seg_num}.ChannelDropDown = {};
+        end
+        chan_num = length(app.segment{seg_num}.ChannelDropDown) + 1;
+        param_index = chan_num;
+        % Get channel names based on the currently displaying plate
+        plate_num = app.PlateDropDown.Value;
+        if ~isnumeric(app.PlateDropDown.Value)
+            plate_num=1; % bad startup value
+        end
+        chan_names = app.plates(plate_num).chan_names;
+        chan_nums = app.plates(plate_num).channels;
+        % Create UI components
+        dropdown = uidropdown(app.segment{seg_num}.tab, ...
+          'Items', chan_names, ...
+          'ItemsData', chan_nums, ...
+          'UserData', chan_names, ...
+          'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
+          'Position', param_pos);
+        label = uilabel(app.segment{seg_num}.tab, ...
+          'Text', param.name, ...
+          'HorizontalAlignment', 'right', ...
+          'Position', label_pos);
+        % Save ui elements
+        app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
+        app.segment{seg_num}.ChannelLabel{chan_num} = label;
+        % Handle if this parameter is optional 
+        if isfield(param,'optional') && ~isempty(param.optional)
+          app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
+        end
+
+      else
+        msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
+        uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');
+        error(msg);
       end
 
-    % Create segment selection dropdown box
-    elseif strcmp(param.type,'segment_dropdown')
-      % Set an index number for this component
-      if ~isfield(app.segment{seg_num},'SegmentDropDown')
-        app.segment{seg_num}.SegmentDropDown = {};
+      % Question mark help button
+      if isfield(param,'help') && ~isempty(param.help)
+        userdata.help_text = param.help;
+        userdata.param_name = param.name;
+        if ~isfield(app.segment{seg_num},'HelpButton')
+          app.segment{seg_num}.HelpButton = {};
+        end
+        help_num = length(app.segment{seg_num}.HelpButton) + 1;
+        app.segment{seg_num}.HelpButton{help_num} = uibutton(app.segment{seg_num}.tab, ...
+        'Text', '', ... 
+        'Icon', 'question-sign.png', ...
+        'BackgroundColor', [0.5 0.5 0.5], ...
+        'UserData', userdata, ...
+        'ButtonPushedFcn', {@Help_Callback, app}, ...  
+        'Position', help_pos);
       end
-      drop_num = length(app.segment{seg_num}.SegmentDropDown) + 1;
-      param_index = drop_num;
-      % Create UI components
-      dropdown = uidropdown(app.segment{seg_num}.tab, ...
-        'Position', param_pos, ...
-        'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
-        'Items', {} );
-      label = uilabel(app.segment{seg_num}.tab, ...
-        'Text', param.name, ...
-        'HorizontalAlignment', 'right', ...
-        'Position', label_pos);
-      % Save ui elements
-      app.segment{seg_num}.SegmentDropDown{drop_num} = dropdown;
-      app.segment{seg_num}.SegmentLabel{drop_num} = label;
-      % Handle if this parameter is optional 
-      if isfield(param,'optional') && ~isempty(param.optional)
-        app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
-      end
-
-    % Create input channel selection dropdown box
-    elseif strcmp(param.type,'image_channel_dropdown')
-      % Set an index number for this component
-      if ~isfield(app.segment{seg_num},'ChannelDropDown')
-        app.segment{seg_num}.ChannelDropDown = {};
-      end
-      chan_num = length(app.segment{seg_num}.ChannelDropDown) + 1;
-      param_index = chan_num;
-      % Get channel names based on the currently displaying plate
-      plate_num = app.PlateDropDown.Value;
-      if ~isnumeric(app.PlateDropDown.Value)
-          plate_num=1; % bad startup value
-      end
-      chan_names = app.plates(plate_num).chan_names;
-      chan_nums = app.plates(plate_num).channels;
-      % Create UI components
-      dropdown = uidropdown(app.segment{seg_num}.tab, ...
-        'Items', chan_names, ...
-        'ItemsData', chan_nums, ...
-        'UserData', chan_names, ...
-        'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
-        'Position', param_pos);
-      label = uilabel(app.segment{seg_num}.tab, ...
-        'Text', param.name, ...
-        'HorizontalAlignment', 'right', ...
-        'Position', label_pos);
-      % Save ui elements
-      app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
-      app.segment{seg_num}.ChannelLabel{chan_num} = label;
-      % Handle if this parameter is optional 
-      if isfield(param,'optional') && ~isempty(param.optional)
-        app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
-      end
-
-    else
-      msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
-      uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');
-      error(msg);
     end
 
-    % Question mark help button
-    if isfield(param,'help') && ~isempty(param.help)
-      userdata.help_text = param.help;
-      userdata.param_name = param.name;
-      if ~isfield(app.segment{seg_num},'HelpButton')
-        app.segment{seg_num}.HelpButton = {};
-      end
-      help_num = length(app.segment{seg_num}.HelpButton) + 1;
-      app.segment{seg_num}.HelpButton{help_num} = uibutton(app.segment{seg_num}.tab, ...
-      'Text', '', ... 
-      'Icon', 'question-sign.png', ...
-      'BackgroundColor', [0.5 0.5 0.5], ...
-      'UserData', userdata, ...
-      'ButtonPushedFcn', {@Help_Callback, app}, ...  
-      'Position', help_pos);
-    end
+    % Display help information for this algorithm in the GUI
+    algo_help_panel = uipanel(app.segment{seg_num}.tab, ...
+      'Title',['Algorithm Documentation '], ...
+      'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
+
+    % Fill in the names of segments across the GUI
+    changed_SegmentName(app);
+
+  % Catch Application Error
+  catch ME
+    handle_application_error(app,ME);
   end
-
-  % Display help information for this algorithm in the GUI
-  algo_help_panel = uipanel(app.segment{seg_num}.tab, ...
-    'Title',['Algorithm Documentation '], ...
-    'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-  help_text = uitextarea(algo_help_panel,'Value',algorithm_help, 'Position',[0,0,350,261],'Editable','off');
-
-  % Fill in the names of segments across the GUI
-  changed_SegmentName(app);
 
 end

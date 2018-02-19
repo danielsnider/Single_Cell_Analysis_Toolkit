@@ -2,6 +2,7 @@ function [params, algorithm_name, algorithm_help] = fun()
 
   algorithm_name = 'Mitosis Detection with Saddle Points';
   algorithm_help = 'See: https://en.wikipedia.org/wiki/Saddle_point';
+  algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;
   n = n + 1;

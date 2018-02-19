@@ -2,6 +2,7 @@ function [params, algorithm_name, algorithm_help] = fun()
 
   algorithm_name = 'E-cadherin Watershed Segmentation';
   algorithm_help = 'Watershed segmentation is used to separate touching objects in an image. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better if you can identify, or "mark", objects with seeds. ';
+  algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;
 

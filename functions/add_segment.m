@@ -35,6 +35,9 @@ function fun(app, createCallbackFcn)
     tabgp = app.segment_tabgp;
     seg_num = length(tabgp.Children)+1;
     app.segment{seg_num} = {};
+    if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
+      app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
+    end
 
     % Create new tab
     tab = uitab(tabgp,'Title',sprintf('Segment %i',seg_num), ...
@@ -101,21 +104,7 @@ function fun(app, createCallbackFcn)
 
   % Catch Application Error
   catch ME
-    % If no cause is attached to the error, this is the first place we're handling it create a uialert, add a cause, and rethrow the error
-    if isempty(ME.cause)
-      if isvalid(app.StartupLogTextArea)
-        delete(app.StartupLogTextArea);
-      end
-      msg = sprintf('Sorry, an application error occured. Please check the error message in the Matlab console for any obvious problems. It is best to restart the application at this time. If the problem persists please report it in detail to: https://github.com/danielsnider/Single_Cell_Analysis_Toolkit/issues');
-      uialert(app.UIFigure,msg,'Application Error', 'Icon','error');
-      msgID = 'APP:ApplicationError';
-      msg = msg;
-      causeException = MException(msgID,msg);
-      ME = addCause(ME,causeException);
-      rethrow(ME)
-    else
-      rethrow(ME)
-    end
+    handle_application_error(app,ME);
   end
 
 end

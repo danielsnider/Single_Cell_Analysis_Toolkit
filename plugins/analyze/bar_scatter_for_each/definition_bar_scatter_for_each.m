@@ -1,8 +1,8 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'Simple Scatter';
+  algorithm.name = 'Bar-Scatter For Each';
   algorithm.help = 'A scatter plot with simple style.';
-  algorithm.image = 'simple_scatter_example.png';
+  algorithm.image = 'bar_scatter_for_each_example.png';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;
