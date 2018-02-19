@@ -10,9 +10,6 @@ function fun(app)
 
   delete_display_segments(app);
   delete_display_channels(app);
-
-  % delete_segments(app, [1:length(app.segment)]);
-  % delete_measures(app, [1:length(app.measure)]);
   if any(ismember(fields(app),'preprocess_tabgp'))
     delete(app.preprocess_tabgp);
     app.preprocess_tabgp = [];
@@ -52,6 +49,8 @@ function fun(app)
   app.Button_RunAllAnalysis.Visible = 'off';
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
+  app.Button_ViewOverlaidMeasurements.Visible = 'off';
+
   app.ProcessingLogTextArea.Value = {''};
 
   app.log_processing_message = @log_processing_message;
