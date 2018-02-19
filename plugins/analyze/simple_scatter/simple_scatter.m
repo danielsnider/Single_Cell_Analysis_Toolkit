@@ -1,6 +1,6 @@
-function fun(marker_size, title_param, fontsize_param, trend_line, correlation_type, x_data, x_label, y_data, y_label)
+function fun(fig_name, fig_num, marker_size, title_param, fontsize_param, trend_line, correlation_type, x_data, x_label, y_data, y_label)
 
-  f = figure(150); clf; set(f,'name','simple scatter','NumberTitle', 'off');
+  f = figure(fig_num); clf; set(f,'name',fig_name,'NumberTitle', 'off');
 
   plot(x_data,y_data, 'o', 'Color', [.6 .6 .6],'MarkerSize', marker_size,'MarkerFaceColor',[.6 .6 .6],'MarkerEdgeColor','w');
   

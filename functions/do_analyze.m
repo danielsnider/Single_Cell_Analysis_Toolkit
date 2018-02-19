@@ -47,8 +47,12 @@ function fun(app, an_num)
     end
   end
 
+  % Unique figure number of this analysis
+  fig_num = an_num + 214748364;
+  fig_name = app.analyze{an_num}.tab.Title;
+
   % Call algorithm
-  feval(algo_name, algo_params{:});
+  feval(algo_name, fig_name, fig_num, algo_params{:});
 
 
 end
