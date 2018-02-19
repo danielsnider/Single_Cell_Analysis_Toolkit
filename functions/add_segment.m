@@ -35,6 +35,8 @@ function fun(app, createCallbackFcn)
     tabgp = app.segment_tabgp;
     seg_num = length(tabgp.Children)+1;
     app.segment{seg_num} = {};
+    app.segment{seg_num}.params = params;
+    app.segment{seg_num}.algorithm_info = algorithm;
     if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
       app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
     end

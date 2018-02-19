@@ -49,6 +49,8 @@ function fun(app, createCallbackFcn)
     tab = uitab(tabgp,'Title',sprintf('Measure %i',meas_num), ...
       'BackgroundColor', [1 1 1]);
     app.measure{meas_num}.tab = tab;
+    app.measure{meas_num}.params = params;
+    app.measure{meas_num}.algorithm_info = algorithm;
     if ~isfield(app.measure{meas_num}.algorithm_info,'maintainer')
       app.measure{meas_num}.algorithm_info.maintainer = 'Unknown';
     end

@@ -34,6 +34,8 @@ function fun(app, createCallbackFcn)
     tabgp = app.preprocess_tabgp;
     proc_num = length(tabgp.Children)+1;
     app.preprocess{proc_num} = {};
+    app.preprocess{proc_num}.params = params;
+    app.preprocess{proc_num}.algorithm_info = algorithm;
     if ~isfield(app.preprocess{proc_num}.algorithm_info,'maintainer')
       app.preprocess{proc_num}.algorithm_info.maintainer = 'Unknown';
     end
