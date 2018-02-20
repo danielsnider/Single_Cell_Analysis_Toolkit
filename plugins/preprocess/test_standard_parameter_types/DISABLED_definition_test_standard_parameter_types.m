@@ -10,24 +10,28 @@ function [params, algorithm] = fun()
   params(n).default = 0;
   params(n).help = 'numeric';
   params(n).type = 'numeric';
+  params(n).optional = true;
 
   n = n + 1;
   params(n).name = 'text';
   params(n).default = 'text';
   params(n).help = 'text';
   params(n).type = 'text';
+  params(n).optional = true;
 
   n = n + 1;
   params(n).name = 'slider';
   params(n).default = 50;
   params(n).help = 'slider';
   params(n).type = 'slider';
+  params(n).optional = true;
 
   n = n + 1;
   params(n).name = 'listbox';
   params(n).default = 'example1';
   params(n).help = 'listbox';
   params(n).type = 'listbox';
+  params(n).optional = true;
   params(n).options = {'example1','example2'};
 
   n = n + 1;
@@ -35,6 +39,7 @@ function [params, algorithm] = fun()
   params(n).default = 'example1';
   params(n).help = 'dropdown';
   params(n).type = 'dropdown';
+  params(n).optional = true;
   params(n).options = {'example1','example2'};
 
   n = n + 1;
@@ -42,5 +47,6 @@ function [params, algorithm] = fun()
   params(n).default = true;
   params(n).help = 'checkbox';
   params(n).type = 'checkbox';
+  params(n).optional = true;
 
 end

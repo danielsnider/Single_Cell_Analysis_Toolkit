@@ -94,8 +94,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       return % nothing was found so return
     end
     % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
-    if length(centroids) > height(iterTable)
-      desired_height = length(centroids)
+    if size(centroids,1) > height(iterTable)
+      desired_height = length(centroids);
       iterTable = append_missing_rows_for_table(iterTable, desired_height);
     end
     % Add X and Y coordinates for each primary label

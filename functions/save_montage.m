@@ -28,7 +28,10 @@ function fun(app)
         app.ColumnDropDown.Value = img.column;
         app.FieldDropDown.Value = img.field;
         app.TimepointDropDown.Value = img.timepoint;
-        app.ExperimentDropDown.Value = complex(img.row,-img.column);
+        exp_val = complex(img.row,-img.column);
+        if ismember(exp_val, app.ExperimentDropDown.ItemsData)
+          app.ExperimentDropDown.Value = exp_val;
+        end
         filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
 
       elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')

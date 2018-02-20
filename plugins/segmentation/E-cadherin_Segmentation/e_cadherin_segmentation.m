@@ -79,7 +79,7 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, wate
     % Display color overlay
     labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
     labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
-    himage = imshow(uint8(labelled_rgb),[min(img8(:)) prctile(img8(:),99.5)]);
+    himage = imshow(im2uint8(labelled_rgb),[min(img8(:)) prctile(img8(:),99.5)]);
     himage.AlphaData = labelled_perim*1;
     if ismember(debug_level,{'All','Result With Seeds'})
       seeds(labelled_img<1)=0;

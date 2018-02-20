@@ -7,12 +7,14 @@ function fun(app,saved_app,createCallbackFcn)
     'timepoints' ...
   };
   for plate_num = 1:length(app.plates)
+    app.plates(plate_num).checkbox.Value = saved_app.plates(plate_num).checkbox.Value
     for filt_num = 1:length(filter_names)
       filter_name = filter_names{filt_num};
       app.plates(plate_num).(['filter_' filter_name]).Value = saved_app.plates(plate_num).(['filter_' filter_name]).Value;
     end
     changed_FilterInput(app,plate_num);
   end
+  changed_EnabledPlates(app);
 
   % Preprocess Tab
   component_names = { ...

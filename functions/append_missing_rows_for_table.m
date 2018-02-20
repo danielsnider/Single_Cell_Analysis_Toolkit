@@ -1,7 +1,7 @@
 function complete_table = append_missing_rows_for_table(incomplete_table, desired_height)
   complete_table = table();
 
-  % Figure out what accesable default values are to fill in missing data with. NaN for numeric, empty cells, and structs with NaNs
+  % Figure out what acceptable default values are to fill in missing data with. NaN for numeric, empty cells, and structs with NaNs
   for col_name=incomplete_table.Properties.VariableNames
     col_data = incomplete_table{1,col_name};
     if isnumeric(col_data)

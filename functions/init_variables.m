@@ -62,4 +62,6 @@ function fun(app)
 
   app.DisplayMeasureCheckBox.Value = false;
   app.DisplayMeasureDropDown.Items = {};
+
+  app.ProgressSlider.Value = 0; % reset progress bar to 0
 end

@@ -42,6 +42,19 @@ function fun(app, createCallbackFcn)
       app.plates = parse_platemap(app.ChooseplatemapEditField.Value);
     end
 
+    %% Assert the name number of metadata fields exists on all plates TODO(Dan): to remove this limitation see file 'append_missing_columns_table_pair.m'
+    lengths = [];
+    for plate_num=1:length(app.plates)
+      lengths = [lengths length(fields(app.plates(plate_num).metadata))];
+    end
+    if length(unique(lengths))>1
+      msg = sprintf('Sorry, there is a limitation that all plates in your platemap must have the same number of metadata fields. Please correct this in your file ''%s'' and try again.', app.ChooseplatemapEditField.Value);
+      uialert(app.UIFigure,msg,'Sorry', 'Icon','error');
+      % Delete log
+      delete(app.StartupLogTextArea);
+      return
+    end
+
     % Draw Plates
     draw_input_data(app, createCallbackFcn);
 

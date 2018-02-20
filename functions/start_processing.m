@@ -10,15 +10,12 @@ function fun(app)
 
   function NewResultQueueCallback(iterTable)
     % Resolve missing table columns, they must all be present in both tables before combining
-    if ~isempty(app.ResultTable)
-      iterTablecolmissing = setdiff(app.ResultTable.Properties.VariableNames, iterTable.Properties.VariableNames);
-      ResultTablecolmissing = setdiff(iterTable.Properties.VariableNames, app.ResultTable.Properties.VariableNames);
-      iterTable = [iterTable array2table(nan(height(iterTable), numel(iterTablecolmissing)), 'VariableNames', iterTablecolmissing)]; % add missing columns
-      app.ResultTable = [app.ResultTable array2table(nan(height(app.ResultTable), numel(ResultTablecolmissing)), 'VariableNames', ResultTablecolmissing)]; % add missing columns
-    end
-
-    % Save result
+    [iterTable app.ResultTable] = append_missing_columns_table_pair(iterTable, app.ResultTable);
+    
+    % Concatenate Results
     app.ResultTable = [iterTable; app.ResultTable];
+    
+    % For Display
     app.ResultTable_for_display = app.ResultTable;
 
     %% Update Progress Bar
@@ -29,6 +26,11 @@ function fun(app)
 
 
   try
+    if length(app.measure)==0
+      uialert(app.UIFigure,'You must have at least one measurement configured.','No Measurements', 'Icon','warn');
+      return
+    end
+
     %% Setup
     app.ProgressSlider.Value = 0; % reset progress bar to 0
     finished_count  = 0; % for progess bar
