@@ -5,6 +5,10 @@ function fun(app, createCallbackFcn)
   end
 
   function Delete_Callback(app, event)
+    if seg_num < length(app.segment)
+      uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Segment which is not the last one.','Sorry', 'Icon','warn');
+      return
+    end
     delete_segments(app, seg_num);
     app.segment(seg_num) = [];
     delete(tab);

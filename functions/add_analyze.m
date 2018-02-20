@@ -1,6 +1,10 @@
 function fun(app, createCallbackFcn)
 
   function Delete_Callback(app, event)
+    if an_num < length(app.analyze)
+      uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Analysis which is not the last one.','Sorry', 'Icon','warn');
+      return
+    end
     delete_analyze(app, an_num);
     app.analyze(an_num) = [];
     delete(tab);

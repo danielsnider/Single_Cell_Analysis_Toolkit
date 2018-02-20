@@ -15,7 +15,6 @@ function fun(app, seg_nums, how_much_to_detele)
     'SegmentDropDownLabel', ...
     'ChannelDropDown', ...
     'ChannelDropDownLabel', ...
-    'ParamOptionalCheck', ...
     'HelpButton', ...
   };
   for seg_num=seg_nums
@@ -23,6 +22,9 @@ function fun(app, seg_nums, how_much_to_detele)
       comp_name = component_names{cid};
       if isfield(app.segment{seg_num},comp_name)
         for idx=1:length(app.segment{seg_num}.(comp_name))
+          if isfield(app.segment{seg_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            delete(app.segment{seg_num}.(comp_name){idx}.UserData.ParamOptionalCheck);
+          end
           delete(app.segment{seg_num}.(comp_name){idx});
           app.segment{seg_num}.(comp_name){idx} = [];
           

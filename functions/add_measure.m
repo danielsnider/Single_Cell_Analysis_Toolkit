@@ -10,6 +10,10 @@ function fun(app, createCallbackFcn)
   end
 
   function Delete_Callback(app, event)
+    if meas_num < length(app.measure)
+      uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Measure which is not the last one.','Sorry', 'Icon','warn');
+      return
+    end
     delete_measures(app, meas_num);
     app.measure(meas_num) = [];
     delete(tab);

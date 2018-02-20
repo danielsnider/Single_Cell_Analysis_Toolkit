@@ -27,6 +27,9 @@ function fun(app, an_nums)
       comp_name = component_names{cid};
       if isfield(app.analyze{an_num},comp_name)
         for idx=1:length(app.analyze{an_num}.(comp_name))
+          if isfield(app.analyze{an_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            delete(app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck);
+          end
           delete(app.analyze{an_num}.(comp_name){idx});
         end
         app.analyze{an_num}.(comp_name) = {};

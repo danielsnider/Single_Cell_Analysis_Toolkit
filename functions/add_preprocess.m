@@ -1,6 +1,10 @@
 function fun(app, createCallbackFcn)
   
   function Delete_Callback(app, event)
+    if proc_num < length(app.preprocess)
+      uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Preprocess which is not the last one.','Sorry', 'Icon','warn');
+      return
+    end
     delete_preprocess(app, proc_num);
     app.preprocess(proc_num) = [];
     delete(tab);

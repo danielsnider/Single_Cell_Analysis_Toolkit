@@ -14,6 +14,9 @@ function fun(app, proc_nums)
       comp_name = component_names{cid};
       if isfield(app.preprocess{proc_num},comp_name)
         for idx=1:length(app.preprocess{proc_num}.(comp_name))
+          if isfield(app.preprocess{proc_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            delete(app.preprocess{proc_num}.(comp_name){idx}.UserData.ParamOptionalCheck);
+          end
           delete(app.preprocess{proc_num}.(comp_name){idx});
           app.preprocess{proc_num}.(comp_name){idx} = [];
         end
