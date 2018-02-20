@@ -10,6 +10,7 @@ function fun(app, createCallbackFcn)
     plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Tissue_Plate_Map.xlsx';
     plate_file = 'Z:\Ceryl\MATLAB codes\Single_Cell_Analysis_Toolkit\Ceryl_Tissue_Plate_Map.xlsx';
     plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
+    plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Multi_Plate_Map.xlsx';
     if exist(plate_file)
       app.ChooseplatemapEditField.Value = plate_file;
       FileName = ''; % just helps testing

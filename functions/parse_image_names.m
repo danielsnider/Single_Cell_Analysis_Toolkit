@@ -50,15 +50,30 @@ function fun(app)
       app.plates(plate_num).channels = uniq_channels;
       app.plates(plate_num).plates = uniq_plates;
 
-      % Set add the row, column, field, etc. values for each file to their struct data in app.plate.img_files
-      for file_num=1:length(app.plates(plate_num).img_files)
-        app.plates(plate_num).img_files(file_num).row = rows(file_num);
-        app.plates(plate_num).img_files(file_num).column = columns(file_num);
-        app.plates(plate_num).img_files(file_num).field = fields(file_num);
-        app.plates(plate_num).img_files(file_num).timepoint = timepoints(file_num);
-        app.plates(plate_num).img_files(file_num).channel = channels(file_num);
-        app.plates(plate_num).img_files(file_num).plate = plates(file_num);
-      end
+      r = num2cell(rows);
+      [app.plates(plate_num).img_files.row] = r{:};
+      c = num2cell(columns);
+      [app.plates(plate_num).img_files.column] = c{:};
+      f = num2cell(fields);
+      [app.plates(plate_num).img_files.field] = f{:};
+      t = num2cell(timepoints);
+      [app.plates(plate_num).img_files.timepoint] = t{:};
+      c = num2cell(channels);
+      [app.plates(plate_num).img_files.channel] = c{:};
+      p = num2cell(plates);
+      [app.plates(plate_num).img_files.plate] = p{:};
+
+      % well_info = struct('row',rows,'column',columns,'field',fields,'timepoint',timepoints,'channel',channels,'plate',plates);
+      % app.plates(plate_num).well_info = well_info;
+      % % Set add the row, column, field, etc. values for each file to their struct data in app.plate.img_files
+      % for file_num=1:length(app.plates(plate_num).img_files)
+      %   app.plates(plate_num).img_files(file_num).row = rows(file_num);
+      %   app.plates(plate_num).img_files(file_num).column = columns(file_num);
+      %   app.plates(plate_num).img_files(file_num).field = fields(file_num);
+      %   app.plates(plate_num).img_files(file_num).timepoint = timepoints(file_num);
+      %   app.plates(plate_num).img_files(file_num).channel = channels(file_num);
+      %   app.plates(plate_num).img_files(file_num).plate = plates(file_num);
+      % end
 
     elseif strcmp(naming_scheme, 'ZeissSplitTiffs')
 
