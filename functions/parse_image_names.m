@@ -80,8 +80,8 @@ function fun(app)
       end
 
       % Store unique values
-      app.plates(plate_num).experiments = unique({img_files.filepart1});
-      app.plates(plate_num).channels = unique([img_files.chan_num]);
+      app.plates(plate_num).experiments = unique({img_files.filepart1},'stable');
+      app.plates(plate_num).channels = unique([img_files.chan_num],'stable');
 
       % Combine split image filenames (multiple items in the list per image, 1 for each channel) to a structure that is one list item per image (with multiple channels nested)
       multi_channel_imgs = [];

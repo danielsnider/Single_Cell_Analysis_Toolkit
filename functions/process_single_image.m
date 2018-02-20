@@ -87,12 +87,18 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       end
     end
 
-    % Add X and Y coordinates for each primary label
+    %% Add X and Y coordinates for each primary label
     stats = regionprops(primary_seg_data,'centroid');
     centroids = cat(1, stats.Centroid);
     if isempty(centroids)
       return % nothing was found so return
     end
+    % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
+    if length(centroids) > height(iterTable)
+      desired_height = length(centroids)
+      iterTable = append_missing_rows_for_table(iterTable, desired_height);
+    end
+    % Add X and Y coordinates for each primary label
     iterTable.x_coord = floor(centroids(:,1));
     iterTable.y_coord = floor(centroids(:,2));
 

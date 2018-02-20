@@ -101,7 +101,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'Position', label_pos);
         app.measure{meas_num}.SegmentDropDown{drop_num} = dropdown;
         app.measure{meas_num}.SegmentDropDown{drop_num}.UserData.param_idx = idx;
-        app.measure{meas_num}.SegmentLabel{drop_num} = label;
+        app.measure{meas_num}.SegmentDropDownLabel{drop_num} = label;
 
       % Create input channel selection dropdown box
       elseif strcmp(param.type,'image_channel_dropdown')
@@ -120,7 +120,7 @@ function result = fun(app, meas_num, createCallbackFcn)
           'Position', label_pos);
         app.measure{meas_num}.ChannelDropDown{ui_elem_num} = dropdown;
         app.measure{meas_num}.ChannelDropDown{ui_elem_num}.UserData.param_idx = idx;
-        app.measure{meas_num}.ChannelLabel{ui_elem_num} = label;
+        app.measure{meas_num}.ChannelDropDownLabel{ui_elem_num} = label;
 
       % Create input channel selection list box
       elseif strcmp(param.type,'image_channel_listbox')

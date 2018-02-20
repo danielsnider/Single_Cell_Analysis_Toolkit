@@ -191,7 +191,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         % Save ui elements
         app.segment{seg_num}.SegmentDropDown{drop_num} = dropdown;
         app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.param_idx = idx;
-        app.segment{seg_num}.SegmentLabel{drop_num} = label;
+        app.segment{seg_num}.SegmentDropDownLabel{drop_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
           app.segment{seg_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
@@ -226,7 +226,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
         app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.param_idx = idx;
         app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.chan_names = chan_names;
-        app.segment{seg_num}.ChannelLabel{chan_num} = label;
+        app.segment{seg_num}.ChannelDropDownLabel{chan_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
           app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);

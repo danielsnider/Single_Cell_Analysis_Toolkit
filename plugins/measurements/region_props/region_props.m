@@ -40,6 +40,10 @@ function MeasureTable = func(plugin_name, plugin_num, segments, stats_per_label,
   for seg_num=segment_max_to_min_order
     seg_name = seg_names{seg_num};
     seg_data = segments.(seg_name);
+    
+    if max(seg_data(:))==0
+        continue % skip because there are no segments to measure
+    end
 
     % Calculate shape stats
     if ~isempty(stats_per_label)

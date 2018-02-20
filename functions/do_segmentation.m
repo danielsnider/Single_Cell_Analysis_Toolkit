@@ -23,7 +23,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
           end
           dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
           if isempty(dep_seg_num)
-            input_name = app.segment{seg_num}.SegmentLabel{drop_num}.Text;
+            input_name = app.segment{seg_num}.SegmentDropDownLabel{drop_num}.Text;
             msg = sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title);
             uialert(app.UIFigure,msg,'Missing Input', 'Icon','error');
             result = [];

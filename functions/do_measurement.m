@@ -11,22 +11,28 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     end
 
     % Collect numbers of segments to measure
-    if isfield(app.measure{meas_num},'SegmentListbox')
-      for param_num=1:length(app.measure{meas_num}.SegmentListbox)
-        param_idx = app.measure{meas_num}.SegmentListbox{param_num}.UserData.param_idx;
-        segments_to_measure = app.measure{meas_num}.SegmentListbox{param_num}.Value;
+    param_types = { ... % known names of UI components
+      'SegmentDropDown', ...
+      'SegmentListbox' ...
+    };
+    for param_type=param_types
+      if isfield(app.measure{meas_num},param_type)
+        for param_num=1:length(app.measure{meas_num}.(param_type{:}))
+          param_idx = app.measure{meas_num}.(param_type{:}){param_num}.UserData.param_idx;
+          segments_to_measure = app.measure{meas_num}.(param_type{:}){param_num}.Value;
 
-        % Create struct of input segments to be passed to the plugin. Where the key is the name of the segment and value is the image content.
-        segment_data = {};
-        for seg_num=segments_to_measure
-          seg_name = app.segment{seg_num}.Name.Value;
-          if strcmp(seg_name,'')
-            seg_name = sprintf('Segment %i', seg_num);
+          % Create struct of input segments to be passed to the plugin. Where the key is the name of the segment and value is the image content.
+          segment_data = {};
+          for seg_num=segments_to_measure
+            seg_name = app.segment{seg_num}.Name.Value;
+            if strcmp(seg_name,'')
+              seg_name = sprintf('Segment %i', seg_num);
+            end
+            seg_data = seg_result{seg_num};
+            segment_data.(genvarname(seg_name)) = seg_data;
           end
-          seg_data = seg_result{seg_num};
-          segment_data.(genvarname(seg_name)) = seg_data;
+          algo_params(param_idx) = {segment_data};
         end
-        algo_params(param_idx) = {segment_data};
       end
     end
 
@@ -75,11 +81,11 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     handle_application_error(app,ME);
   end
 
-  plugin_name = app.segment{seg_num}.tab.Title;
+  plugin_name = app.measure{meas_num}.tab.Title;
 
   try
     % Call algorithm
-    iterTable = feval(algo_name, plugin_name, seg_num, algo_params{:});
+    iterTable = feval(algo_name, plugin_name, meas_num, algo_params{:});
 
   % Catch Plugin Error
   catch ME

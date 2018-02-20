@@ -121,7 +121,12 @@ function fun(app)
           data = app.ResultTable_for_display(selector,{measure_name,'x_coord','y_coord'});
           fontsize = app.DisplayMeasureFontSize.Value;
           fontcolor = app.measure_overlay_color;
-          text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%g'),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+          
+          if isnumeric(data.(measure_name))
+            text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%g'),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+          else
+            text(data.x_coord,data.y_coord,data.(measure_name),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+          end
         end
       end
     end

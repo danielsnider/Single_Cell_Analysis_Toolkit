@@ -15,5 +15,5 @@ function uniq_chan_names = fun(app)
       uniq_chan_names{length(uniq_chan_names)+1} = metadata.Ch4;
     end
   end
-  uniq_chan_names = unique(uniq_chan_names);
+  uniq_chan_names = unique(uniq_chan_names,'stable');
 end

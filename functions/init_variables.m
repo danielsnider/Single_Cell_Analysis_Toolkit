@@ -55,5 +55,11 @@ function fun(app)
 
   app.log_processing_message = @log_processing_message;
 
+  app.PrimarySegmentDropDown.Items = {};
+  app.PrimarySegmentDropDown.ItemsData = [];
+
   app.ChooseplatemapEditField.Value = '';
+
+  app.DisplayMeasureCheckBox.Value = false;
+  app.DisplayMeasureDropDown.Items = {};
 end
