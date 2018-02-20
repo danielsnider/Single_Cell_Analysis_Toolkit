@@ -1,31 +1,27 @@
-function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_param, trend_line, correlation_type)
+function fun(ResultTable)
 
-  f = figure(plugin_num+344); clf; set(f,'name',plugin_name,'NumberTitle', 'off');
+ResultTable.TimePoint=str2double(ResultTable.TimePoint);
+uniResults = table();
+% uniResults.TimePoint = (unique(ResultTable.TimePoint,'sorted'))
+uniResults = unique(ResultTable(:,{'row','column'}));
+uniTimePoint = unique(ResultTable.TimePoint,'sorted');
+uniWells = unique(ResultTable(:,{'row','column'}));
 
-  plot(x.data,y.data, 'o', 'Color', [.6 .6 .6],'MarkerSize', marker_size,'MarkerFaceColor',[.6 .6 .6],'MarkerEdgeColor','w');
-  
-  set(gca,'FontSize',fontsize_param);
-  set(gca,'Color',[1 1 1 ]);
-  set(gcf,'Color',[1 1 1 ]);
+count=1;
 
-  xlabel(x.label, 'Interpreter','none');
-  ylabel(y.label, 'Interpreter','none');
-
-  box off
-
-  if trend_line
-    lsline
-  end
-
-  if ~isequal(correlation_type,false)
-    [r,p] = corr(x.data,y.data,'type',correlation_type);
-    if isempty(title_param)
-      title_param = sprintf('r=%.2f, p=%.2f',r,p);
-    else
-      title_param = sprintf('%s (r=%.2f, p=%.2f)',title_param,r,p);
+% loop over all wells
+for well = 1:size(uniWells,1)
+    % loop over time points
+    for time_point = 1:size(uniTimePoint,1)
+        row = uniWells.row(well); col=uniResults.column(well);
+        Num = sum(ismember(ResultTable.TimePoint,uniTimePoint(time_point))&ResultTable.row==row&ResultTable.column==col); % Total number of cells per well
+        uniResults.(['TP_' num2str(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; %Append cell number at the particular well to the uniWells variable.
+        %             disp(['TimePoint: ' num2str(uniTimePoint(time_point)) ' Row:' num2str(uniWells.row(well)) ' Col: ' num2str(uniWells.column(well)) ' CellNum: ' num2str(Num)])
+        %             pause(0.05)  
     end
-  end
+    count=count+1;
+end
 
-  title(title_param);
+uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
 
 end

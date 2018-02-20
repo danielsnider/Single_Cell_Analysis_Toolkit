@@ -7,16 +7,18 @@ function [params, algorithm] = fun()
 
   n = 0;
   n = n + 1;
-  params(n).name = 'Data X-axis';
+  params(n).name = 'ResultTable';
   params(n).default = '';
-  params(n).help = 'Choose a measure that will be used on the X-axis.';
-  params(n).type = 'measurement_dropdown';
-% 
-%   n = n + 1;
-%   params(n).name = 'Data Y-axis';
-%   params(n).default = '';
-%   params(n).help = 'Choose a measure that will be used on the X-axis.';
-%   params(n).type = 'measurement_dropdown';
+  params(n).help = 'Load ResultTable';
+  params(n).type = 'text';
+
+  n = n + 1;
+  params(n).name = 'Plotting';
+  params(n).default = '';
+  params(n).help = 'Choose what plots you want';
+  params(n).type = 'dropdown';
+  params(n).options = {'None', 'Exponential', 'MicroPlate'};
+  
 % 
 %   n = n + 1;
 %   params(n).name = 'Marker Size';
