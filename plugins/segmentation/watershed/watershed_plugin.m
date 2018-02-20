@@ -102,12 +102,18 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     f = figure(743); clf; set(f,'name','watershed result','NumberTitle', 'off')
     % Display original image
     img8 = im2uint8(img);
-    imshow(img8,[min(img8(:)) prctile(img8(:),99.5)]);
+    %if 
+    if min(img8(:)) < prctile(img8(:),99.5)
+        min_max = [min(img8(:)) prctile(img8(:),99.5)];
+    else
+        min_max = [];
+    end
+    imshow(img8,[min_max]);
     hold on
     % Display color overlay
     labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
     labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
-    himage = imshow(im2uint8(labelled_rgb),[min(img8(:)) prctile(img8(:),99.5)]);
+    himage = imshow(im2uint8(labelled_rgb),[min_max]);
     himage.AlphaData = labelled_perim*1;
     if ismember(debug_level,{'All','Result With Seeds'})
       if ~isequal(seeds,false)

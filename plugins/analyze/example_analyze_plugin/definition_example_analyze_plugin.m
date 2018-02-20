@@ -1,8 +1,8 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'Bar-Scatter For Each';
+  algorithm.name = 'Example Analysis Plugin';
   algorithm.help = 'A scatter plot with simple style.';
-  algorithm.image = 'bar_scatter_for_each_example.png';
+  algorithm.image = 'simple_scatter_example.png';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;
@@ -16,12 +16,6 @@ function [params, algorithm] = fun()
   params(n).name = 'Data Y-axis';
   params(n).default = '';
   params(n).help = 'Choose a measure that will be used on the X-axis.';
-  params(n).type = 'measurement_dropdown';
-
-  n = n + 1;
-  params(n).name = 'Plot For Each';
-  params(n).default = '';
-  params(n).help = 'Create a plot for each group.';
   params(n).type = 'measurement_dropdown';
 
   n = n + 1;

@@ -87,6 +87,10 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       end
     end
 
+    if isempty(iterTable)
+      return
+    end
+
     %% Add X and Y coordinates for each primary label
     stats = regionprops(primary_seg_data,'centroid');
     centroids = cat(1, stats.Centroid);

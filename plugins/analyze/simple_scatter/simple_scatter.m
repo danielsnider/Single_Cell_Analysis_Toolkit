@@ -1,5 +1,13 @@
 function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_param, trend_line, correlation_type)
 
+  % Remove NaNs
+  x_dat = x.data;
+  y_dat = y.data;
+  x.data(isnan(x_dat)) = [];
+  x.data(isnan(y_dat)) = [];
+  y.data(isnan(x_dat)) = [];
+  y.data(isnan(y_dat)) = [];
+
   f = figure(plugin_num+344); clf; set(f,'name',plugin_name,'NumberTitle', 'off');
 
   plot(x.data,y.data, 'o', 'Color', [.6 .6 .6],'MarkerSize', marker_size,'MarkerFaceColor',[.6 .6 .6],'MarkerEdgeColor','w');
@@ -8,8 +16,8 @@ function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_p
   set(gca,'Color',[1 1 1 ]);
   set(gcf,'Color',[1 1 1 ]);
 
-  xlabel(x.label, 'Interpreter','none');
-  ylabel(y.label, 'Interpreter','none');
+  xlabel(x.name, 'Interpreter','none');
+  ylabel(y.name, 'Interpreter','none');
 
   box off
 
