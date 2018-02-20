@@ -1,5 +1,14 @@
 function imgs_to_process = fun(app)
   imgs_to_process = [];
+
+  if isvalid(app.StartupLogTextArea)
+    msg = sprintf('Checking which images should be processed');
+    if app.CheckBox_Parallel.Value && app.processing_running
+      send(app.ProcessingLogQueue, msg);
+    else
+      app.log_processing_message(app, msg);
+    end
+  end
   
   for plate_num=1:length(app.plates)
     plate=app.plates(plate_num);
