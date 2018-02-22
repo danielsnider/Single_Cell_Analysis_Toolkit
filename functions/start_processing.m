@@ -1,5 +1,10 @@
 function fun(app)
-
+cwp=gcp('nocreate');
+if isempty(cwp)
+    warning off all
+else
+    pctRunOnAll warning off all %Turn off Warnings
+end
   function ProcessingLogQueueCallback(msg)
     app.log_processing_message(app, msg);
   end
@@ -59,6 +64,7 @@ function fun(app)
     if app.CheckBox_Parallel.Value
       app.log_processing_message(app, 'Starting parallel processing pool.');
       ProcessingLogQueue = parallel.pool.DataQueue;
+%       disp(ProcessingLogQueue)
       app.ProcessingLogQueue = ProcessingLogQueue;
       afterEach(ProcessingLogQueue, @ProcessingLogQueueCallback);
       UiAlertQueue = parallel.pool.DataQueue;

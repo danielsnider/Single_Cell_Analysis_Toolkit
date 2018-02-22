@@ -5,7 +5,7 @@ ResultTable.(measurement_name)=ResultTable.(measurement_name);
 % ResultTable.TimePoint=str2double(ResultTable.TimePoint);
 uniResults = table();
 % uniResults.TimePoint = (unique(ResultTable.TimePoint,'sorted'))
-uniResults = unique(ResultTable(:,{'row','column'}));
+uniResults = unique(ResultTable(:,{'row','column','WellConditions'}));
 uniTimePoint = unique(ResultTable.(measurement_name),'sorted');
 uniWells = unique(ResultTable(:,{'row','column'}));
 
@@ -25,5 +25,24 @@ for well = 1:size(uniWells,1)
 end
 
 uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
+
+% if Plot == 'Exponential'
+%     
+%     disp('HI Exponential Plotting')
+%     
+% end
+
+if char(Plot) == 'MicroPlate'    
+    MicroPlate_Plotting(uniResults)    
+end
+
+
+
+
+
+
+assignin('base','uniResults',uniResults);
+evalin('base','openvar(''uniResults'')'); 
+
 
 end

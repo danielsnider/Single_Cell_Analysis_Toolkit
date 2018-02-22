@@ -54,7 +54,8 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         segment_name = app.segment{seg_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', segment_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running
-          send(app.ProcessingLogQueue, msg);
+            disp(msg)
+%           send(app.ProcessingLogQueue, msg);
         else
           app.log_processing_message(app, msg);
         end

@@ -1,4 +1,10 @@
 function fun(app, createCallbackFcn)
+cwp=gcp('nocreate');
+if isempty(cwp)
+    warning off all
+else
+    pctRunOnAll warning off all %Turn off Warnings
+end
   try
     if ~isempty(app.ChooseplatemapEditField.Value)
       init_variables(app);
