@@ -9,7 +9,13 @@ function [params, algorithm] = fun()
   n = n + 1;
   params(n).name = 'ResultTable';
   params(n).default = '';
-  params(n).help = 'Load ResultTable';
+  params(n).help = 'Current Loaded ResultTable to do analysis on.';
+  params(n).type = 'ResultTable_Box';
+  
+  n = n + 1;
+  params(n).name = 'Measurement';
+  params(n).default = '';
+  params(n).help = 'Enter the measurment name used in Excel Plate Map. I.e "TimePoint"';
   params(n).type = 'text';
 
   n = n + 1;

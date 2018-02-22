@@ -14,7 +14,7 @@ function fun(app, createCallbackFcn)
       app.Button_RunAllAnalysis.Visible = 'off';
     end
   end
-
+    
   function changed_AnalyzeName(app, event)
     if strcmp(app.analyze{an_num}.Name.Value,'')
       app.analyze{an_num}.tab.Title = sprintf('Analysis %i', an_num);
@@ -22,9 +22,22 @@ function fun(app, createCallbackFcn)
       app.analyze{an_num}.tab.Title = sprintf('Analysis %i: %s', an_num, app.analyze{an_num}.Name.Value);
     end
   end
+    
+
+  function Run_Analysis_Callback(app,event)
+    % Display log
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    pause(0.1); % enough time for the log text area to appear on screen
+
+    do_analyze(app, an_num);
+
+    % Delete log
+    delete(app.StartupLogTextArea);
+           
+  end
 
   try
-    plugin_definitions = dir('./plugins/analyze/**/definition*');
+    plugin_definitions = dir('./plugins/analyze/**/definition*.m');
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
@@ -99,7 +112,15 @@ function fun(app, createCallbackFcn)
       'BackgroundColor', [.95 .95 .95], ...
       'ButtonPushedFcn', createCallbackFcn(app, @Delete_Callback, true), ...
       'Position', [369,385,26,23]);
-
+    
+    % Run button
+    run_button = uibutton(tab, ...
+      'Text','',...
+      'Icon', 'play-button.png', ...
+      'BackgroundColor', [.95 .95 .95], ...
+      'ButtonPushedFcn', createCallbackFcn(app, @Run_Analysis_Callback, true), ...
+      'Position', [400,385,26,23]);
+    
     %% Set a display color to see in the figure
     app.analyze{an_num}.display_color = [];
 
