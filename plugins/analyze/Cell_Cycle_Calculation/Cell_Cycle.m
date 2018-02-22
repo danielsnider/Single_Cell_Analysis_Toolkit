@@ -17,7 +17,7 @@ for well = 1:size(uniWells,1)
     for time_point = 1:size(uniTimePoint,1)
         row = uniWells.row(well); col=uniResults.column(well);
         Num = sum(ismember(ResultTable.(measurement_name),uniTimePoint(time_point))&ResultTable.row==row&ResultTable.column==col); % Total number of cells per well
-        uniResults.(['TP_' num2str(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; %Append cell number at the particular well to the uniWells variable.
+        uniResults.(['TP_' cell2mat(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; %Append cell number at the particular well to the uniWells variable.
 %         disp(['TimePoint: ' num2str(uniTimePoint(time_point)) ' Row:' num2str(uniWells.row(well)) ' Col: ' num2str(uniWells.column(well)) ' CellNum: ' num2str(Num)])
 %         pause(0.05)  
     end
