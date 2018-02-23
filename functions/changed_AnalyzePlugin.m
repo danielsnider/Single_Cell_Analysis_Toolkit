@@ -135,6 +135,7 @@ function result = fun(app, an_num, createCallbackFcn)
           if isfield(param,'limits') & size(param.limits)==[1 2]
             app.analyze{an_num}.fields{field_num}.Limits = param.limits;
           end
+        
         end
         app.analyze{an_num}.fields{field_num}.ValueChangedFcn = createCallbackFcn(app, @do_analyze_, true);
         app.analyze{an_num}.fields{field_num}.Position = param_pos;
@@ -174,7 +175,35 @@ function result = fun(app, an_num, createCallbackFcn)
         if isfield(param,'optional') && ~isempty(param.optional)
           app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
         end
-
+    
+        
+      elseif strcmp(param.type,'ResultTable_Box')
+          
+        % Set an index number for this component
+        if ~isfield(app.analyze{an_num},'ResultTableBox')
+          app.analyze{an_num}.ResultTableBox = {};
+        end
+        drop_num = length(app.analyze{an_num}.ResultTableBox) + 1;
+        param_index = drop_num;
+        % Create UI components
+        edit_field = uieditfield(app.analyze{an_num}.tab, ...
+          'Position', param_pos, ...
+          'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+          'Value', 'ResultTable', ...
+          'BackgroundColor', [0.9 0.9 0.9], ...
+          'Editable', 'off');
+        label = uilabel(app.analyze{an_num}.tab, ...
+          'Text', param.name, ...
+          'HorizontalAlignment', 'right', ...
+          'Position', label_pos);
+        % Save ui elements
+        app.analyze{an_num}.ResultTableBox{drop_num} = edit_field;
+        app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx = idx;
+        app.analyze{an_num}.ResultTableLabel{drop_num} = label;
+        
+        
+        
+        
       else
         msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
         uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');

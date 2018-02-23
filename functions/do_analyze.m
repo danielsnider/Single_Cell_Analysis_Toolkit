@@ -41,6 +41,20 @@ function fun(app, an_num)
       end
     end
 
+    % If ResultTable is needed for Analysis, Assign ResultTable to param
+    if isfield(app.analyze{an_num},'ResultTableBox')
+      for drop_num=1:length(app.analyze{an_num}.ResultTableBox)
+        param_idx = app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.ResultTableBox{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        
+        algo_params(param_idx) = {app.ResultTable};
+      end
+    end
+    
+    
     if isvalid(app.StartupLogTextArea)
       analyze_name = app.analyze{an_num}.tab.Title;
       msg = sprintf('%s ''%s.m''', analyze_name, algo_name);

@@ -10,7 +10,8 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     if isvalid(app.StartupLogTextArea)
       msg = sprintf('Loading image %s', [name ext]);
       if app.CheckBox_Parallel.Value && app.processing_running
-        send(app.ProcessingLogQueue, msg);
+          disp(msg)
+%         send(app.ProcessingLogQueue, msg);
       else
         app.log_processing_message(app, msg);
       end

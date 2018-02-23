@@ -2,7 +2,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
   msg = sprintf('Processing image %d of %d',current_img_number,NumberOfImages);
   if is_parallel_processing
-    send(ProcessingLogQueue,msg);
+    disp(msg)
+%     send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
   end
