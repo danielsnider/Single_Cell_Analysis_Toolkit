@@ -86,23 +86,47 @@ function fun(app)
         error(msg);
       end
 
+      % Zeiss starts channel nums sometimes at 0
+      offset = 0;
+      file_naming_has_id_number_then_channel = false;
+
       % Parse image names
       for img_num=1:length(img_files)
-        patterns = regexp(img_files(img_num).name,'(?<filepart1>.*)_C0(?<chan_num>\d)(?<filepart2>.*)','names');
+        % eg. jerboa_pancreas_apotome-Image Export-01_c4m142_ORG.tif
+        % eg. jerboa_spleen-05_C02(Alexa Fluor 555)_ORG.tif
+        patterns = regexp(img_files(img_num).name,'(?<filepart1>.*)_[cC][0]?(?<chan_num>\d)(?<filepart2>.*)','names');
         img_files(img_num).filepart1 = patterns.filepart1;
         img_files(img_num).filepart2 = patterns.filepart2;
-        img_files(img_num).chan_num = str2num(patterns.chan_num)+1; % Zeiss starts channel nums at 0
+        chan_num = str2num(patterns.chan_num);
+        if chan_num == 0
+          offset = 1;
+          file_naming_has_id_number_then_channel = true; % channel number comes before the unique number for this image changing the sorting of the images
+        end
+        img_files(img_num).chan_num = chan_num+offset; % Zeiss starts channel nums at 0
       end
+      
+      app.plates(plate_num).channels = unique([img_files.chan_num],'stable');
+      chan_nums = app.plates(plate_num).channels;
+      num_chans = length(chan_nums);
 
       % Store unique values
-      app.plates(plate_num).experiments = unique({img_files.filepart1},'stable');
-      app.plates(plate_num).channels = unique([img_files.chan_num],'stable');
+      if file_naming_has_id_number_then_channel
+        app.plates(plate_num).experiments = unique({img_files.filepart1},'stable');
+      else
+        image_names = unique({img_files.name},'stable') 
+        image_names = image_names(1:length(img_files)/num_chans) % get the set of filenames for the first channel only
+        app.plates(plate_num).experiments = image_names;
+      end
 
       % Combine split image filenames (multiple items in the list per image, 1 for each channel) to a structure that is one list item per image (with multiple channels nested)
       multi_channel_imgs = [];
-      chan_nums = app.plates(plate_num).channels;
-      number_of_channels = length(app.plates(plate_num).channels);
-      for img_num=1:number_of_channels:length(img_files)
+      if file_naming_has_id_number_then_channel
+          loop_over = 1:num_chans:length(img_files);
+      else
+          loop_over = 1:length(img_files)/num_chans;
+      end
+          
+      for img_num=loop_over
         multi_channel_img = {};
         multi_channel_img.channel_nums = chan_nums;
         multi_channel_img.plate_num = plate_num;
@@ -114,11 +138,15 @@ function fun(app)
         multi_channel_img.experiment_num = length(multi_channel_imgs)+1;
         multi_channel_img.ImageName = image_file.name;
         for chan_num=[chan_nums]
-          image_file = img_files(img_num+chan_num-1);
+            if file_naming_has_id_number_then_channel
+                image_file = img_files(img_num+chan_num-1);
+            else
+                image_file = img_files(img_num+length(img_files)*(chan_num-1)/num_chans);
+            end
           multi_channel_img.chans(chan_num).folder = image_file.folder;
-          multi_channel_img.chans(chan_num).name = ...
-          [image_file.filepart1 '_C0' num2str(chan_num-1) ...
-           image_file.filepart2]; % ex. jerboa_pancreas-09_C00(DAPI)_ORG.tif NOTE: Zeiss starts channel nums at 0
+          %multi_channel_img.chans(chan_num).name = ...
+          %[image_file.filepart1 '_C0' num2str(chan_num-1) ...
+          % image_file.filepart2]; % ex. jerboa_pancreas-09_C00(DAPI)_ORG.tif NOTE: Zeiss starts channel nums at 0
           multi_channel_img.chans(chan_num).path = fullfile(image_file.folder, image_file.name);
         end
         multi_channel_imgs = [multi_channel_imgs; multi_channel_img];
