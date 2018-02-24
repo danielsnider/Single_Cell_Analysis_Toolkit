@@ -27,7 +27,7 @@ function plates = func(full_path)
 
     %% Store specific well information
     plate.wells = txt(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
-
+        
     %% Load Plate Metadata
     plate.metadata = {};
     offset = 0;
@@ -123,9 +123,12 @@ function plates = func(full_path)
         condition_row_values{count} = values;
         condition_row_keys{count} = key;
       end
-    end
-
+    end    
+    
+    
     %% Add the experimental information found in the condition columns to the well info of each individual well (seperated by commas)
+    % Initialize a cope of plate.wells to store meta-datastructures
+    plate.wells_meta = plate.wells;
     % Loop over condition columns
     for n=1:length(condition_column_keys)
       key = condition_column_keys{n};
@@ -137,17 +140,21 @@ function plates = func(full_path)
         end
         val = toString(values{yy}, 'disp');
         condition = sprintf('%s %s', key, val);
+        condition_meta = val;
         % Loop over well info items in this plate row and add the information found in the condition column to each well info
         for xx=1:plate.columns
-          if any([isnan(plate.wells{yy,xx}) isempty(plate.wells{yy,xx})]) % skip unset wells
+          if any([~isstruct(plate.wells{yy,xx})&isnan(plate.wells{yy,xx})  isempty(plate.wells{yy,xx})]) % skip unset wells
             continue
           end
           % Append info seperated by a comma
           plate.wells{yy,xx} = sprintf('%s, %s', plate.wells{yy,xx}, condition);
+          % Append datastructure info to plate.wells_meta
+          ds.MainField = plate.wells_meta{yy,xx};
+          ds.(char(regexprep(key,'\s','_'))) = condition_meta;
+          plate.wells_meta{yy,xx} = ds;
         end
       end
     end
-
 
     %% Add the experimental information found in the condition rows to the well info of each individual well (seperated by commas)
     % Loop over condition rows
@@ -161,17 +168,21 @@ function plates = func(full_path)
         end
         val = toString(values{xx}, 'disp');
         condition = sprintf('%s %s', key, val);
+        condition_meta = val;
         % Loop over well info items in this plate column and add the information found in the condition row to each well info
         for yy=1:plate.rows
-          if any([isnan(plate.wells{yy,xx}) isempty(plate.wells{yy,xx})]) % skip unset wells
+%           if any([(~isstruct(plate.wells{yy,xx})&isnan(plate.wells{yy,xx})) isempty(plate.wells{yy,xx})]) % skip unset wells
+          if isempty(plate.wells{yy,xx})
             continue
           end
           % Append info seperated by a comma
           plate.wells{yy,xx} = sprintf('%s, %s', plate.wells{yy,xx}, condition);
+          % Append datastructure info to plate.wells_meta
+          plate.wells_meta{yy,xx}.(char(regexprep(key,'\s','_')))=condition_meta;
         end
       end
     end
-
+     
     plate.name = plate.metadata.Name;
 
     %% Store plate information

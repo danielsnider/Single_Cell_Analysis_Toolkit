@@ -1,4 +1,5 @@
 function fun(app)
+warning off all
 cwp=gcp('nocreate');
 if isempty(cwp)
     warning off all

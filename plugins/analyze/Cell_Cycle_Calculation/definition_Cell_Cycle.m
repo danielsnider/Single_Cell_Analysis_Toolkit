@@ -23,6 +23,20 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'Choose what plots you want';
   params(n).type = 'listbox';
-  params(n).options = {'None', 'Exponential', 'MicroPlate'};
+  params(n).options = {'None', 'MicroPlate'};
+  
+  n = n + 1;
+  params(n).name = 'Row Name';
+  params(n).default = '';
+  params(n).help = 'Choose what metadata you want for the Row Labels';
+  params(n).type = 'WellMetaInfo_List';
+  params(n).options = {'None'};
+  
+  n = n + 1;
+  params(n).name = 'Column Name';
+  params(n).default = '';
+  params(n).help = 'Choose what metadata you want for the Column Labels';
+  params(n).type = 'listbox';
+  params(n).options = {'None'};
   
 end

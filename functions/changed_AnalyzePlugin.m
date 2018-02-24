@@ -52,6 +52,10 @@ function result = fun(app, an_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_analyze_(app, Update)
+    if ~app.analyze{an_num}.run_button.Value
+        return
+    end
+        
     % Display log
     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
     pause(0.1); % enough time for the log text area to appear on screen
@@ -202,6 +206,34 @@ function result = fun(app, an_num, createCallbackFcn)
         app.analyze{an_num}.ResultTableLabel{drop_num} = label;
         
         
+        elseif strcmp(param.type,'WellMetaInfo_List')
+             app.analyze{an_num}.fields{field_num} = uilistbox(app.analyze{an_num}.tab, ...
+            'Items', param.options, ...
+            'Multiselect', 'on');
+          v_offset = v_offset - 34;
+          param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
+%           
+%         % Set an index number for this component
+%         if ~isfield(app.analyze{an_num},'WellMetaInfoList')
+%           app.analyze{an_num}.WellMetaInfoList = {};
+%         end
+%         drop_num = length(app.analyze{an_num}.WellMetaInfoList) + 1;
+%         param_index = drop_num;
+%         % Create UI components
+%         edit_field = uieditfield(app.analyze{an_num}.tab, ...
+%           'Position', param_pos, ...
+%           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+%           'Value', 'ResultTable', ...
+%           'BackgroundColor', [0.9 0.9 0.9], ...
+%           'Editable', 'off');
+%         label = uilabel(app.analyze{an_num}.tab, ...
+%           'Text', param.name, ...
+%           'HorizontalAlignment', 'right', ...
+%           'Position', label_pos);
+%         % Save ui elements
+%         app.analyze{an_num}.WellMetaInfoList{drop_num} = edit_field;
+%         app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData.param_idx = idx;
+%         app.analyze{an_num}.WellMetaInfoList{drop_num} = label;
         
         
       else

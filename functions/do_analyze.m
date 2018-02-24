@@ -54,6 +54,17 @@ function fun(app, an_num)
       end
     end
     
+    % Info for well metadata
+    if isfield(app.analyze{an_num},'WellMetaInfo_List')
+      for drop_num=1:length(app.analyze{an_num}.WellMetaInfoList)
+        param_idx = app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        algo_params(param_idx) = {app.ResultTable};
+      end
+    end
     
     if isvalid(app.StartupLogTextArea)
       analyze_name = app.analyze{an_num}.tab.Title;
