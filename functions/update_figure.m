@@ -131,7 +131,7 @@ function fun(app)
       end
     end
 
-    hold off
+    hold off 
 
   % Catch Application Error
   catch ME
