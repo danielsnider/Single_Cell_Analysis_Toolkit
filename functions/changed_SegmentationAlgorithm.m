@@ -69,7 +69,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       plate_num = app.PlateDropDown.Value;
       dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
       image_path = app.image_info.chans(dep_chan_num).path;
-      image_data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
+      app.image(dep_chan_num).data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
     end
 
     app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
@@ -85,12 +85,8 @@ function result = fun(app, seg_num, createCallbackFcn)
     % Delete existing UI components before creating new ones on top
     delete_segments(app,[seg_num]);
 
-
-    app.segment{seg_num}.do_segmentation = @() do_segmentation(app, seg_num, algo_name, app.image);
-
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
-
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;

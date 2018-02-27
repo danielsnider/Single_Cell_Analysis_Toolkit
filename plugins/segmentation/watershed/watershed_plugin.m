@@ -117,6 +117,7 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     himage.AlphaData = labelled_perim*1;
     if ismember(debug_level,{'All','Result With Seeds'})
       if ~isequal(seeds,false)
+        seeds(labelled_img<1)=0;
         % Display red dots for seeds
         [xm,ym]=find(seeds);
         hold on

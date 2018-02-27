@@ -30,7 +30,7 @@ function fun(app, createCallbackFcn)
       return
     end
 
-    plugin_definitions = dir('./plugins/measurements/**/definition*');
+    plugin_definitions = dir('./plugins/measurements/**/definition*.m');
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)

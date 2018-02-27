@@ -19,7 +19,7 @@ function fun(app, createCallbackFcn)
   end
 
   try
-    plugin_definitions = dir('./plugins/preprocess/**/definition*');
+    plugin_definitions = dir('./plugins/preprocess/**/definition*.m');
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
