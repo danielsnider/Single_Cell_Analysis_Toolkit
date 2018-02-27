@@ -45,25 +45,7 @@ function result = fun(app, proc_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_preprocessing_(app, Update)
-    % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
-    pause(0.1); % enough time for the log text area to appear on screen
-
-    prev_fig = get(groot,'CurrentFigure'); % Save current figure
-    
-    plate_num = app.PlateDropDown.Value;
-    chan_num = get_chan_num_for_proc_num(app, proc_num);
-    img_path = get_current_image_path(app, chan_num);
-
-    % Do preprocesing
-    app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
-
-    if ~isempty(prev_fig)
-      figure(prev_fig); % Set back current figure to focus
-    end
-
-    % Delete log
-    delete(app.StartupLogTextArea);
+    do_preprocessing_on_current_image(app, proc_num);
   end
 
     try

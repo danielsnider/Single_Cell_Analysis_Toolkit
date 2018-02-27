@@ -94,7 +94,10 @@ function fun(app)
       for img_num=1:length(img_files)
         % eg. jerboa_pancreas_apotome-Image Export-01_c4m142_ORG.tif
         % eg. jerboa_spleen-05_C02(Alexa Fluor 555)_ORG.tif
-        patterns = regexp(img_files(img_num).name,'(?<filepart1>.*)_[cC][0]?(?<chan_num>\d)(?<filepart2>.*)','names');
+
+        % eg. jerboa_pancreas_apotome-Image Export-01_s1c4m142_ORG.tif
+        % eg. jerboa_pancreas_apotome-Image Export-01_s2c4m142_ORG.tif
+        patterns = regexp(img_files(img_num).name,'(?<filepart1>.*)_[s]?[\d]?[cC][0]?(?<chan_num>\d)(?<filepart2>.*)','names');
         img_files(img_num).filepart1 = patterns.filepart1;
         img_files(img_num).filepart2 = patterns.filepart2;
         chan_num = str2num(patterns.chan_num);

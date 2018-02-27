@@ -51,13 +51,15 @@ end
     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
     pause(0.1); % enough time for the log text area to appear on screen
 
-    % Get image names that weren't filtered from all plates
-    imgs_to_process = get_images_to_process(app);
-
-    % Limit to only one image if requested by check box
+    % Get image names to process
     if app.CheckBox_TestRun.Value
-      imgs_to_process=imgs_to_process(1);
+      % Limit to only one image if requested by check box
+      imgs_to_process = imgs_to_process(1);
+    else
+      % Get image names that weren't filtered from all plates
+      imgs_to_process = get_images_to_process(app);
     end
+
 
     NumberOfImages = length(imgs_to_process);
 

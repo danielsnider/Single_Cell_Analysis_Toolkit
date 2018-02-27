@@ -16,12 +16,15 @@ function fun(app, createCallbackFcn)
       app.preprocess_tabgp = [];
     end
     % Preprocess this image without the preprocess operation that was just deleted
-    app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
-    update_figure(app);
+    do_preprocessing_on_current_image(app, proc_num, chan_num, img_path);
   end
 
   function changed_PreprocessName_(app, event)
     changed_PreprocessName(app, proc_num);
+  end
+
+  function InputChannelChangedCallback(app, event)
+    do_preprocessing_on_current_image(app, proc_num);
   end
 
   try
@@ -71,6 +74,7 @@ function fun(app, createCallbackFcn)
     channel_names = get_enabled_channel_names(app);
     dropdown = uidropdown(app.preprocess{proc_num}.tab, ...
       'Items', channel_names, ...
+      'ValueChangedFcn', createCallbackFcn(app, @InputChannelChangedCallback, true), ...
       'Position', [162,v_offset,200,22]);
     label = uilabel(app.preprocess{proc_num}.tab, ...
       'Text', 'Preprocess Channel', ...
