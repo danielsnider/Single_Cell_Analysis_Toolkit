@@ -70,7 +70,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData.chan_names(drop_num);
       plate_num = app.PlateDropDown.Value;
       dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
-      image_path = app.image_info.chans(dep_chan_num).path;
+      image_path = get_current_image_path(app,dep_chan_num);
       app.image(dep_chan_num).data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
     end
 
