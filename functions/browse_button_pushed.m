@@ -86,6 +86,7 @@ end
 
     % Delete log
     delete(app.StartupLogTextArea);
+    app.ProcessingLogTextArea.Value = '';
 
   % Catch Application Error
   catch ME

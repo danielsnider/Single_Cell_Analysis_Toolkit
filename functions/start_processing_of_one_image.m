@@ -56,7 +56,15 @@ function start_processing_of_one_image(app)
     current_img_number = 1;
     NumberOfImages = 1;
     is_parallel_processing = false;
-    process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
+    % process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,@NewResultCallback);
+
+    temp2 = app.CheckBox_Parallel.Value;
+    app.CheckBox_Parallel.Value = false;
+    temp = app.CheckBox_TestRun.Value; % COMMENT HERE PLEAS
+    app.CheckBox_TestRun.Value = true;
+    start_processing(app, @NewResultCallback);
+    app.CheckBox_TestRun.Value = temp;
+    app.CheckBox_Parallel.Value = temp2;
 
     % Update list of measurements in the display tab
     draw_display_measure_selection(app);
