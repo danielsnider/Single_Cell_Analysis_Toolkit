@@ -29,7 +29,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
               seg_name = sprintf('Segment %i', seg_num);
             end
             seg_data = seg_result{seg_num};
-            segment_data.(genvarname(seg_name)) = seg_data;
+            segment_data.(matlab.lang.makeValidName(seg_name)) = seg_data;
           end
           algo_params(param_idx) = {segment_data};
         end
@@ -58,7 +58,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
             chan_name = channels_to_measure{idx};
             chan_num = find(strcmp(plate.chan_names,chan_name));
             chan_data = imgs(chan_num).data;
-            img_data.(genvarname(chan_name)) = chan_data;
+            img_data.(matlab.lang.makeValidName(chan_name)) = chan_data;
           end
           if ~isempty(img_data)
             algo_params(param_idx) = {img_data};

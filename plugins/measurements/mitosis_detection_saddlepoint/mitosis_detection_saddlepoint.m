@@ -38,6 +38,6 @@ function MeasureTable=func(plugin_name, plugin_num, img, seg)
 
   % Store
   MeasureTable = table();
-  MeasureTable{:,[genvarname(seg_name) '_' genvarname(img_name) '_SaddlePointMitosis']}=SaddlePoint;
+  MeasureTable{:,[matlab.lang.makeValidName(seg_name) '_' matlab.lang.makeValidName(img_name) '_SaddlePointMitosis']}=SaddlePoint;
 
 end
