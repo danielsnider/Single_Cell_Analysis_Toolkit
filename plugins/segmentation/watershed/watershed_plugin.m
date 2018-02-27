@@ -102,7 +102,6 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     f = figure(743); clf; set(f,'name','watershed result','NumberTitle', 'off')
     % Display original image
     img8 = im2uint8(img);
-    %if 
     if min(img8(:)) < prctile(img8(:),99.5)
         min_max = [min(img8(:)) prctile(img8(:),99.5)];
     else
