@@ -26,8 +26,10 @@ function plates = func(full_path)
     plate.num_wells = plate.rows*plate.columns;
 
     %% Store specific well information
-    plate.wells = txt(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
-        
+    txt_str = cellstr(cellfun(@string, raw));
+    txt_str = txt_str(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
+    plate.wells = txt_str;
+
     %% Load Plate Metadata
     plate.metadata = {};
     offset = 0;
@@ -140,7 +142,6 @@ function plates = func(full_path)
         end
         val = toString(values{yy}, 'disp');
         condition = sprintf('%s %s', key, val);
-        condition_meta = val;
         % Loop over well info items in this plate row and add the information found in the condition column to each well info
         for xx=1:plate.columns
           if any([~isstruct(plate.wells{yy,xx})&isnan(plate.wells{yy,xx})  isempty(plate.wells{yy,xx})]) % skip unset wells
@@ -149,9 +150,11 @@ function plates = func(full_path)
           % Append info seperated by a comma
           plate.wells{yy,xx} = sprintf('%s, %s', plate.wells{yy,xx}, condition);
           % Append datastructure info to plate.wells_meta
-          ds.WellCondition = plate.wells_meta{yy,xx};
-          ds.(matlab.lang.makeValidName(key)) = condition_meta;
-          plate.wells_meta{yy,xx} = ds;
+          if ~isstruct(plate.wells_meta{yy,xx})
+            plate.wells_meta{yy,xx} = struct();
+          end
+          plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
+          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val;
         end
       end
     end
@@ -178,7 +181,11 @@ function plates = func(full_path)
           % Append info seperated by a comma
           plate.wells{yy,xx} = sprintf('%s, %s', plate.wells{yy,xx}, condition);
           % Append datastructure info to plate.wells_meta
-          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key))=condition_meta;
+          if ~isstruct(plate.wells_meta{yy,xx})
+            plate.wells_meta{yy,xx} = struct();
+          end
+          plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
+          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val;
         end
       end
     end

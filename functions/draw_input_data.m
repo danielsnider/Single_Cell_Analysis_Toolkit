@@ -80,13 +80,13 @@ function fun(app, createCallbackFcn)
     letters = {letters{2:end-1}}; % first and last are empty, thx matlab
 
     % Replace "NaN" to "" in the wells
-    for x=1:size(plate.wells,1)
-      for y=1:size(plate.wells,2)
-        if isnan(plate.wells{x,y})
-          plate.wells{x,y} = '';
-        end
-      end
-    end
+%     for x=1:size(plate.wells,1)
+%       for y=1:size(plate.wells,2)
+%         if isnan(plate.wells{x,y})
+%           plate.wells{x,y} = '';
+%         end
+%       end
+%     end
 
     % Add Plate Checkbox
     app.plates(plate_num).checkbox = uicheckbox(tab, ...
