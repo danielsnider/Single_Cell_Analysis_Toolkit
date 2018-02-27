@@ -5,6 +5,9 @@ function fun(app, createCallbackFcn)
       uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Preprocess which is not the last one.','Sorry', 'Icon','warn');
       return
     end
+    plate_num = app.PlateDropDown.Value;
+    chan_num = get_chan_num_for_proc_num(app, proc_num);
+    img_path = get_current_image_path(app, chan_num);
     delete_preprocess(app, proc_num);
     app.preprocess(proc_num) = [];
     delete(tab);
@@ -12,6 +15,9 @@ function fun(app, createCallbackFcn)
       delete(app.preprocess_tabgp);
       app.preprocess_tabgp = [];
     end
+    % Preprocess this image without the preprocess operation that was just deleted
+    app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
+    update_figure(app);
   end
 
   function changed_PreprocessName_(app, event)

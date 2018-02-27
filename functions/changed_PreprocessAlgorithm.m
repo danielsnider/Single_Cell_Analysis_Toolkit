@@ -13,7 +13,7 @@ function result = fun(app, proc_num, createCallbackFcn)
       app.preprocess{proc_num}.fields{param_index}.Enable = val;
     end
   end
-
+ 
   function Help_Callback(uiElem, Update, app)
     help_text = uiElem.UserData.help_text;
     param_name = uiElem.UserData.param_name;
@@ -49,36 +49,18 @@ function result = fun(app, proc_num, createCallbackFcn)
     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
     pause(0.1); % enough time for the log text area to appear on screen
 
+    prev_fig = get(groot,'CurrentFigure'); % Save current figure
+    
     plate_num = app.PlateDropDown.Value;
-    proc_chan_name = app.preprocess{proc_num}.ChannelDropDown.Value;
-
-    % Convert channel name to it's number in the plate
-    for chan_num = 1:length(app.plates(plate_num).chan_names)
-      if strcmp(proc_chan_name, app.plates(plate_num).chan_names(chan_num));
-        break % found it, the chan_num will be used outside the loop
-      end
-    end
-
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
-      % Build path to current file
-      img_dir = app.plates(plate_num).metadata.ImageDir;
-      plate_file_num = app.plates(plate_num).plate_num; % The plate number in the filename of images
-      row = app.RowDropDown.Value;
-      column = app.ColumnDropDown.Value;
-      field = app.FieldDropDown.Value;
-      timepoint = app.TimepointDropDown.Value;
-      img_path = sprintf(...
-        '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
-        img_dir,row,column,field,plate_file_num,chan_num,timepoint);
-
-    elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
-      img_num = app.ExperimentDropDown.Value;
-      multi_channel_img = app.ExperimentDropDown.UserData(img_num);
-      img_path = multi_channel_img.chans(chan_num).path;
-    end
+    chan_num = get_chan_num_for_proc_num(app, proc_num);
+    img_path = get_current_image_path(app, chan_num);
 
     % Do preprocesing
     app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
+
+    if ~isempty(prev_fig)
+      figure(prev_fig); % Set back current figure to focus
+    end
 
     % Delete log
     delete(app.StartupLogTextArea);

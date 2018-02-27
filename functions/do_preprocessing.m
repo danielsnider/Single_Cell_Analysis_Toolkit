@@ -17,8 +17,6 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
       end
     end
 
-
-
     img = imread(img_path);
     
     % Return if no preprocessing is configured

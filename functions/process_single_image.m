@@ -136,12 +136,14 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
       iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
       cell_struct = plate.wells_meta(image_file.row,image_file.column);
-      field_names=fieldnames(cell_struct{1,1});  
-      for field = 1:size(field_names)
-%         disp(field)       
-        iterTable.(char(field_names(field))) = cell(size(iterTable,1),1);       
-        iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))) = repmat(cellstr(cell_struct{1,1}.(char(field_names(field)))),[size(iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))),1) 1]);
-      end     
+      if ~isempty(cell_struct) && ~isempty(cell_struct{:})
+        field_names=fieldnames(cell_struct{1,1});  
+        for field = 1:size(field_names)
+    %     disp(field)       
+          iterTable.(char(field_names(field))) = cell(size(iterTable,1),1);       
+          iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))) = repmat(cellstr(cell_struct{1,1}.(char(field_names(field)))),[size(iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))),1) 1]);
+        end 
+      end
     end
     
   end

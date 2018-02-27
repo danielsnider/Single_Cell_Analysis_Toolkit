@@ -58,6 +58,8 @@ function result = fun(app, seg_num, createCallbackFcn)
     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
     pause(0.1); % enough time for the log text area to appear on screen
 
+    prev_fig = get(groot,'CurrentFigure'); % Save current figure
+
     % Preprocess list of input channels to be passed to the plugin
     for idx=1:length(app.segment{seg_num}.ChannelDropDown)
       if isfield(app.segment{seg_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.ChannelDropDown{idx}.UserData.Value
@@ -73,6 +75,10 @@ function result = fun(app, seg_num, createCallbackFcn)
     end
 
     app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
+    update_figure(app);
+    if ~isempty(prev_fig)
+      figure(prev_fig); % Set back current figure to focus
+    end
 
     % Delete log
     delete(app.StartupLogTextArea);

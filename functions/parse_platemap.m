@@ -149,8 +149,8 @@ function plates = func(full_path)
           % Append info seperated by a comma
           plate.wells{yy,xx} = sprintf('%s, %s', plate.wells{yy,xx}, condition);
           % Append datastructure info to plate.wells_meta
-          ds.MainField = plate.wells_meta{yy,xx};
-          ds.(char(regexprep(key,'\s','_'))) = condition_meta;
+          ds.WellCondition = plate.wells_meta{yy,xx};
+          ds.(matlab.lang.makeValidName(key)) = condition_meta;
           plate.wells_meta{yy,xx} = ds;
         end
       end
