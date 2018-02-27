@@ -1,4 +1,4 @@
-function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot)
+function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot,MetaRows,MetaCols)
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
@@ -28,6 +28,7 @@ end
 
 uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
 
+% Make exponential separate
 % if Plot == 'Exponential'
 %     
 %     disp('HI Exponential Plotting')
@@ -35,12 +36,12 @@ uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
 % end
 
 if strcmp(Plot,'MicroPlate')   
-    MicroPlate_Plotting(uniResults,uniWells)    
+    MicroPlate_Plotting(uniResults,uniWells,MetaRows,MetaCols)    
 end
 
 
-
-
+% Pre-Processing Data
+% grpstats(app.ResultTable,{'Treatment','TimePoint'},'mean','DataVars',{'Segment1_DPC_TotalIntensity'})
 
 
 assignin('base','uniResults',uniResults);

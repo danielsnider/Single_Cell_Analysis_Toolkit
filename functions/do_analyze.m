@@ -45,7 +45,7 @@ function fun(app, an_num)
     if isfield(app.analyze{an_num},'ResultTableBox')
       for drop_num=1:length(app.analyze{an_num}.ResultTableBox)
         param_idx = app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx;
-        if isfield(app.analyze{an_num}.ResultTableBox{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+        if isfield(app.analyze{an_num}.ResultTableBox{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.ResultTableBox{drop_num}.UserData.ParamOptionalCheck.Value
           algo_params(param_idx) = {false};
           continue
         end
@@ -55,14 +55,18 @@ function fun(app, an_num)
     end
     
     % Info for well metadata
-    if isfield(app.analyze{an_num},'WellMetaInfo_List')
-      for drop_num=1:length(app.analyze{an_num}.WellMetaInfoList)
-        param_idx = app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData.param_idx;
-        if isfield(app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+    if isfield(app.analyze{an_num},'MeasurementListBox')
+      for drop_num=1:length(app.analyze{an_num}.MeasurementListBox)
+        param_idx = app.analyze{an_num}.MeasurementListBox{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.MeasurementListBox{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.MeasurementListBox{drop_num}.UserData.ParamOptionalCheck.Value
           algo_params(param_idx) = {false};
           continue
         end
-        algo_params(param_idx) = {app.ResultTable};
+         meas = {}
+        meas_name = app.analyze{an_num}.MeasurementListBox{drop_num}.Value;
+        meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
+        meas.data = ResultTable{:,meas_name};
+        algo_params(param_idx) = {meas};
       end
     end
     

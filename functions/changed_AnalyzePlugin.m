@@ -206,36 +206,34 @@ function result = fun(app, an_num, createCallbackFcn)
         app.analyze{an_num}.ResultTableLabel{drop_num} = label;
         
         
-        elseif strcmp(param.type,'WellMetaInfo_List')
-             app.analyze{an_num}.fields{field_num} = uilistbox(app.analyze{an_num}.tab, ...
-            'Items', param.options, ...
-            'Multiselect', 'on');
+      elseif strcmp(param.type,'MeasurementListBox')
+          % Set an index number for this component
+          if ~isfield(app.analyze{an_num},'MeasurementListBox')
+              app.analyze{an_num}.MeasurementListBox = {};
+          end
+          drop_num = length(app.analyze{an_num}.MeasurementListBox) + 1;
+          param_index = drop_num;
+          % Create GUI Componenets
+          listbox = uilistbox(app.analyze{an_num}.tab, ...
+              'Position', [param_pos(1) param_pos(2)-34 param_pos(3) param_pos(4)+34], ...
+              'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+              'Items', {}, ...
+              'Multiselect', 'on');
+          label = uilabel(app.analyze{an_num}.tab, ...
+              'Text', param.name, ...
+              'HorizontalAlignment', 'right', ...
+              'Position', label_pos);
           v_offset = v_offset - 34;
           param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
-%           
-%         % Set an index number for this component
-%         if ~isfield(app.analyze{an_num},'WellMetaInfoList')
-%           app.analyze{an_num}.WellMetaInfoList = {};
-%         end
-%         drop_num = length(app.analyze{an_num}.WellMetaInfoList) + 1;
-%         param_index = drop_num;
-%         % Create UI components
-%         edit_field = uieditfield(app.analyze{an_num}.tab, ...
-%           'Position', param_pos, ...
-%           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
-%           'Value', 'ResultTable', ...
-%           'BackgroundColor', [0.9 0.9 0.9], ...
-%           'Editable', 'off');
-%         label = uilabel(app.analyze{an_num}.tab, ...
-%           'Text', param.name, ...
-%           'HorizontalAlignment', 'right', ...
-%           'Position', label_pos);
-%         % Save ui elements
-%         app.analyze{an_num}.WellMetaInfoList{drop_num} = edit_field;
-%         app.analyze{an_num}.WellMetaInfoList{drop_num}.UserData.param_idx = idx;
-%         app.analyze{an_num}.WellMetaInfoList{drop_num} = label;
-        
-        
+          % Save ui elements
+          app.analyze{an_num}.MeasurementListBox{drop_num} = listbox;
+          app.analyze{an_num}.MeasurementListBox{drop_num}.UserData.param_idx = idx;
+          app.analyze{an_num}.MeasurementListLabel{drop_num} = label;
+          if isfield(param,'optional') && ~isempty(param.optional)
+            app.analyze{an_num}.MeasurementListLabel{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
+          end
+          
+   
       else
         msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
         uialert(app.UIFigure,msg,'Known Parameter Type', 'Icon','error');

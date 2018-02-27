@@ -17,6 +17,16 @@ function fun(app)
         end
       end
     end
+    
+    % Populate analyze listboxs with measurement names 
+    for an_num=1:length(app.analyze)
+      if isfield(app.analyze{an_num},'MeasurementListBox')
+        for drop_num=1:length(app.analyze{an_num}.MeasurementListBox)
+          app.analyze{an_num}.MeasurementListBox{drop_num}.Items = meas_names;
+        end
+      end
+    end
+    
   % Catch Application Error
   catch ME
     handle_application_error(app,ME);
