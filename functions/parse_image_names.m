@@ -114,8 +114,8 @@ function fun(app)
       if file_naming_has_id_number_then_channel
         app.plates(plate_num).experiments = unique({img_files.filepart1},'stable');
       else
-        image_names = unique({img_files.name},'stable') 
-        image_names = image_names(1:length(img_files)/num_chans) % get the set of filenames for the first channel only
+        image_names = unique({img_files.name},'stable'); 
+        image_names = image_names(1:length(img_files)/num_chans); % get the set of filenames for the first channel only
         app.plates(plate_num).experiments = image_names;
       end
 

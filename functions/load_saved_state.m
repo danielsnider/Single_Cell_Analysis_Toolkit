@@ -1,4 +1,9 @@
 function fun(app,saved_app,createCallbackFcn)
+  % Display Tab
+  app.PlateDropDown.Items = saved_app.PlateDropDown.Items;
+  app.PlateDropDown.ItemsData = saved_app.PlateDropDown.ItemsData;
+  app.PlateDropDown.Value = saved_app.PlateDropDown.Value;
+  
   % Input Tab
   filter_names = { ...
     'rows', ...
