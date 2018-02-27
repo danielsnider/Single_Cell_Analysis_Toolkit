@@ -1,12 +1,24 @@
 function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_param, trend_line, correlation_type)
 
+  % Check that data is numeric
+  if ~isnumeric(x_data)
+    msg = sprintf('Cannot plot with incorrect data type. You have given non-numeric data given in ''%s''.',x.name);
+    msgbox(msg, 'Cannot Plot','error');
+    return
+  end
+  if ~isnumeric(y_data)
+    msg = sprintf('Cannot plot with incorrect data type. You have given non-numeric data given in ''%s''.',y.name);
+    msgbox(msg, 'Cannot Plot','error');
+    return
+  end
+
   % Remove NaNs
-  x_dat = x.data;
-  y_dat = y.data;
-  x.data(isnan(x_dat)) = [];
-  x.data(isnan(y_dat)) = [];
-  y.data(isnan(x_dat)) = [];
-  y.data(isnan(y_dat)) = [];
+  x_data = x.data;
+  y_data = y.data;
+  x.data(isnan(x.data)) = [];
+  x.data(isnan(y.data)) = [];
+  y.data(isnan(x.data)) = [];
+  y.data(isnan(y.data)) = [];
 
   f = figure(plugin_num+344); clf; set(f,'name',plugin_name,'NumberTitle', 'off');
 
