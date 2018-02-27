@@ -12,7 +12,7 @@ function fun(app,saved_app,createCallbackFcn)
     'timepoints' ...
   };
   for plate_num = 1:length(app.plates)
-    app.plates(plate_num).checkbox.Value = saved_app.plates(plate_num).checkbox.Value
+    app.plates(plate_num).checkbox.Value = saved_app.plates(plate_num).checkbox.Value;
     for filt_num = 1:length(filter_names)
       filter_name = filter_names{filt_num};
       app.plates(plate_num).(['filter_' filter_name]).Value = saved_app.plates(plate_num).(['filter_' filter_name]).Value;
@@ -25,7 +25,6 @@ function fun(app,saved_app,createCallbackFcn)
   component_names = { ...
     'fields', ...
     'labels', ...
-    'ParamOptionalCheck', ...
   };
   for proc_num=1:length(saved_app.preprocess)
     add_preprocess(app,createCallbackFcn);
@@ -39,6 +38,9 @@ function fun(app,saved_app,createCallbackFcn)
       comp_name = component_names{cid}; % get known ui component type name
       if isfield(app.preprocess{proc_num},comp_name) % only if it exists
         for idx=1:length(app.preprocess{proc_num}.(comp_name)) % loop over each item of this type
+          if isfield(app.preprocess{proc_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            app.preprocess{proc_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value = saved_app.preprocess{proc_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value;
+          end
           field_names = fieldnames(app.preprocess{proc_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
@@ -67,7 +69,6 @@ function fun(app,saved_app,createCallbackFcn)
     'SegmentDropDownLabel', ...
     'ChannelDropDown', ...
     'ChannelDropDownLabel', ...
-    'ParamOptionalCheck', ...
   };
   for seg_num=1:length(saved_app.segment)
     add_segment(app,createCallbackFcn);
@@ -80,6 +81,9 @@ function fun(app,saved_app,createCallbackFcn)
       comp_name = component_names{cid}; % get known ui component type name
       if isfield(app.segment{seg_num},comp_name) % only if it exists
         for idx=1:length(app.segment{seg_num}.(comp_name)) % loop over each item of this type
+          if isfield(app.segment{seg_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            app.segment{seg_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value = saved_app.segment{seg_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value;
+          end
           field_names = fieldnames(app.segment{seg_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
@@ -123,6 +127,9 @@ function fun(app,saved_app,createCallbackFcn)
       comp_name = component_names{cid}; % get known ui component type name
       if isfield(app.measure{meas_num},comp_name) % only if it exists
         for idx=1:length(app.measure{meas_num}.(comp_name)) % loop over each item of this type
+          if isfield(app.measure{meas_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            app.measure{meas_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value = saved_app.measure{meas_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value;
+          end
           field_names = fieldnames(app.measure{meas_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
@@ -162,6 +169,9 @@ function fun(app,saved_app,createCallbackFcn)
       comp_name = component_names{cid}; % get known ui component type name
       if isfield(app.analyze{an_num},comp_name) % only if it exists
         for idx=1:length(app.analyze{an_num}.(comp_name)) % loop over each item of this type
+          if isfield(app.analyze{an_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+            app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value = saved_app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value;
+          end
           field_names = fieldnames(app.analyze{an_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
@@ -184,14 +194,14 @@ function fun(app,saved_app,createCallbackFcn)
 
   %% ResultTable
   if any(ismember(fields(saved_app),'ResultTable')) && istable(saved_app.ResultTable)
-    app.ResultTable = saved_app.ResultTable
+    app.ResultTable = saved_app.ResultTable;
     app.Button_ViewMeasurements.Visible = 'on';
     app.Button_ExportMeasurements.Visible = 'on';
   end
 
   %% ResultTable_for_display
   if any(ismember(fields(saved_app),'ResultTable_for_display')) && istable(saved_app.ResultTable_for_display)
-    app.ResultTable_for_display = saved_app.ResultTable_for_display
+    app.ResultTable_for_display = saved_app.ResultTable_for_display;
   end
 
 end

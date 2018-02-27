@@ -1,12 +1,12 @@
 function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_param, trend_line, correlation_type)
 
   % Check that data is numeric
-  if ~isnumeric(x_data)
+  if ~isnumeric(x.data)
     msg = sprintf('Cannot plot with incorrect data type. You have given non-numeric data given in ''%s''.',x.name);
     msgbox(msg, 'Cannot Plot','error');
     return
   end
-  if ~isnumeric(y_data)
+  if ~isnumeric(y.data)
     msg = sprintf('Cannot plot with incorrect data type. You have given non-numeric data given in ''%s''.',y.name);
     msgbox(msg, 'Cannot Plot','error');
     return
