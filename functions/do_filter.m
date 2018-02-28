@@ -1,4 +1,5 @@
 function [Table, num_filtered_rows] = fun(Table, Filter)
+  % Segment1_DAPI_MeanIntensity; Segment1_DAPI_MeanIntensity >= 487.7
   %% EXAMPLE INPUT FILTER:
   % Filter.column = { ...
   %   'SaddlePoint; SaddlePoint < 50', ... % not mitotic
@@ -30,8 +31,7 @@ function [Table, num_filtered_rows] = fun(Table, Filter)
 
       % Sanity check
       if ~any(ismember(Table.Properties.VariableNames,column_name))
-        warning('[filter_table.m] Cannot filter on column name "%s" because it doesn''t exist', column_name)
-        continue
+        error('Cannot filter on column name "%s" because it doesn''t exist', column_name)
       end
 
       % Create a variable (ex. NArea) to make possible filters like 'NArea > median(NArea)'

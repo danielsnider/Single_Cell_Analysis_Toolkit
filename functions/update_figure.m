@@ -61,7 +61,7 @@ function fun(app)
     end
 
     % Display
-    f = figure(111); clf; set(f, 'name','Image','NumberTitle', 'off');
+    f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off');
     imshow(composite_img,[]);
     hold on
 
