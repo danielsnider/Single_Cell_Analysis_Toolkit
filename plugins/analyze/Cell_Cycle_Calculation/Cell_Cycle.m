@@ -2,11 +2,16 @@ function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot,MetaRows
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
+
+ResultTable.Properties.VariableNames{1} = 'row';
+ResultTable.Properties.VariableNames{2} = 'column';
+
 % ResultTable.TimePoint=str2double(ResultTable.TimePoint);
 uniResults = table();
 % uniResults.TimePoint = (unique(ResultTable.TimePoint,'sorted'))
 
 MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
+% MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'Well_Info')):end);
 
 uniResults = unique(ResultTable(:,['row','column',MetaDataColumns]));
 uniTimePoint = unique(ResultTable.(measurement_name),'sorted');

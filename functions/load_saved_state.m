@@ -81,13 +81,23 @@ function fun(app,saved_app,createCallbackFcn)
       comp_name = component_names{cid}; % get known ui component type name
       if isfield(app.segment{seg_num},comp_name) % only if it exists
         for idx=1:length(app.segment{seg_num}.(comp_name)) % loop over each item of this type
-          if isfield(app.segment{seg_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+          if isfield(saved_app.segment{seg_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
             app.segment{seg_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value = saved_app.segment{seg_num}.(comp_name){idx}.UserData.ParamOptionalCheck.Value;
           end
           field_names = fieldnames(app.segment{seg_num}.(comp_name){idx}); % get all the value field names on this ui element
           for field_name=field_names' % loop over each field on this ui element, setting the app's value using the saved value
             if ismember(field_name,{'BeingDeleted', 'Type', 'OuterPosition','Parent','ValueChangedFcn','HandleVisibility', 'BusyAction', 'Interruptible', 'CreateFcn', 'DeleteFcn'})
               continue % skip blacklisted property names that are known to be readonly
+            end
+            if ismember(field_name,{'UserData'}) && isstruct(app.segment{seg_num}.(comp_name){idx}.UserData)
+              data_fields = fieldnames(app.segment{seg_num}.(comp_name){idx}.UserData);
+              for data_field_name=data_fields'
+                if ismember(data_field_name,{'ParamOptionalCheck'})
+                    continue % skip blacklisted property
+                end
+                app.segment{seg_num}.(comp_name){idx}.UserData.(data_field_name{:}) = saved_app.segment{seg_num}.(comp_name){idx}.UserData.(data_field_name{:});
+              end
+              continue % handle UserData differently so to skip copying ParamOptionalCheck
             end
               try
                 % Place the saved value into the app
