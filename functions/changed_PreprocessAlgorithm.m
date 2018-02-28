@@ -12,6 +12,7 @@ function result = fun(app, proc_num, createCallbackFcn)
     if ismember(param.type,{'numeric','text','dropdown'})
       app.preprocess{proc_num}.fields{param_index}.Enable = val;
     end
+    do_preprocessing_(app,'Update');
   end
  
   function Help_Callback(uiElem, Update, app)

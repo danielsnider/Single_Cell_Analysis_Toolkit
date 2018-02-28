@@ -14,7 +14,7 @@ function result = fun(app, an_num, createCallbackFcn)
     elseif strcmp(param.type,'measurement_dropdown')
       app.analyze{an_num}.MeasurementDropDown{param_index}.Enable = val;
     end
-    do_analyze(app, an_num);
+    do_analyze_(app,'Update');
   end
 
   function Help_Callback(uiElem, Update, app)

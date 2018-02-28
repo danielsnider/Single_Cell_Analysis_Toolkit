@@ -56,7 +56,7 @@ function fun(app, createCallbackFcn)
     tabgp = app.analyze_tabgp;
     an_num = length(tabgp.Children)+1;
     app.analyze{an_num} = {};
-    app.analyze{an_num}.params = params;
+        app.analyze{an_num}.params = params;
     app.analyze{an_num}.algorithm_info = algorithm;
     if ~isfield(app.analyze{an_num}.algorithm_info,'maintainer')
       app.analyze{an_num}.algorithm_info.maintainer = 'Unknown';

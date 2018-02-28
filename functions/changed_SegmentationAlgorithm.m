@@ -16,7 +16,7 @@ function result = fun(app, seg_num, createCallbackFcn)
     elseif strcmp(param.type,'image_channel_dropdown')
       app.segment{seg_num}.ChannelDropDown{param_index}.Enable = val;
     end
-    app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
+    do_segmentation_(app,'Update');
   end
 
   function Help_Callback(uiElem, Update, app)
