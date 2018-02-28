@@ -7,7 +7,7 @@ function fun(app)
     end
 
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [126,651,650,105]);
+    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
     pause(0.1); % enough time for the log text area to appear on screen
 
     % Load data

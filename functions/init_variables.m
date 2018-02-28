@@ -1,6 +1,5 @@
 function fun(app)
 
-
   % Delete input data plates
   if isfield(app, 'input_data')
     if isfield(app.input_data, 'tabgp')
@@ -51,6 +50,7 @@ function fun(app)
   app.Button_ExportMeasurements.Visible = 'off';
   app.Button_ViewOverlaidMeasurements.Visible = 'off';
 
+  app.FiltersTextArea.UserData.LastValue = {''};
   app.ProcessingLogTextArea.Value = {''};
 
   app.log_processing_message = @log_processing_message;
