@@ -19,7 +19,7 @@ function stat_data = fun(stat_data,MeasureTable,stat_name,intensity_stat_flag)
       if strcmp(stat_name,{'Area', 'ConvexArea', 'EquivDiameter', 'Perimeter'})
         missing_data = zeros(size(test_stat_data)); % create zeros with the right shape for this stat
       else
-        missing_data = nan(size(test_stat_data)); % create nan with the right shape for this stat
+        missing_data = NaN; % create nan with the right shape for this stat, any shape will do
       end
       missing_data_start_pos = length(stat_data)+1; % start index of missing data
       missing_data_end_pos = height(MeasureTable); % end index of missing data

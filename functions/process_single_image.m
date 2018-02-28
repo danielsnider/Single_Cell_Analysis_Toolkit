@@ -80,10 +80,13 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       % Remove duplicate columns, keep the column that got there first
       new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));
       MeasureTable = MeasureTable(:,new_col_names);
-      % Store new measurements
-      if isempty(iterTable)
-        iterTable=MeasureTable;
-      else
+      if istable(MeasureTable)
+        % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
+        if max(primary_seg_data(:)) > height(MeasureTable)
+          desired_height = max(primary_seg_data(:)); % desired height is the number of primary segments
+          MeasureTable = append_missing_rows_for_table(MeasureTable, desired_height);
+        end
+        % Append new measurements
         iterTable=[iterTable MeasureTable];
       end
     end
@@ -98,11 +101,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if isempty(centroids)
       return % nothing was found so return
     end
-    % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
-    if size(centroids,1) > height(iterTable)
-      desired_height = length(centroids);
-      iterTable = append_missing_rows_for_table(iterTable, desired_height);
-    end
+    
     % Add X and Y coordinates for each primary label
     iterTable.x_coord = floor(centroids(:,1));
     iterTable.y_coord = floor(centroids(:,2));
