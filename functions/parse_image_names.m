@@ -13,7 +13,7 @@ function fun(app)
       msg = sprintf('Could not load image file names. Unkown image file format "%s". Please see your plate map spreadsheet.',naming_scheme);
       uialert(app.UIFigure,msg,'Unkown Image File Format', 'Icon','error');
     end
-
+    
     if strcmp(naming_scheme, 'OperettaSplitTiffs')
       % The plate number in the filename of images
       plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
@@ -89,6 +89,7 @@ function fun(app)
       % Zeiss starts channel nums sometimes at 0
       offset = 0;
       file_naming_has_id_number_then_channel = false;
+      last_chan_num = NaN;
 
       % Parse image names
       for img_num=1:length(img_files)
@@ -103,16 +104,29 @@ function fun(app)
           offset = 1;
           file_naming_has_id_number_then_channel = true; % channel number comes before the unique number for this image changing the sorting of the images
         end
-        img_files(img_num).chan_num = chan_num+offset; % Zeiss starts channel nums at 0
+        img_files(img_num).chan_num = chan_num+offset; % Zeiss starts channel nums at 0 sometimes
+        img_files(img_num).filename_without_channel = [patterns.filepart1 patterns.filepart2];
       end
       
       app.plates(plate_num).channels = unique([img_files.chan_num],'stable');
       chan_nums = app.plates(plate_num).channels;
       num_chans = length(chan_nums);
+      
+      %% Detect wether image files are sorted in a way where all channel 1 image are before all channel 2 images
+      % We compare the first two images to see if the channel number changes
+      if length(img_files)>=2
+        img1_pattern = regexp(img_files(1).name,'(?<filepart1>.*)_[s]?[\d]?[cC][0]?(?<chan_num>\d)(?<filepart2>.*)','names');
+        img1_chan_num = str2num(img1_pattern.chan_num);
+        img2_pattern = regexp(img_files(2).name,'(?<filepart1>.*)_[s]?[\d]?[cC][0]?(?<chan_num>\d)(?<filepart2>.*)','names');
+        img2_chan_num = str2num(img1_pattern.chan_num);
+        if img1_chan_num == img2_chan_num
+          file_naming_has_id_number_then_channel = false;
+        end
+      end
 
       % Store unique values
       if file_naming_has_id_number_then_channel
-        app.plates(plate_num).experiments = unique({img_files.filepart1},'stable');
+        app.plates(plate_num).experiments = unique({img_files.filename_without_channel},'stable');
       else
         image_names = unique({img_files.name},'stable'); 
         image_names = image_names(1:length(img_files)/num_chans); % get the set of filenames for the first channel only
