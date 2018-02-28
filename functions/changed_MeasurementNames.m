@@ -26,6 +26,9 @@ function fun(app)
         end
       end
     end
+
+    % Populate filter sort by dropdown
+    app.FilterSortByDropDown.Items = meas_names;
     
   % Catch Application Error
   catch ME

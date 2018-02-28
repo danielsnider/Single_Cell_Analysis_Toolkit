@@ -19,6 +19,12 @@ function start_processing_of_one_image(app)
       app.Button_ViewOverlaidMeasurements.Visible = 'on';
     end
 
+    % Update Filter Tab
+    if istable(app.ResultTable)
+      app.NumberBeforeFiltering.Value = height(app.ResultTable);
+      app.NumberAfterFiltering.Value = height(app.ResultTable);
+    end
+
   % Catch Application Error
   catch ME
     handle_application_error(app,ME);

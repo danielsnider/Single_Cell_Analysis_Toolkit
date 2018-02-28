@@ -21,6 +21,9 @@ function [Table, num_filtered_rows] = fun(Table, Filter)
     for ii=1:length(Filter.column)
       height_before = height(Table);
       column_filter = char(Filter.column(ii));
+      if isempty(strtrim(column_filter))
+        continue % skip empty
+      end
       column_filter_arr = strsplit(column_filter, ';');
       column_name = char(column_filter_arr(1));
       operator = char(column_filter_arr(2));
@@ -51,16 +54,21 @@ function [Table, num_filtered_rows] = fun(Table, Filter)
   end
 
   %% Handle Filter.first
+  FirstRows = table();
   if isfield(Filter,'first') && ~isempty(Filter.first)
-    FirstRows = Table(1:Filter.first,:);
-  else
-    FirstRows = table();
+    amount = Filter.first;
+    if amount > height(Table)
+      amount = height(Table); % Don't go overbounds
+    end
+    FirstRows = Table(1:amount,:);
   end
   %% Handle Filter.last
+  LastRows = table();
   if isfield(Filter,'last') && ~isempty(Filter.last)
-    LastRows = Table(end-Filter.last+1:end,:);
-  else
-    LastRows = table();
+    amount = Filter.last-1;
+    if amount < height(Table)
+        LastRows = Table(end-amount:end,:);
+    end
   end
   % Combine  first and last (if required)
   if (isfield(Filter,'first') && ~isempty(Filter.first)) | (isfield(Filter,'last') && ~isempty(Filter.last))

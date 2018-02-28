@@ -20,6 +20,10 @@ function fun(app)
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'on';
   app.Button_ExportMeasurements.Visible = 'on';
+
+  % Update Filter Tab
+  app.NumberBeforeFiltering.Value = height(app.ResultTable);
+  app.NumberAfterFiltering.Value = height(app.ResultTable);
   
   % Delete log
   delete(app.StartupLogTextArea);

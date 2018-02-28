@@ -48,6 +48,7 @@ function fun(app)
   app.Button_RunAllAnalysis.Visible = 'off';
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
+  app.Button_ViewFilteredData.Visible = 'off';
   app.Button_ViewOverlaidMeasurements.Visible = 'off';
 
   app.FiltersTextArea.UserData.LastValue = {''};

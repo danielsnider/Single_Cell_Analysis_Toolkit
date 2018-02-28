@@ -99,7 +99,7 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
   result = labelled_img;
 
   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
-    f = figure(743); clf; set(f,'name','watershed result','NumberTitle', 'off')
+    f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
     % Display original image
     img8 = im2uint8(img);
     if min(img8(:)) < prctile(img8(:),99.5)

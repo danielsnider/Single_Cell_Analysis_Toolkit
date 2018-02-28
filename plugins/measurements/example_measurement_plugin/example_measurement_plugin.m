@@ -24,6 +24,8 @@ function MeasureTable=func(plugin_name, plugin_num, img, seg)
 
   % Store
   MeasureTable = table();
-  MeasureTable{:,[matlab.lang.makeValidName(seg_name) '_' matlab.lang.makeValidName(img_name) '_MeanIntensity']}=MeanIntensity;
+  if ~isempty(MeanIntensity)
+    MeasureTable{:,[matlab.lang.makeValidName(seg_name) '_' matlab.lang.makeValidName(img_name) '_MeanIntensity']}=MeanIntensity;
+  end
 
 end

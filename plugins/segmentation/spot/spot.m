@@ -20,7 +20,7 @@ function seeds = spot(plugin_name, plugin_num, img, thresh_param, smooth_param, 
 
   if ismember(debug_level,{'Result Only','All'})
     [X Y] = find(seeds);
-    f = figure(222); clf; set(f, 'name','seeds','NumberTitle', 'off')
+    f = figure(222); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
     imshow(img,[]);
     hold on;
     plot(Y,X,'or','markersize',2,'markerfacecolor','r')

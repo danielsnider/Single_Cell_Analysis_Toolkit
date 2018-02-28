@@ -3,7 +3,9 @@ function fun(app, an_num)
     algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
     algo_params = {};
 
-    if ~isempty(app.ResultTable)
+    if ~isempty(app.ResultTable_filtered)
+      ResultTable = app.ResultTable_filtered;
+    elseif ~isempty(app.ResultTable)
       ResultTable = app.ResultTable;
     elseif ~isempty(app.ResultTable_for_display)
       ResultTable = app.ResultTable_for_display;
