@@ -24,6 +24,8 @@ function fun(app)
   % Update Filter Tab
   app.NumberBeforeFiltering.Value = height(app.ResultTable);
   app.NumberAfterFiltering.Value = height(app.ResultTable);
+  app.ResultTable_filtered = table();
+
   
   % Delete log
   delete(app.StartupLogTextArea);

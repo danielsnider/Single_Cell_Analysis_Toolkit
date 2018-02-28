@@ -8,4 +8,5 @@ function fun(app)
   end
   app.FiltersTextArea.Value = {''};
   app.FilterReductionTextArea.Value = {''};
+  app.Button_ViewFilteredData.Visible = 'off';
 end

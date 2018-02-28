@@ -53,6 +53,7 @@ function fun(app, NewResultCallback)
     %% Loop over images and process each one
     if app.CheckBox_Parallel.Value
       app.log_processing_message(app, 'Starting parallel processing pool.');
+      app.log_processing_message(app, 'Please see the Matlab console for further progess messages.');
       ProcessingLogQueue = parallel.pool.DataQueue;
 %       disp(ProcessingLogQueue)
       app.ProcessingLogQueue = ProcessingLogQueue;
