@@ -1,4 +1,4 @@
-function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot,MetaRows,MetaCols)
+function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot,Plot_Title,MetaRows,MetaCols)
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
@@ -41,7 +41,7 @@ uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
 % end
 
 if strcmp(Plot,'MicroPlate')   
-    MicroPlate_Plotting(uniResults,uniWells,MetaRows,MetaCols)    
+    MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)    
 end
 
 
