@@ -66,26 +66,76 @@ function result = fun(app, an_num, createCallbackFcn)
     delete(app.StartupLogTextArea);
   end
   
+    
+
+    
+
+
+
   try
     % Get new selection of plugin
     algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
 
     % Delete existing UI components before creating new ones on top
     delete_analyze(app,[an_num]);
-
+    
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
 
-    % Display GUI component for each parameter to the algorithm
+   % ------------------------- WORK IN PROGRESS HERE -----------------
+   % Create subtabs for parameters
+   if isfield(params,'sub_tab')
+       tmp_params_table= struct2table(params);
+       tab_count=1;tab_names=cell(1,1);
+       for p = 1:size(tmp_params_table.sub_tab,1)
+           tab_names(tab_count,1)=tmp_params_table.sub_tab(p);
+           tab_count=tab_count+1;
+       end
+       tab_names = unique(tab_names(~cellfun('isempty', tab_names)),'stable');
+       sub_tbgroup = uitabgroup('parent', app.analyze{an_num}.tab, 'Position',[405 25 390 390]); %[left bottom width height]
+       for num_tab = 1:size(tab_names,1)
+           uitab('parent', sub_tbgroup, 'Title', char(tab_names(num_tab)));
+       end
+   end
+    % ---------------------- END OF PROGRESS ------------------------
+    
+    
+   % Display GUI component for each parameter to the algorithm
+   if isfield(params,'sub_tab')
+    v_offset = 365; %[100 332 125 22]
+   else
     v_offset = 419;
+   end
+   
     for idx=1:length(params)
-      param = params(idx);
-
+        
+      param = params(idx); 
+      
+      % Set which tab becomes parent to parameter components
+      if isfield(param,'sub_tab')
+       sub_tbgroup.SelectedTab = sub_tbgroup.Children(contains(tab_names,param.sub_tab));
+       current_tab = sub_tbgroup.SelectedTab;
+      else
+      	current_tab = app.analyze{an_num}.tab;
+      end
+      
       % Location of GUI component
-      v_offset = v_offset - 33;
-
-      param_pos = [620 v_offset 125 22];
-      label_pos = [400 v_offset-5 200 22];
+      if isfield(param,'sub_tab')
+          v_offset = v_offset - 33;
+      else
+          v_offset = v_offset - 33;
+      end
+      if isfield(param,'sub_tab')
+          param_pos = [100 v_offset 125 22]; %[100 332 125 22]
+      else
+          param_pos = [620 v_offset 125 22];
+      end
+      if isfield(param,'sub_tab')
+          label_pos = [5 v_offset-5 80 70]; %[5 280 80 70]
+      else
+          label_pos = [400 v_offset-5 200 22];
+      end
+      
       help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
       param_index = NaN;
 
@@ -106,33 +156,34 @@ function result = fun(app, an_num, createCallbackFcn)
         if ~isfield(app.analyze{an_num},'fields')
           app.analyze{an_num}.fields = {};
         end
+        
         field_num = length(app.analyze{an_num}.fields) + 1;
         param_index = field_num;
         % Create UI components
         if strcmp(param.type,'numeric')
-          app.analyze{an_num}.fields{field_num} = uispinner(app.analyze{an_num}.tab);
+          app.analyze{an_num}.fields{field_num} = uispinner(current_tab);
           if isfield(param,'limits') & size(param.limits)==[1 2]
             app.analyze{an_num}.fields{field_num}.Limits = param.limits;
           end
           app.analyze{an_num}.fields{field_num}.ValueDisplayFormat = '%g';
         elseif strcmp(param.type,'text')
-          app.analyze{an_num}.fields{field_num} = uieditfield(app.analyze{an_num}.tab);
+          app.analyze{an_num}.fields{field_num} = uieditfield(current_tab);
         elseif strcmp(param.type,'dropdown')
-          app.analyze{an_num}.fields{field_num} = uidropdown(app.analyze{an_num}.tab);
+          app.analyze{an_num}.fields{field_num} = uidropdown(current_tab);
           app.analyze{an_num}.fields{field_num}.Items = param.options;
         elseif strcmp(param.type,'checkbox')
-          app.analyze{an_num}.fields{field_num} = uicheckbox(app.analyze{an_num}.tab);
+          app.analyze{an_num}.fields{field_num} = uicheckbox(current_tab);
           app.analyze{an_num}.fields{field_num}.Text = '';
           param_pos = [param_pos(1) param_pos(2)+4 25 15];
         elseif strcmp(param.type,'listbox')
-          app.analyze{an_num}.fields{field_num} = uilistbox(app.analyze{an_num}.tab, ...
+          app.analyze{an_num}.fields{field_num} = uilistbox(current_tab, ...
             'Items', param.options, ...
             'Multiselect', 'on');
           v_offset = v_offset - 34;
           param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
         elseif strcmp(param.type,'slider')
           param_pos = [param_pos(1) param_pos(2)+5 param_pos(3) param_pos(4)];
-          app.analyze{an_num}.fields{field_num} = uislider(app.analyze{an_num}.tab, ...
+          app.analyze{an_num}.fields{field_num} = uislider(current_tab, ...
             'MajorTicks', [], ...
             'MajorTickLabels', {}, ...
             'MinorTicks', []);
@@ -145,7 +196,7 @@ function result = fun(app, an_num, createCallbackFcn)
         app.analyze{an_num}.fields{field_num}.Position = param_pos;
         app.analyze{an_num}.fields{field_num}.Value = param.default;
         app.analyze{an_num}.fields{field_num}.UserData.param_idx = idx;
-        app.analyze{an_num}.labels{field_num} = uilabel(app.analyze{an_num}.tab);
+        app.analyze{an_num}.labels{field_num} = uilabel(current_tab);
         app.analyze{an_num}.labels{field_num}.HorizontalAlignment = 'right';
         app.analyze{an_num}.labels{field_num}.Position = label_pos;
         app.analyze{an_num}.labels{field_num}.Text = param.name;
@@ -163,11 +214,11 @@ function result = fun(app, an_num, createCallbackFcn)
         drop_num = length(app.analyze{an_num}.MeasurementDropDown) + 1;
         param_index = drop_num;
         % Create UI components
-        dropdown = uidropdown(app.analyze{an_num}.tab, ...
+        dropdown = uidropdown(current_tab, ...
           'Position', param_pos, ...
           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
           'Items', {} );
-        label = uilabel(app.analyze{an_num}.tab, ...
+        label = uilabel(current_tab, ...
           'Text', param.name, ...
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
@@ -183,20 +234,43 @@ function result = fun(app, an_num, createCallbackFcn)
         
       elseif strcmp(param.type,'ResultTable_Box')
           
+%         if contains(param.sub_tab,tab_names)
+%         
+%            sub_tbgroup.SelectedTab = sub_tbgroup.Children(contains(tab_names,param.sub_tab));
+%            current_tab = sub_tbgroup.SelectedTab;
+% %             app.analyze{an_num}.sub_tab=current_tab;
+%             
+% %             current_tab = app.analyze{an_num}.tab.Children(1).Children(1);
+%         edit_field = uieditfield('parent',current_tab, ...
+%           'Position', [100 332 125 22], ...
+%           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+%           'Value', 'ResultTable', ...
+%           'BackgroundColor', [1 1 1], ...
+%           'Editable', 'off');
+%       
+%         label = uilabel('parent',current_tab, ...
+%           'Text', param.name, ...
+%           'HorizontalAlignment', 'right', ...
+%           'Position', [5 280 80 70]);
+%             
+%             
+%         end
+        
         % Set an index number for this component
         if ~isfield(app.analyze{an_num},'ResultTableBox')
           app.analyze{an_num}.ResultTableBox = {};
         end
+        
         drop_num = length(app.analyze{an_num}.ResultTableBox) + 1;
         param_index = drop_num;
         % Create UI components
-        edit_field = uieditfield(app.analyze{an_num}.tab, ...
+        edit_field = uieditfield(current_tab, ...
           'Position', param_pos, ...
           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
           'Value', 'ResultTable', ...
           'BackgroundColor', [0.9 0.9 0.9], ...
           'Editable', 'off');
-        label = uilabel(app.analyze{an_num}.tab, ...
+        label = uilabel(current_tab, ...
           'Text', param.name, ...
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
@@ -214,12 +288,12 @@ function result = fun(app, an_num, createCallbackFcn)
           drop_num = length(app.analyze{an_num}.MeasurementListBox) + 1;
           param_index = drop_num;
           % Create GUI Componenets
-          listbox = uilistbox(app.analyze{an_num}.tab, ...
+          listbox = uilistbox(current_tab, ...
               'Position', [param_pos(1) param_pos(2)-34 param_pos(3) param_pos(4)+34], ...
               'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
               'Items', {}, ...
               'Multiselect', 'on');
-          label = uilabel(app.analyze{an_num}.tab, ...
+          label = uilabel(current_tab, ...
               'Text', param.name, ...
               'HorizontalAlignment', 'right', ...
               'Position', label_pos);
@@ -248,7 +322,7 @@ function result = fun(app, an_num, createCallbackFcn)
           app.analyze{an_num}.HelpButton = {};
         end
         help_num = length(app.analyze{an_num}.HelpButton) + 1;
-        app.analyze{an_num}.HelpButton{help_num} = uibutton(app.analyze{an_num}.tab, ...
+        app.analyze{an_num}.HelpButton{help_num} = uibutton(current_tab, ...
         'Text', '', ... 
         'Icon', 'question-sign.png', ...
         'BackgroundColor', [0.5 0.5 0.5], ...

@@ -55,8 +55,7 @@ Paths = Data.Path_to_Dataset;
 TimePoints = Data.Time_Point;
 iterTable = table();
 ResultTable = table();
-for path = 1:size(Paths,1)
-    
+for path = 1:size(Paths,1)    
     load_iterTable = load([char(Paths(path)) '\ResultTable.mat']);
     iterTable = load_iterTable.ResultTable;
     TableHeight = size(iterTable,1);
