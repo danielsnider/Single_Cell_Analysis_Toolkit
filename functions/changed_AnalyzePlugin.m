@@ -106,7 +106,7 @@ function result = fun(app, an_num, createCallbackFcn)
    else
     v_offset = 419;
    end
-   
+    prev_tab = 'None';
     for idx=1:length(params)
         
       param = params(idx); 
@@ -115,6 +115,11 @@ function result = fun(app, an_num, createCallbackFcn)
       if isfield(param,'sub_tab')
        sub_tbgroup.SelectedTab = sub_tbgroup.Children(contains(tab_names,param.sub_tab));
        current_tab = sub_tbgroup.SelectedTab;
+       
+       if current_tab~=prev_tab
+           v_offset = 365; %[100 332 125 22] 
+       end
+       prev_tab = current_tab;
       else
       	current_tab = app.analyze{an_num}.tab;
       end
@@ -131,7 +136,7 @@ function result = fun(app, an_num, createCallbackFcn)
           param_pos = [620 v_offset 125 22];
       end
       if isfield(param,'sub_tab')
-          label_pos = [5 v_offset-5 80 70]; %[5 280 80 70]
+          label_pos = [5 v_offset-56 80 70]; %[5 280 80 70]
       else
           label_pos = [400 v_offset-5 200 22];
       end
