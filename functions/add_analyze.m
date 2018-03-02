@@ -37,13 +37,16 @@ function fun(app, createCallbackFcn)
   end
 
   try
+    
     plugin_definitions = dir('./plugins/analyze/**/definition*.m');
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
-      [params, algorithm] = eval(plugin_name);
+      [params, algorithm] = eval(plugin_name); %Should be somewhere else
+      available_plugins.(plugin_name){1,1} = params;
+      available_plugins.(plugin_name){1,2} = algorithm;
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{plugin_num} = plugin_name{2};
       plugin_pretty_names{plugin_num} = algorithm.name;

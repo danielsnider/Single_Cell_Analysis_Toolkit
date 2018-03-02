@@ -68,6 +68,6 @@ function [params, algorithm] = fun()
   params(n).help = 'Choose what metadata you want for the Column Labels.';
   params(n).type = 'MeasurementListBox';
   params(n).optional = false;
-  sparams(n).sub_tab = 'Plotting';
+  params(n).sub_tab = 'Plotting';
   
 end

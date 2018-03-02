@@ -23,8 +23,13 @@ function result = fun(app, an_num, createCallbackFcn)
     uialert(app.UIFigure,help_text,param_name, 'Icon','info');
   end
 
-  function checkbox = MakeOptionalCheckbox(app, an_num, param, param_index)
-    check_pos = [param_pos(1)-20 param_pos(2)+4 25 15];
+  function checkbox = MakeOptionalCheckbox(app, an_num, param, param_index, current_tab)
+      if isfield(params,'sub_tab')
+          check_pos = [param_pos(1)-20 param_pos(2)+4 25 15];
+      else
+          check_pos = [param_pos(1)-20 param_pos(2)+4 25 15];
+      end
+    
     userdata = {}; % context to pass to callback
     userdata.an_num = an_num;
     userdata.param = param;
@@ -35,7 +40,7 @@ function result = fun(app, an_num, createCallbackFcn)
       default_state = param.optional_default_state;
       default_enable = 'off';
     end
-    checkbox = uicheckbox(app.analyze{an_num}.tab, ...
+    checkbox = uicheckbox('parent',current_tab, ...
     'Position', check_pos, ...
     'Value', default_state, ...
     'Text', '', ...
@@ -75,13 +80,16 @@ function result = fun(app, an_num, createCallbackFcn)
   try
     % Get new selection of plugin
     algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
-
+   
+    
     % Delete existing UI components before creating new ones on top
     delete_analyze(app,[an_num]);
     
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
-
+    % Re-initialize paramater info and algorithm info for current algorithm plugin.
+    app.analyze{an_num}.params = params;
+    app.analyze{an_num}.algorithm_info = algorithm;
    % ------------------------- WORK IN PROGRESS HERE -----------------
    % Create subtabs for parameters
    if isfield(params,'sub_tab')
@@ -149,7 +157,11 @@ function result = fun(app, an_num, createCallbackFcn)
 
       % Change spacing if optional parameter to allow space for a checkbox
       if isfield(param,'optional') && ~isempty(param.optional)
-        param_pos = [param_pos(1)+20 param_pos(2) param_pos(3)-20 param_pos(4)];
+          if isfield(param,'sub_tab')
+               param_pos = [param_pos(1)+20 param_pos(2) param_pos(3)-20 param_pos(4)];
+          else
+               param_pos = [param_pos(1)+20 param_pos(2) param_pos(3)-20 param_pos(4)];
+          end
       end
 
       % Correct unavailable user set default value
@@ -210,7 +222,11 @@ function result = fun(app, an_num, createCallbackFcn)
         app.analyze{an_num}.labels{field_num}.Text = param.name;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
-          app.analyze{an_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
+          if isfield(param,'sub_tab')
+              app.analyze{an_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
+          else
+              app.analyze{an_num}.fields{field_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
+          end
         end
 
       % Create analyze selection dropdown box
@@ -236,34 +252,12 @@ function result = fun(app, an_num, createCallbackFcn)
         app.analyze{an_num}.MeasurementLabel{drop_num} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
-          app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
+          app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
         end
     
         
       elseif strcmp(param.type,'ResultTable_Box')
-          
-%         if contains(param.sub_tab,tab_names)
-%         
-%            sub_tbgroup.SelectedTab = sub_tbgroup.Children(contains(tab_names,param.sub_tab));
-%            current_tab = sub_tbgroup.SelectedTab;
-% %             app.analyze{an_num}.sub_tab=current_tab;
-%             
-% %             current_tab = app.analyze{an_num}.tab.Children(1).Children(1);
-%         edit_field = uieditfield('parent',current_tab, ...
-%           'Position', [100 332 125 22], ...
-%           'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
-%           'Value', 'ResultTable', ...
-%           'BackgroundColor', [1 1 1], ...
-%           'Editable', 'off');
-%       
-%         label = uilabel('parent',current_tab, ...
-%           'Text', param.name, ...
-%           'HorizontalAlignment', 'right', ...
-%           'Position', [5 280 80 70]);
-%             
-%             
-%         end
-        
+
         % Set an index number for this component
         if ~isfield(app.analyze{an_num},'ResultTableBox')
           app.analyze{an_num}.ResultTableBox = {};
@@ -312,7 +306,7 @@ function result = fun(app, an_num, createCallbackFcn)
           app.analyze{an_num}.MeasurementListBox{drop_num}.UserData.param_idx = idx;
           app.analyze{an_num}.MeasurementListLabel{drop_num} = label;
           if isfield(param,'optional') && ~isempty(param.optional)
-            app.analyze{an_num}.MeasurementListLabel{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
+            app.analyze{an_num}.MeasurementListLabel{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
           end
           
    
