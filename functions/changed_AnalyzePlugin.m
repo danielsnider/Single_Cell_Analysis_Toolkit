@@ -94,7 +94,10 @@ function result = fun(app, an_num, createCallbackFcn)
        tab_names = unique(tab_names(~cellfun('isempty', tab_names)),'stable');
        sub_tbgroup = uitabgroup('parent', app.analyze{an_num}.tab, 'Position',[405 25 390 390]); %[left bottom width height]
        for num_tab = 1:size(tab_names,1)
-           uitab('parent', sub_tbgroup, 'Title', char(tab_names(num_tab)));
+           newtab = uitab('parent', sub_tbgroup, 'Title', char(tab_names(num_tab)));
+           newtab.BackgroundColor = rand(1,3);
+           newtab.ForegroundColor = rand(1, 3);
+
        end
    end
     % ---------------------- END OF PROGRESS ------------------------
@@ -131,12 +134,12 @@ function result = fun(app, an_num, createCallbackFcn)
           v_offset = v_offset - 33;
       end
       if isfield(param,'sub_tab')
-          param_pos = [100 v_offset 125 22]; %[100 332 125 22]
+          param_pos = [200 v_offset 125 22]; %[100 332 125 22]
       else
           param_pos = [620 v_offset 125 22];
       end
       if isfield(param,'sub_tab')
-          label_pos = [5 v_offset-56 80 70]; %[5 280 80 70]
+          label_pos = [-20 v_offset-52 200 70]; %[5 280 80 70]
       else
           label_pos = [400 v_offset-5 200 22];
       end
