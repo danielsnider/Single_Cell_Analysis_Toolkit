@@ -27,24 +27,30 @@ for an_num=an_nums
         delete(app.analyze{an_num}.DocumentationBox);
         app.analyze{an_num}.DocumentationBox = [];
     end
+
     % Delete Parameters
-    if isfield(app.analyze{an_num}.params,'sub_tab')
-        disp('hi')
-%         delete(app.analyze{an_num}.tab.Children)
-        
-        
-    else 
-        for cid=1:length(component_names)
-            comp_name = component_names{cid};
-            if isfield(app.analyze{an_num},comp_name)
-                for idx=1:length(app.analyze{an_num}.(comp_name))
-                    if isfield(app.analyze{an_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
-                        delete(app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck);
-                    end
-                    delete(app.analyze{an_num}.(comp_name){idx});
+    for cid=1:length(component_names)
+        comp_name = component_names{cid};
+        if isfield(app.analyze{an_num},comp_name)
+            for idx=1:length(app.analyze{an_num}.(comp_name))
+
+                if isfield(app.analyze{an_num}.(comp_name){idx}.UserData,'ParamOptionalCheck')
+                    delete(app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck);
+                    app.analyze{an_num}.(comp_name){idx}.UserData.ParamOptionalCheck = [];
                 end
-                app.analyze{an_num}.(comp_name) = {};
+
+                delete(app.analyze{an_num}.(comp_name){idx});
+                app.analyze{an_num}.(comp_name){idx} = [];
+
             end
+            app.analyze{an_num}.(comp_name) = {};
+        end
+    end
+    % Delete sub_tabs
+    if isfield(app.analyze{an_num}.params,'sub_tab') 
+        if app.analyze{an_num}.sub_tab ~= 'None'
+            delete(app.analyze{an_num}.sub_tab);
+            app.analyze{an_num}.sub_tab = 'None';
         end
     end
 end

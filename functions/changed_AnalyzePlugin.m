@@ -92,7 +92,7 @@ function result = fun(app, an_num, createCallbackFcn)
     app.analyze{an_num}.algorithm_info = algorithm;
    % ------------------------- WORK IN PROGRESS HERE -----------------
    % Create subtabs for parameters
-   if isfield(params,'sub_tab')
+    if isfield(params,'sub_tab')
        tmp_params_table= struct2table(params);
        tab_count=1;tab_names=cell(1,1);
        for p = 1:size(tmp_params_table.sub_tab,1)
@@ -107,6 +107,9 @@ function result = fun(app, an_num, createCallbackFcn)
            newtab.ForegroundColor = rand(1, 3);
 
        end
+       app.analyze{an_num}.sub_tab = sub_tbgroup;
+   else
+       app.analyze{an_num}.sub_tab = 'None';
    end
     % ---------------------- END OF PROGRESS ------------------------
     
