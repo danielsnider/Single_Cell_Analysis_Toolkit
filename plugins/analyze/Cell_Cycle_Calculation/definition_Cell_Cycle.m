@@ -25,19 +25,25 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'Do you want to pre-process the data by averaging replicate datasets or do you want to do any normalization?';
   params(n).type = 'listbox';
-  params(n).options = {'None','Average Replicates','Normalize by control'};
+  params(n).options = {'None','Average Replicates','Normalize'};
   params(n).sub_tab = 'Pre-Processing';
  
   n = n + 1;
-  params(n).name = 'Normalize by:';
+  params(n).name = 'Control Treatment';
   params(n).default = '';
-  params(n).help = 'What do you want to normalize by?';
-  params(n).type = 'MeasurementListBox';
+  params(n).help = 'What treatment did you use as a control i.e.: DMSO';
+  params(n).type = 'text';
   params(n).optional = false;
   params(n).sub_tab = 'Pre-Processing';
 
-
-
+  n = n + 1;
+  params(n).name = 'Normalize against';
+  params(n).default = '';
+  params(n).help = 'What do you want to normalize by?';
+  params(n).type = 'WellConditionListBox';
+  params(n).optional = false;
+  params(n).sub_tab = 'Pre-Processing';
+  
   n = n + 1;
   params(n).name = 'Plotting';
   params(n).default = '';
@@ -47,7 +53,7 @@ function [params, algorithm] = fun()
   params(n).sub_tab = 'Plotting';
   
     n = n + 1;
-  params(n).name = 'Title for Plot if applicable';
+  params(n).name = 'Plot Title';
   params(n).default = '';
   params(n).help = 'Enter a title name for your plot.';
   params(n).type = 'text';

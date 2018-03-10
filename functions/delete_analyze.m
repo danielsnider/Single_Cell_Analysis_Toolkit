@@ -13,8 +13,8 @@ function fun(app, an_nums)
     'ResultTableLabel'...
     'MeasurementListBox'...
     'MeasurementListLabel'...
-    'HelpButton'
-    
+    'HelpButton'...
+    'WellConditionListBox'    
   };
 for an_num=an_nums
     % Delete Image
@@ -27,7 +27,6 @@ for an_num=an_nums
         delete(app.analyze{an_num}.DocumentationBox);
         app.analyze{an_num}.DocumentationBox = [];
     end
-
     % Delete Parameters
     for cid=1:length(component_names)
         comp_name = component_names{cid};

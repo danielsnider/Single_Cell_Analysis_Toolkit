@@ -35,7 +35,7 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-        meas = {}
+        meas = {};
         meas_name = app.analyze{an_num}.MeasurementDropDown{drop_num}.Value;
         meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
         meas.data = ResultTable{:,meas_name};
@@ -64,13 +64,33 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-         meas = {}
+        meas = {};
         meas_name = app.analyze{an_num}.MeasurementListBox{drop_num}.Value;
         meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
         meas.data = ResultTable{:,meas_name};
         algo_params(param_idx) = {meas};
       end
     end
+    
+    % Info for WellConditions
+    if isfield(app.analyze{an_num},'WellConditionListBox')
+      for drop_num=1:length(app.analyze{an_num}.WellConditionListBox)        
+        if any(contains(fieldnames(app.analyze{an_num}.WellConditionListBox{drop_num}),'UserData'))
+            param_idx = app.analyze{an_num}.WellConditionListBox{drop_num}.UserData.param_idx;
+            if isfield(app.analyze{an_num}.WellConditionListBox{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.WellConditionListBox{drop_num}.UserData.ParamOptionalCheck.Value
+              algo_params(param_idx) = {false};
+              continue
+            end
+        meas = {};
+        meas = app.analyze{an_num}.WellConditionListBox{drop_num}.Value';
+%         meas_name = app.analyze{an_num}.WellConditionListBox{drop_num}.Value;
+%         meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
+%         meas.data = meas.name;
+        algo_params(param_idx) = {meas};
+        end
+      end
+    end
+    
     
     if isvalid(app.StartupLogTextArea)
       analyze_name = app.analyze{an_num}.tab.Title;

@@ -1,14 +1,16 @@
 function fun(app)
   try
-    % Get measurement names from ResultTable of if not available from ResultTable_for_display
+    % Get measurement names and well conditions from ResultTable or if not available from ResultTable_for_display
     if ~isempty(app.ResultTable)
       meas_names = app.ResultTable.Properties.VariableNames;
+      well_conditions = unique(app.ResultTable.WellConditions,'stable');
     elseif ~isempty(app.ResultTable_for_display)
       meas_names = app.ResultTable_for_display.Properties.VariableNames;
+      well_conditions = unique(app.ResultTable_for_display.WellConditions,'stable');
     else
       return
     end
-
+    
     % Populate analyze dropdowns with measurement names 
     for an_num=1:length(app.analyze)
       if isfield(app.analyze{an_num},'MeasurementDropDown')
@@ -27,6 +29,15 @@ function fun(app)
       end
     end
 
+     % Populate analyze listboxs with well info
+    for an_num=1:length(app.analyze)
+      if isfield(app.analyze{an_num},'WellConditionListBox')
+        for drop_num=1:length(app.analyze{an_num}.WellConditionListBox)
+          app.analyze{an_num}.WellConditionListBox{drop_num}.Items = well_conditions;
+        end
+      end
+    end
+    
     % Populate filter sort by dropdown
     app.FilterSortByDropDown.Items = meas_names;
     

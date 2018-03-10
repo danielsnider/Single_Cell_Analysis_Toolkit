@@ -1,4 +1,4 @@
-function fun(plugin_name, plugin_num,ResultTable, measurement_name,Plot,Plot_Title,MetaRows,MetaCols)
+function fun(plugin_name, plugin_num,ResultTable, measurement_name,pre_process_options,control_treatment,normalize_by,Plot,Plot_Title,MetaRows,MetaCols)
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
@@ -44,9 +44,11 @@ if strcmp(Plot,'MicroPlate')
     MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)    
 end
 
+if ~contains(pre_process_options,'None')
+    Pre_Processing(uniResults,uniWells,pre_process_options,control_treatment,normalize_by)
+end
 
-% Pre-Processing Data
-% grpstats(app.ResultTable,{'Treatment','TimePoint'},'mean','DataVars',{'Segment1_DPC_TotalIntensity'})
+
 
 
 assignin('base','uniResults',uniResults);
