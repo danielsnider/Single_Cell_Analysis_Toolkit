@@ -127,6 +127,9 @@ function fun(app,saved_app,createCallbackFcn)
   end
 
   % Measure Tab
+  app.PrimarySegmentDropDown.Items = saved_app.PrimarySegmentDropDown.Items;
+  app.PrimarySegmentDropDown.ItemsData = saved_app.PrimarySegmentDropDown.ItemsData;
+  app.PrimarySegmentDropDown.Value = saved_app.PrimarySegmentDropDown.Value;
   component_names = { ...
     'fields', ...
     'labels', ...
