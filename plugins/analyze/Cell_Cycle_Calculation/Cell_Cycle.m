@@ -1,11 +1,12 @@
-function fun(plugin_name, plugin_num,ResultTable, measurement_name,pre_process_options,control_treatment,normalize_by,Plot,Plot_Title,MetaRows,MetaCols)
+function fun(plugin_name, plugin_num,ResultTable, measurement_name,Imaging_Type,pre_process_options,control_treatment,normalize_by,Plot,Plot_Title,MetaRows,MetaCols)
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
 
-ResultTable.Properties.VariableNames{1} = 'row';
-ResultTable.Properties.VariableNames{2} = 'column';
-
+if strcmp(ResultTable.Properties.VariableNames{1},'Row')
+    ResultTable.Properties.VariableNames{1} = 'row';
+    ResultTable.Properties.VariableNames{2} = 'column';
+end
 % ResultTable.TimePoint=str2double(ResultTable.TimePoint);
 uniResults = table();
 % uniResults.TimePoint = (unique(ResultTable.TimePoint,'sorted'))
@@ -14,7 +15,7 @@ MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Pr
 % MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'Well_Info')):end);
 
 uniResults = unique(ResultTable(:,['row','column',MetaDataColumns]));
-uniTimePoint = unique(ResultTable.(measurement_name),'sorted');
+uniTimePoint = flip(unique(ResultTable.(measurement_name),'stable'));
 uniWells = unique(ResultTable(:,{'row','column'}));
 
 count=1;
@@ -45,7 +46,7 @@ if strcmp(Plot,'MicroPlate')
 end
 
 if ~contains(pre_process_options,'None')
-    Pre_Processing(uniResults,uniWells,pre_process_options,control_treatment,normalize_by)
+    Pre_Processing(uniResults,uniWells,pre_process_options,control_treatment,normalize_by,Imaging_Type,Plot_Title)
 end
 
 

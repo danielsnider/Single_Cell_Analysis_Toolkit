@@ -21,6 +21,14 @@ function [params, algorithm] = fun()
   params(n).sub_tab = 'Main';
   
   n = n + 1;
+  params(n).name = 'Imaging Type';
+  params(n).default = '';
+  params(n).help = 'Enter the type of imaging technique used in this experiemnt. Either DPC or fixed/stained cells';
+  params(n).type = 'listbox';
+  params(n).options = {'DPC','Fixed'};
+  params(n).sub_tab = 'Main';
+  
+  n = n + 1;
   params(n).name = 'Pre-Processing';
   params(n).default = '';
   params(n).help = 'Do you want to pre-process the data by averaging replicate datasets or do you want to do any normalization?';

@@ -28,11 +28,18 @@ function MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)
     Default_96 = zeros([8 12])*nan;
     for well  = 1:size(uniWells,1)
         row = uniWells.row(well); col=uniWells.column(well);
-        
-        if cell2mat(uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col))>0
-            Default_96(row,col)=cell2mat(uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col));
+        if iscell(uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col))
+            if cell2mat(uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col))>0 %Error Here
+                Default_96(row,col)=cell2mat(uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col));
+            else
+                Default_96(row,col)= NaN;
+            end
         else
+            if uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col)>0 %Error Here
+            Default_96(row,col)=uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col);
+            else
             Default_96(row,col)= NaN;
+            end
         end
     end 
     data=mat2gray(Default_96,[0 50]);    
