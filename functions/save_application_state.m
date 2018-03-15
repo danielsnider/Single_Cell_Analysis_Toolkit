@@ -6,9 +6,10 @@ function fun(app)
     app.log_processing_message(app, 'Saving application state...');
 
     pause(0.1); % enough time for the log text area to appear on screen
-
+    
+    % Save Application State
     saved_app = app;
-    uisave('saved_app');
+    Check_Object_Memory_Size(saved_app,'saved_app','None'); 
 
     app.log_processing_message(app, 'Application state saved');
     app.log_processing_message(app, 'Finished.');

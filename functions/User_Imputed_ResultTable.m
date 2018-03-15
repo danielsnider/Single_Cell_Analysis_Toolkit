@@ -49,7 +49,6 @@ for well = 1:size(uniWells,1)
     
 end
 
-
 % Combine ResultsTables with TimePoint
 Paths = Data.Path_to_Dataset;
 TimePoints = Data.Time_Point;
@@ -64,7 +63,6 @@ for path = 1:size(Paths,1)
     iterTable.TimePoint = Impute_TimePoint;
     ResultTable = [ResultTable;iterTable];
 end
-
 
 uniWells = unique(ResultTable(:,{'Row','Column'}));
 
