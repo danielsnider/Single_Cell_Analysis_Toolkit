@@ -1,7 +1,6 @@
 function MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)   
     
-%     Plate_Values = uniResults.Cell_Cycle;
-    
+    % Parse row meta-data info for row labeling
     uniResults = sortrows(uniResults,{'column' 'row'}, {'ascend'});
     rownames=cell([8 1]);
     idcs=unique(uniResults.row,'stable');
@@ -13,6 +12,7 @@ function MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)
         end        
     end    
     
+    % Parse column meta-data info for column labeling
     uniResults = sortrows(uniResults,{'row' 'column' }, {'ascend'});
     colnames=cell([1 12]);
     idcs=unique(uniResults.column,'stable');
@@ -24,6 +24,7 @@ function MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)
         end        
     end   
     
+    % Parsing Data into 96 dimension matrix
     uniResults = sortrows(uniResults,{'column' 'row'}, {'ascend'});
     Default_96 = zeros([8 12])*nan;
     for well  = 1:size(uniWells,1)
@@ -36,15 +37,16 @@ function MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)
             end
         else
             if uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col)>0 %Error Here
-            Default_96(row,col)=uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col);
+                Default_96(row,col)=uniResults.Cell_Cycle(uniResults.row==row&uniResults.column==col);
             else
-            Default_96(row,col)= NaN;
+                Default_96(row,col)= NaN;
             end
         end
     end 
     data=mat2gray(Default_96,[0 50]);    
     data(data==1)=NaN;
     
+    % Plotting Action
     figure('Name','MicroPlatePlot');microplateplot(data,'TEXTLABELS',sprintfc('%d',Default_96),'MissingValueColor',[0.9,0.9,0.9],'TextFontSize',12,'RowLabels',rownames,'ColumnLabels',colnames);colorbar
     colormap('cool(6)')
     title(['Cell Cycle Length (Hours) for Experiment: ' char(Plot_Title)],'Interpreter', 'none')  

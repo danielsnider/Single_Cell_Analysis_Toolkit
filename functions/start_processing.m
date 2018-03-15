@@ -49,9 +49,12 @@ function fun(app, NewResultCallback)
     end
 
     NumberOfImages = length(imgs_to_process);
-
+    
     %% Loop over images and process each one
+    timerOn = false;
     if app.CheckBox_Parallel.Value
+      tStart = tic; %Timer
+      timerOn = true;
       app.log_processing_message(app, 'Starting parallel processing pool.');
       app.log_processing_message(app, 'Please see the Matlab console for further progess messages.');
       ProcessingLogQueue = parallel.pool.DataQueue;
@@ -81,11 +84,31 @@ function fun(app, NewResultCallback)
       for current_img_number = 1:NumberOfImages
         process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,callback_fnc);
       end
+      
     end
 
     app.log_processing_message(app, 'Finished.');
     app.ProgressSlider.Value = 1; % set progress bar to 100%
-
+    delete(gcp('nocreate')); %Shuts down parrallel pool
+    
+    if ~strcmp(app.SavetoEditField.Value,'choose a path')    
+        filename = strcat(app.SavetoEditField.Value, '\ResultTable.mat');
+        ResultTable_To_Save = app.ResultTable;
+        VariableInfo = whos('ResultTable_To_Save');
+        NumBytes = VariableInfo.bytes;
+        str = Check_ResultTable_Size(NumBytes); 
+        fprintf('\n')
+        disp(['Saving ResultTable of size ' str ' to ... ' app.SavetoEditField.Value ])   
+        if str2double(strrep(str,'Gb',''))>=2 & contains(str,'Gb')
+            save(filename, 'ResultTable_To_Save', '-v7.3', '-nocompression')
+        else
+            save(filename, 'ResultTable_To_Save', '-v7')
+        end  
+    end
+     if timerOn == true
+         tEnd = toc(tStart); % Stop Timer
+         fprintf('Segmentation took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+     end
     % Update list of measurements in the display tab
     draw_display_measure_selection(app);
 
