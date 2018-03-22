@@ -1,7 +1,21 @@
-Data = readtable("R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin_TEST_Eden_Result_Table_Data\SE\Dataset_LKB1Data.xlsx");
+[file,path,~] = uigetfile('R:\Justin_S\Single_Cell_Analysis_Toolkit');
+Data = readtable([path '\' file]);
+% 
+% answer = 'Yes';
+% path_list = cell(1,1); count = 1;
+% while strcmp(answer,'Yes')
+%     
+%     path_list(count,1) = cellstr(uigetdir('*C:\'));
+%     count = count +1;
+%     answer = questdlg('Would you like to add another ResultTable?', 'Path to ResultTable', 'Yes','No','No');
+%     
+% end
+
+
+
 % PlateMap = Data.Plate_Map;
 
-[num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin_TEST_Eden_Result_Table_Data\Plate map 20180129_LKB1cellcycle.xlsx');
+[num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin 20180112\DPC\Concatenated Result tables from old GUI\Plate map 20180212_cycE1.xlsx');
 
 % Get Well Meta-Info based on 96-Well Plate
 Well_Conditons = cell(60,3);idx = 1;
@@ -35,6 +49,7 @@ for item = 10:size(raw,1)
     tmp_Col_Con=num2cell(2:13)';
 end
 
+load([char(Data.Path_to_Dataset(1)) '\ResultTable.mat']);
 uniWells = unique(ResultTable(:,{'Row','Column'}));
 WellConditions = table();
 WellConditions(:,1) = uniWells(:,1);
@@ -45,8 +60,7 @@ WellConditions.WellConditions = cell(size(uniWells,1),1);
 for well = 1:size(uniWells,1)
     row = uniWells.Row(well); col = uniWells.Column(well);
     tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3))) ', ' char(table2cell(Col_Conditions.CellLineType(Col_Conditions.CellLineType.col==col,2))) ', ' char(table2cell(Row_Conditions.Drug(Row_Conditions.Drug.row==row,2)))];% FIX THIS AT SOME POINT
-    WellConditions.WellConditions(WellConditions.row==row&WellConditions.column==col) = cellstr(tmp);
-    
+    WellConditions.WellConditions(WellConditions.row==row&WellConditions.column==col) = cellstr(tmp);    
 end
 
 % Combine ResultsTables with TimePoint

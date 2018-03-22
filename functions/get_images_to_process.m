@@ -1,7 +1,7 @@
 function imgs_to_process = fun(app)
   imgs_to_process = [];
 
-  if isvalid(app.StartupLogTextArea)
+  if isstruct(app.StartupLogTextArea)
     msg = sprintf('Checking which images should be processed');
     app.log_processing_message(app, msg);
   end

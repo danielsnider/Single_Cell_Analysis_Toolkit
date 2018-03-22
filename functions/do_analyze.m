@@ -91,8 +91,17 @@ function fun(app, an_num)
       end
     end
     
-    
-    if isvalid(app.StartupLogTextArea)
+    % ------------------------------ WORK IN PROGRESS ----------------------------
+    if isfield(app.analyze{an_num},'InputUITable')
+        
+        for drop_num=1:length(app.analyze{an_num}.InputUITable)
+            app.analyze{an_num}.InputUITable{drop_num}.UserData
+        
+        
+        end
+    end
+    % ----------------------------------------------------------------------------
+    if isstruct(app.StartupLogTextArea)
       analyze_name = app.analyze{an_num}.tab.Title;
       msg = sprintf('%s ''%s.m''', analyze_name, algo_name);
       if app.CheckBox_Parallel.Value && app.processing_running

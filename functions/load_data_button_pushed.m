@@ -7,8 +7,9 @@ function fun(app)
     end
 
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-    pause(0.1); % enough time for the log text area to appear on screen
+%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = txt_update;
+%     pause(0.1); % enough time for the log text area to appear on screen
 
     % Load data
     app.log_processing_message(app, ['Loading data from ' FileName]);
@@ -17,7 +18,8 @@ function fun(app)
     if ~isfield(vars_struct,'ResultTable')
       msg = sprintf('Sorry, the Matlab data file that you chose did not contain the expected variable ''ResultTable''. Please re-open the variable in Matlab, rename the variable to the name ''ResultTable'', save it again to a file, and then loading the data will work.');
       uialert(app.UIFigure,msg,'Data Not Loaded', 'Icon','warn');
-      delete(app.StartupLogTextArea);
+%       delete(app.StartupLogTextArea);
+%       	app.StartupLogTextArea.tx.String;
       return
     end
     
@@ -36,7 +38,8 @@ function fun(app)
     app.Button_ExportMeasurements.Visible = 'on';
 
     % Delete log
-    delete(app.StartupLogTextArea);
+%     delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
 
   % Catch Application Error
   catch ME

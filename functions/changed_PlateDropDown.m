@@ -1,9 +1,10 @@
 function fun(app)
   try
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-    pause(0.1); % enough time for the log text area to appear on screen
-    
+%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = txt_update;
+%     pause(0.1); % enough time for the log text area to appear on screen
+     
     prev_fig = get(groot,'CurrentFigure'); % Save current figure
 
 
@@ -18,7 +19,8 @@ function fun(app)
     end
 
     % Delete log
-    delete(app.StartupLogTextArea);
+%     delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
 
   % Catch Application Error
   catch ME

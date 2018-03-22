@@ -66,13 +66,15 @@ function result = fun(app, an_num, createCallbackFcn)
         end
         
         % Display log
-        app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-        pause(0.1); % enough time for the log text area to appear on screen
+%         app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = txt_update;
+%         pause(0.1); % enough time for the log text area to appear on screen
         
         do_analyze(app, an_num);
         
         % Delete log
-        delete(app.StartupLogTextArea);
+%         delete(app.StartupLogTextArea);
+% 	app.StartupLogTextArea.tx.String = {};
     end
 
 try
@@ -332,6 +334,40 @@ try
             if isfield(param,'optional') && ~isempty(param.optional)
                 app.analyze{an_num}.WellConditionListBox{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
             end
+            
+            % uitable
+        elseif strcmp(param.type,'InputUITable')
+            % Set an index number for this component
+            if ~isfield(app.analyze{an_num},'InputUITable')
+                app.analyze{an_num}.InputUITable = {};
+            end
+            drop_num = length(app.analyze{an_num}.InputUITable) + 1;
+            param_index = drop_num;
+            % Create GUI Componenets
+            emptyRow = cell(7,2);
+            tableData = emptyRow;
+            table = uitable(current_tab, ...
+                'Position', [param_pos(1)-130 param_pos(2)-90 param_pos(3)+170 param_pos(4)+90], ...
+                'ColumnName',{'Path' 'TimePoint'},... 
+                'ColumnFormat',({[] []}),... 
+                'ColumnEditable', true,...
+                'Data',tableData,...
+                'CellEditCallBack',createCallbackFcn(app, @do_analyze_, true));
+            label = uilabel(current_tab, ...
+                'Text', param.name, ...
+                'HorizontalAlignment', 'right', ...
+                'Position', label_pos);
+            v_offset = v_offset - 34;
+            param_pos = [param_pos(1) v_offset param_pos(3) param_pos(4)+34];
+            % Save ui elements
+            app.analyze{an_num}.InputUITable{drop_num} = table;
+            app.analyze{an_num}.InputUITable{drop_num}.UserData.param_idx = idx;
+            app.analyze{an_num}.InputUITableLabel{drop_num} = label;
+            if isfield(param,'optional') && ~isempty(param.optional)
+                app.analyze{an_num}.InputUITable{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
+            end
+            
+            
             
         else
             msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);

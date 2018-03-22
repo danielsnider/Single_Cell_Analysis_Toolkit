@@ -3,7 +3,7 @@ function fun(app)
     % Currently selected plate number
     plate_num = app.PlateDropDown.Value;
 
-    if isvalid(app.StartupLogTextArea)
+    if isstruct(app.StartupLogTextArea)
       msg = sprintf('Displaying image.');
       app.log_processing_message(app, msg);
     end

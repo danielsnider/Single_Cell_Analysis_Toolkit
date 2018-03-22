@@ -10,7 +10,8 @@ function fun(app)
     count = 1;
 
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+% app.StartupLogTextArea = txt_update;
     app.log_processing_message(app, 'Starting Montage.');
     pause(0.5); % enough time for the log text area to appear on screen
 
@@ -60,7 +61,8 @@ function fun(app)
 
     % Delete log
     app.log_processing_message(app, 'Finished');
-    delete(app.StartupLogTextArea);
+%     delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
 
   % Catch Application Error
   catch ME

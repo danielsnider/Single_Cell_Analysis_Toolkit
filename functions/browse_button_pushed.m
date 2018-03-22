@@ -38,7 +38,8 @@ end
     end
 
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+    app.StartupLogTextArea = txt_update;
     app.log_processing_message(app, 'Starting...');
     pause(0.1); % enough time for the log text area to appear on screen
 
@@ -59,7 +60,8 @@ end
       msg = sprintf('Sorry, there is a limitation that all plates in your platemap must have the same number of metadata fields. Please correct this in your file ''%s'' and try again.', app.ChooseplatemapEditField.Value);
       uialert(app.UIFigure,msg,'Sorry', 'Icon','error');
       % Delete log
-      delete(app.StartupLogTextArea);
+%       delete(app.StartupLogTextArea);
+%       	app.StartupLogTextArea.tx.String = {};
       return
     end
 
@@ -85,7 +87,8 @@ end
     update_figure(app);
 
     % Delete log
-    delete(app.StartupLogTextArea);
+%     delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
     app.ProcessingLogTextArea.Value = '';
 
   % Catch Application Error

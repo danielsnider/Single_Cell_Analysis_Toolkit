@@ -50,7 +50,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         algo_params(param_idx) = {image_data};
       end
 
-      if isvalid(app.StartupLogTextArea)
+      if isstruct(app.StartupLogTextArea)
         segment_name = app.segment{seg_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', segment_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running

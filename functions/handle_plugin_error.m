@@ -1,8 +1,9 @@
 function handle_plugin_error(app,ME,plugin_type,plugin_num)
   % If no cause is attached to the error, this is the first place we're handling it create a uialert, add a cause, and rethrow the error
   if isempty(ME.cause)
-    if isvalid(app.StartupLogTextArea)
-      delete(app.StartupLogTextArea);
+    if isstruct(app.StartupLogTextArea)
+%       delete(app.StartupLogTextArea);
+%         app.StartupLogTextArea.tx.String = {};
     end
     maintainer = app.(plugin_type){plugin_num}.algorithm_info.maintainer;
     algo_name = app.(plugin_type){plugin_num}.tab.Title;

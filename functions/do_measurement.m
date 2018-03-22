@@ -67,7 +67,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
       end
     end
 
-    if isvalid(app.StartupLogTextArea)
+    if isstruct(app.StartupLogTextArea)
       measure_name = app.measure{meas_num}.tab.Title;
       msg = sprintf('%s ''%s.m''', measure_name, algo_name);
       if app.CheckBox_Parallel.Value && app.processing_running
@@ -93,7 +93,7 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
     handle_plugin_error(app,ME,'measure',meas_num);
   end
 
-  if isvalid(app.StartupLogTextArea)
+  if isstruct(app.StartupLogTextArea)
     new_measurements = strjoin(iterTable.Properties.VariableNames,', ');
     msg = sprintf('%s ''%s.m'' produced columns: %s', measure_name, algo_name, new_measurements);
     if app.CheckBox_Parallel.Value && app.processing_running

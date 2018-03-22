@@ -7,7 +7,7 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     end
 
     [filepath,name,ext] = fileparts(img_path);
-    if isvalid(app.StartupLogTextArea)
+    if isstruct(app.StartupLogTextArea)
       msg = sprintf('Loading image %s', [name ext]);
       if app.CheckBox_Parallel.Value && app.processing_running
           disp(msg)

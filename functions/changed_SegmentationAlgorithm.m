@@ -55,8 +55,9 @@ function result = fun(app, seg_num, createCallbackFcn)
   % Callback for when parameter value is changed by the user
   function do_segmentation_(app, Update)
     % Display log
-    app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-    pause(0.1); % enough time for the log text area to appear on screen
+%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%     app.StartupLogTextArea = txt_update;
+%     pause(0.1); % enough time for the log text area to appear on screen
 
     prev_fig = get(groot,'CurrentFigure'); % Save current figure
 
@@ -81,7 +82,8 @@ function result = fun(app, seg_num, createCallbackFcn)
     end
 
     % Delete log
-    delete(app.StartupLogTextArea);
+%     delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
   end
 
   try

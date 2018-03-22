@@ -1,6 +1,6 @@
 function fun(app)
   % Display log
-  app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
+%   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
   app.log_processing_message(app, 'Please wait!');
   app.log_processing_message(app, 'Saving application state...');
 
@@ -13,5 +13,6 @@ function fun(app)
   app.log_processing_message(app, 'Finished.');
 
   % Delete log
-  delete(app.StartupLogTextArea);
+%   delete(app.StartupLogTextArea);
+%     app.StartupLogTextArea.tx.String = {};
 end
