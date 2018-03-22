@@ -1,4 +1,11 @@
 function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultCallback,ProcessingLogQueue,UiAlertQueue)
+  warning off all
+  cwp=gcp('nocreate');
+  if isempty(cwp)
+      warning off all
+  else
+      pctRunOnAll warning off all %Turn off Warnings
+  end
   
   msg = sprintf('Processing image %d of %d',current_img_number,NumberOfImages);
   if is_parallel_processing

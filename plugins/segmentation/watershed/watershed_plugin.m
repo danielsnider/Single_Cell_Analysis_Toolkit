@@ -1,4 +1,12 @@
 function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, debug_level)
+    
+  warning off all
+  cwp=gcp('nocreate');
+  if isempty(cwp)
+      warning off all
+  else
+      pctRunOnAll warning off all %Turn off Warnings
+  end
 
   % Smooth
   img_smooth = imgaussfilt(img,threshold_smooth_param);

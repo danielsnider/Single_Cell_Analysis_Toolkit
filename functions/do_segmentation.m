@@ -1,4 +1,11 @@
 function result = do_segmentation(app, seg_num, algo_name, imgs)
+  warning off all
+  cwp=gcp('nocreate');
+  if isempty(cwp)
+      warning off all
+  else
+      pctRunOnAll warning off all %Turn off Warnings
+  end
   try
     try
 

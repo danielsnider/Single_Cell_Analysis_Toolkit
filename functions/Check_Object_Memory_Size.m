@@ -1,8 +1,8 @@
 function Check_Object_Memory_Size(varToCheck,savename,optional_path)
-
     VariableInfo = whos('varToCheck');
     NumBytes = VariableInfo.bytes;
     scale = floor(log(NumBytes)/log(1024));
+    ResultTable=varToCheck;
     switch scale
         case 0
             str = [sprintf('%.0f',NumBytes) ' b'];
@@ -20,9 +20,9 @@ function Check_Object_Memory_Size(varToCheck,savename,optional_path)
         otherwise
             str = 'Over a petabyte!!!';
     end
-    if savename ~= 'None'
+    if ~strcmp(savename,'None')
         fprintf('\n')
-        if optional_path ~= 'None'
+        if isempty(optional_path)
             dirname = uigetdir('C:\');
             filename = [dirname '\' savename '.mat'];
         else

@@ -88,7 +88,7 @@ function fun(app, NewResultCallback)
 
     app.log_processing_message(app, 'Finished.');
     app.ProgressSlider.Value = 1; % set progress bar to 100%
-    delete(gcp('nocreate')); %Shuts down parrallel pool
+    % delete(gcp('nocreate')); %Shuts down parrallel pool
     
     % User Automated ResultTable Saving
     if ~strcmp(app.SavetoEditField.Value,'choose a path')    
