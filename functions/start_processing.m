@@ -90,17 +90,29 @@ function fun(app, NewResultCallback)
     app.ProgressSlider.Value = 1; % set progress bar to 100%
     % delete(gcp('nocreate')); %Shuts down parrallel pool
     
-    % User Automated ResultTable Saving
-    if ~strcmp(app.SavetoEditField.Value,'choose a path')    
-        ResultTable_To_Save = app.ResultTable;
-        Check_Object_Memory_Size(ResultTable_To_Save,'ResultTable',app.SavetoEditField.Value);      
-    end
-    
     % Stop Timer
     if timerOn == true
         tEnd = toc(tStart); % Stop Timer
         fprintf('Segmentation took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
     end
+    
+    % User Automated ResultTable Saving
+    % Work on path validation
+    if ~strcmp(app.SavetoEditField.Value,'choose a path')  
+        tStart = tic; % Start Timer
+        ResultTable_To_Save = app.ResultTable;
+        Check_Object_Memory_Size(ResultTable_To_Save,'ResultTable',app.SavetoEditField.Value);   
+        tEnd = toc(tStart); % Stop Timer
+        fprintf('Saving ResultsTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+    elseif isempty(app.SavetoEditField.Value)
+        app.SavetoEditField.Value = 'choose a path';
+    end
+    
+%     % Stop Timer
+%     if timerOn == true
+%         tEnd = toc(tStart); % Stop Timer
+%         fprintf('Segmentation took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+%     end
     % Update list of measurements in the display tab
     draw_display_measure_selection(app);
 

@@ -109,7 +109,8 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
     f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
     % Display original image
-    img8 = im2uint8(img);
+    % Cast img as double, had issues with 32bit
+    img8 = im2uint8(double(img));
     if min(img8(:)) < prctile(img8(:),99.5)
         min_max = [min(img8(:)) prctile(img8(:),99.5)];
     else
