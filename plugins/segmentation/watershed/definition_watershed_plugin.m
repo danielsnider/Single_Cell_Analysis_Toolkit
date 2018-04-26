@@ -1,6 +1,6 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'Watershed Segmentation';
+  algorithm.name = 'Basic Watershed Segmentation';
   algorithm.help = 'Watershed segmentation is used to separate touching objects in an image. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better if you can identify, or "mark", objects with seeds. ';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
@@ -20,9 +20,9 @@ function [params, algorithm] = fun()
   params(n).optional_default_state = false;
 
   n = n + 1;
-  params(n).name = 'Gaussian Blur (for threshold)';
+  params(n).name = 'Gaussian Blur (for object boundaries)';
   params(n).default = 0.3;
-  params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
+  params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together.';
   params(n).type = 'numeric';
   params(n).limits = [0.00001 Inf];
 

@@ -13,7 +13,7 @@ function img_path = fun(app, chan_num)
       '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
       img_dir,row,column,field,plate_file_num,chan_num,timepoint);
 
-  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
     img_path = multi_channel_img.chans(chan_num).path;

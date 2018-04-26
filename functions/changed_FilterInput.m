@@ -9,7 +9,7 @@ function func(app, plate_num)
       'timepoints' ...
     };
 
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
 
       app.RowDropDown.Visible = 'off';
       app.ColumnDropDown.Visible = 'off';

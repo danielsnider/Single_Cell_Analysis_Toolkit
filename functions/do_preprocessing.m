@@ -7,7 +7,7 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     end
 
     [filepath,name,ext] = fileparts(img_path);
-    if isstruct(app.StartupLogTextArea)
+    if isvalid(app.StartupLogTextArea.tx) == 1
       msg = sprintf('Loading image %s', [name ext]);
       if app.CheckBox_Parallel.Value && app.processing_running
           disp(msg)
@@ -49,7 +49,7 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
       % Call algorithm
       algo_name = app.preprocess{proc_num}.AlgorithmDropDown.Value;
 
-      if isvalid(app.StartupLogTextArea)
+      if isvalid(app.StartupLogTextArea.tx) == 1
         preprocess_name = app.preprocess{proc_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', preprocess_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running
