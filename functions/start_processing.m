@@ -103,7 +103,7 @@ function fun(app, NewResultCallback)
         ResultTable_To_Save = app.ResultTable;
         Check_Object_Memory_Size(ResultTable_To_Save,'ResultTable',app.SavetoEditField.Value);   
         tEnd = toc(tStart); % Stop Timer
-        fprintf('Saving ResultsTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+        fprintf('Saving ResultTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
     elseif isempty(app.SavetoEditField.Value)
         app.SavetoEditField.Value = 'choose a path';
     end
