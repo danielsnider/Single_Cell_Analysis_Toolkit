@@ -1,5 +1,4 @@
 function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultCallback,ProcessingLogQueue,UiAlertQueue)
-  l = 1
   warning off all
   cwp=gcp('nocreate');
   if isempty(cwp)
@@ -49,7 +48,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
 
       
-  l = 999
 
   %% Primary Segment Handling
   % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
@@ -72,7 +70,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
   end
   
-  l = 999
 
   %% Perform Measurements
   iterTable = table();
@@ -108,7 +105,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       return
     end
   
-  l = 999
 
     %% Add X and Y coordinates for each primary label
     stats = regionprops(primary_seg_data,'centroid');

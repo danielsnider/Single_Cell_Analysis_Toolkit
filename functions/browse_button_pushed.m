@@ -19,6 +19,7 @@ end
     plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Multi_Plate_Map.xlsx';
     plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
     plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Derrick_Plate_Map.xlsx';
+    plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\GUI\daniel\Derrick_Plate_Map_Laptop.xlsx';
     if exist(plate_file)
       app.ChooseplatemapEditField.Value = plate_file;
       FileName = ''; % just helps testing
