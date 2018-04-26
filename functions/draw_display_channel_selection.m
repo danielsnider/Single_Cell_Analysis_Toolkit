@@ -60,8 +60,8 @@ function fun(app)
     focus_pos = [413,v_offset,29,24]; % 305
     min_slider_pos = [320,v_offset+17,25,3]; % 322
     max_slider_pos = [320,v_offset+1,25,3]; % 306
-    min_label_pos = [355,v_offset+13,25,15]; % 318
-    max_label_pos = [355,v_offset-4,28,15]; % 301
+    min_label_pos = [355,v_offset+12,25,20]; % 318
+    max_label_pos = [355,v_offset-5,28,20]; % 301
 
     % Check Box
     app.display.channel{chan_num}.checkbox = uicheckbox(app.Tab_Display, ...

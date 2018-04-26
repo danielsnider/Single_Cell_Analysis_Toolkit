@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, gain_thresh, threshold_smooth_param, thresh_param, watershed_smooth_param, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_param, min_area, max_area, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -32,13 +32,6 @@ function result = fun(plugin_name, plugin_num, img, gain_thresh, threshold_smoot
     seeds(x(i),y(i)) = 1;
   end
   seeds = seeds;
-
-  % Intensity Gain
-  img_gain = img>gain_thresh;
-  if ismember(debug_level,{'All'})
-    f = figure(8888); clf; set(f,'name','intensity gain','NumberTitle', 'off');
-    imshow(img_gain,[]);
-  end
 
   % Smooth
   img_smooth = imgaussfilt(double(img),threshold_smooth_param);

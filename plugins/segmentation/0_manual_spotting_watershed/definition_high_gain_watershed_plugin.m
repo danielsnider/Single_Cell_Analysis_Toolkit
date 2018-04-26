@@ -1,7 +1,7 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'High Gain Watershed Segmentation';
-  algorithm.help = 'High Gain Watershed segmentation is used to separate touching objects in an image with intensities turned brigher to see more shape definition. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better if you can identify, or "mark", objects with seeds. ';
+  algorithm.name = 'Manual Spotting Watershed Segmentation';
+  algorithm.help = 'Manual Spotting Watershed segmentation is used to separate touching objects in an image with a pause in the execution of the algorithm to ask a human how many cells there are and where their each cells brightest point it. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better when you can identify, or "mark", objects with seeds. This plugin gives you an option to manually identify seeds if a nuclear stain is unavailable.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;
@@ -10,13 +10,6 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'The image to segment';
   params(n).type = 'image_channel_dropdown';
-
-  n = n + 1;
-  params(n).name = 'Gain Threshold';
-  params(n).default = 43;
-  params(n).help = 'Make the image brighter by setting a pixel value cut-off. Intensity values higher than the cut-off will be set to 100% brightness. Values less than the cut-off will be scaled between 0 to 255.';
-  params(n).type = 'numeric';
-  params(n).limits = [0 Inf];
 
   n = n + 1;
   params(n).name = 'Gaussian Blur for Threshold';
