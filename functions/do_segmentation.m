@@ -8,6 +8,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
   end
   try
     try
+        l = 11
 
       % Create list of algorithm parameter values to be passed to the plugin
       algo_params = {};
@@ -19,6 +20,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         end
         algo_params(param_idx) = {app.segment{seg_num}.fields{idx}.Value};
       end
+      l = 2
 
       % Create list of segmentation results to be passed to the plugin
       if isfield(app.segment{seg_num}, 'SegmentDropDown')
@@ -61,8 +63,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         segment_name = app.segment{seg_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', segment_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running
-            disp(msg)
-%           send(app.ProcessingLogQueue, msg);
+           send(app.ProcessingLogQueue, msg);
         else
           app.log_processing_message(app, msg);
         end
@@ -72,8 +73,13 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
 
       try
         % Call algorithm
+          
+  l = 22
+
         result = feval(algo_name, plugin_name, seg_num, algo_params{:});
         app.segment{seg_num}.result = result;
+  
+  l = 33
 
       % Catch Plugin Error
       catch ME

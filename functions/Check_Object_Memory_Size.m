@@ -17,11 +17,15 @@ function Check_Object_Memory_Size(varToCheck,savename,optional_path)
         case -inf
             % Size occasionally returned as zero (eg some Java objects).
             str = 'Not Available';
+            return
         otherwise
             str = 'Over a petabyte!!!';
     end
     if ~strcmp(savename,'None')
         fprintf('\n')
+        %if strcmp(optional_path,'choose a path')
+        %    optional_path = uigetdir('C:\');
+        %end
         if isempty(optional_path)
             dirname = uigetdir('C:\');
             filename = [dirname '\' savename '.mat'];

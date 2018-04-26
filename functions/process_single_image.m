@@ -1,4 +1,5 @@
 function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultCallback,ProcessingLogQueue,UiAlertQueue)
+  l = 1
   warning off all
   cwp=gcp('nocreate');
   if isempty(cwp)
@@ -9,8 +10,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
   msg = sprintf('Processing image %d of %d',current_img_number,NumberOfImages);
   if is_parallel_processing
-    disp(msg)
-%     send(ProcessingLogQueue,msg);
+%    disp(msg)
+    send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
   end
@@ -47,6 +48,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     seg_result{seg_num} = do_segmentation(app, seg_num, algo_name, imgs);
   end
 
+      
+  l = 999
+
   %% Primary Segment Handling
   % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
   primary_seg_num = app.PrimarySegmentDropDown.Value;
@@ -67,6 +71,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       seg_result{seg_num} = new_sub_seg_data;
     end
   end
+  
+  l = 999
 
   %% Perform Measurements
   iterTable = table();
@@ -101,6 +107,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if isempty(iterTable)
       return
     end
+  
+  l = 999
 
     %% Add X and Y coordinates for each primary label
     stats = regionprops(primary_seg_data,'centroid');

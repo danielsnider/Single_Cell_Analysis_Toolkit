@@ -98,7 +98,7 @@ function fun(app, NewResultCallback)
     
     % User Automated ResultTable Saving
     % Work on path validation
-    if ~strcmp(app.SavetoEditField.Value,'choose a path')  
+    if ~strcmp(app.SavetoEditField.Value,'choose a path') &  ~strcmp(app.SavetoEditField.Value,'') & ~isempty(app.ResultTable)
         tStart = tic; % Start Timer
         ResultTable_To_Save = app.ResultTable;
         Check_Object_Memory_Size(ResultTable_To_Save,'ResultTable',app.SavetoEditField.Value);   

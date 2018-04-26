@@ -20,13 +20,14 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     img = imread(img_path);
     
     % Return if no preprocessing is configured
-    if isempty(app.preprocess_tabgp)
+    if sum(ismember(fields(app),'preprocess_tabgp'))==0
+      go = 'away'
       return
     end
 
     % Get name of requested channel based on the current plate
     chan_name = app.plates(plate_num).chan_names(chan_num);
-
+    
     % Loop over each user configured preprocessing step, check if it applies to the requested image, if so do it
     for proc_num = 1:length(app.preprocess)
       % Check if the configured preprocessing step's channel matches the requested image channel
