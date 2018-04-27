@@ -20,36 +20,36 @@ function [params, algorithm] = fun()
   params(n).optional_default_state = false;
 
   n = n + 1;
-  params(n).name = 'Gaussian Blur (for object boundaries)';
-  params(n).default = 0.3;
+  params(n).name = 'Gaussian Blur for Threshold';
+  params(n).default = 1.3;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together.';
   params(n).type = 'numeric';
   params(n).limits = [0.00001 Inf];
 
   n = n + 1;
-  params(n).name = 'Gaussian Blur (for watershed)';
-  params(n).default = 5;
+  params(n).name = 'Gaussian Blur for Segmentation';
+  params(n).default = 0.75;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
   params(n).limits = [0.00001 Inf];
   params(n).optional = true;
-  params(n).optional_default_state = false;
+  params(n).optional_default_state = true;
 
   n = n + 1;
   params(n).name = 'Threshold';
-  params(n).default = 275;
+  params(n).default = 150;
   params(n).help = 'Remove segments of the image that are less than the threshold.';
   params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Min Area';
-  params(n).default = 200;
+  params(n).default = 5;
   params(n).help = 'Remove segments that are smaller than the min area.';
   params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Max Area';
-  params(n).default = 100000;
+  params(n).default = Inf;
   params(n).help = 'Remove segments that are larger than the max area.';
   params(n).type = 'numeric';
 
