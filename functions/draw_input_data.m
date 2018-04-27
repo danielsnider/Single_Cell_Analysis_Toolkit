@@ -96,7 +96,7 @@ function fun(app, createCallbackFcn)
       'ValueChangedFcn', createCallbackFcn(app, @CheckCallback, true));
 
     visibility = 'on';
-    if strcmp(plate.metadata.ImageFileFormat, 'ZeissSplitTiffs')
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
       pos = numimages_label.Position;
       numimages_label.Position = [pos(1) 276 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
       pos = app.plates(plate_num).NumberOfImagesField.Position;
