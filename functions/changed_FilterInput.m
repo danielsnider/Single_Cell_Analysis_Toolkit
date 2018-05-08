@@ -64,8 +64,8 @@ function func(app, plate_num)
     end
 
     % Calculate what should be filtered and kept
-    for filt_num = 1:length(filter_names)
-      filter_name = filter_names{filt_num};
+    for filter_name = [filter_names special_filters]
+      filter_name = filter_name{:};
 
       %% Consolidate userfriendly filter format of '1','1,2', or '1,2,1:3','*' into a list [1 2 3]
       avail_vals = app.plates(plate_num).(filter_name); % the relavent field of interest, ex. row or column

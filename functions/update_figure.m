@@ -81,7 +81,7 @@ function fun(app)
         continue
       end
       seg = app.segment{seg_num}.result;
-      seg = zeros(size(img_norm))
+      seg = zeros(size(im_norm));
       seg(1:100,1:100,1)=255;
       seg(1:100,1:100,2)=254;
       gain = app.display.segment{seg_num}.gain_slider.Value/100;

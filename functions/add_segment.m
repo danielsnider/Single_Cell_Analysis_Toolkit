@@ -20,6 +20,7 @@ function fun(app, createCallbackFcn)
   end
   
   try
+    plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
     plugin_names = {};
     plugin_pretty_names = {};
@@ -27,9 +28,23 @@ function fun(app, createCallbackFcn)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       [params, algorithm] = eval(plugin_name);
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if ~isfield(algorithm,'supports_3D') || ~algorithm.supports_3D
+          continue % unsupported plugin due to lack of 3D support
+        end
+      end
       plugin_name = strsplit(plugin_name,'definition_');
-      plugin_names{plugin_num} = plugin_name{2};
-      plugin_pretty_names{plugin_num} = algorithm.name;
+      plugin_names{length(plugin_names)+1} = plugin_name{2};
+      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
+    end
+
+    if isempty(plugin_names)
+      msg = 'Sorry, no segmentation plugins found.';
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
+      end
+      uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');
+      return
     end
 
     % Setup

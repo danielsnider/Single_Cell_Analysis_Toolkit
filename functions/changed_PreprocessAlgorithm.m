@@ -55,6 +55,11 @@ function result = fun(app, proc_num, createCallbackFcn)
 
     % Delete existing UI components before creating new ones on top
     delete_preprocess(app,[proc_num]);
+    
+    % Return if no algorithms (3D supports fewer algorithms)
+    if isempty(algo_name)
+      return
+    end
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);

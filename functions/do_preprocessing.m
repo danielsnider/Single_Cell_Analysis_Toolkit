@@ -1,7 +1,6 @@
 function img = do_preprocess_image(app, plate_num, chan_num, img_path)
   try
 
-
     if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
       img = img_path; % data is already in memory here
       

@@ -15,11 +15,25 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','XYZCT-Bio-Formats'})
+  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
     app.ExperimentDropDown.Items = app.plates(plate_num).experiments;
     app.ExperimentDropDown.ItemsData = 1:length(app.plates(plate_num).experiments);
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
 
+  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+    % TODO: change label nam efrom experiment to image CHARLIE
+    app.ExperimentDropDown.Items = app.plates(plate_num).experiments;
+    app.ExperimentDropDown.ItemsData = 1:length(app.plates(plate_num).experiments);
+    app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
+
+    % Populate Timepoint Dropdown
+    app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).timepoints);
+    app.TimepointDropDown.ItemsData = app.plates(plate_num).keep_timepoints;
+
+    % Populate ZSlice Dropdown
+    app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).zslices);
+    app.ZSliceDropDown.ItemsData = app.plates(plate_num).keep_zslices;
+    
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
     % Build list of experiments in the plate as a list of names and a list of well row/column numbers stored as complex values because matlab won't allow two seperate values per DataItem
     experiments = app.plates(plate_num).wells;
