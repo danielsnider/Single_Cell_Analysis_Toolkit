@@ -21,7 +21,7 @@ function [params, algorithm] = fun()
 
   n = n + 1;
   params(n).name = 'Threshold';
-  params(n).default = '95%';
+  params(n).default = '99.5%';
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Enter between 0% and 100% to threshold dynamically using the percentile at the given level as the threshold. Omit the % to hard code the threshold to an intensity value.';
   params(n).type = 'text';
 

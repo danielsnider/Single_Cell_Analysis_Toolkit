@@ -40,6 +40,8 @@ end
       app.ChooseplatemapEditField.Value = [PathName FileName];
     end
 
+    busy_state_change(app,'busy');
+
     % Display log
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
     app.StartupLogTextArea = txt_update;
@@ -93,6 +95,8 @@ end
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
     app.ProcessingLogTextArea.Value = '';
+
+    busy_state_change(app,'not busy');
 
   % Catch Application Error
   catch ME

@@ -59,6 +59,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 %     app.StartupLogTextArea = txt_update;
 %     pause(0.1); % enough time for the log text area to appear on screen
 
+    busy_state_change(app, 'busy');
     prev_fig = get(groot,'CurrentFigure'); % Save current figure
 
     % Preprocess list of input channels to be passed to the plugin
@@ -80,7 +81,9 @@ function result = fun(app, seg_num, createCallbackFcn)
     if ~isempty(prev_fig)
       figure(prev_fig); % Set back current figure to focus
     end
+    busy_state_change(app, 'not busy');
 
+    
     % Delete log
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};

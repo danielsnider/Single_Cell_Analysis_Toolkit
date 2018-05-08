@@ -13,6 +13,10 @@ function handle_application_error(app,ME)
     msg = msg;
     causeException = MException(msgID,msg);
     ME = addCause(ME,causeException);
+
+    busy_state_change(app,'not busy');
+
+
     rethrow(ME)
   else
       

@@ -13,6 +13,8 @@ function fun(app)
   app.Button_ViewMeasurements.Visible = 'off';
   app.Button_ExportMeasurements.Visible = 'off';
 
+  busy_state_change(app,'busy');
+
   app.ResultTable = [];
 
   %% EXECUTE MAIN PROCESSING
@@ -27,6 +29,7 @@ function fun(app)
   app.NumberAfterFiltering.Value = height(app.ResultTable);
   app.ResultTable_filtered = table();
 
+  busy_state_change(app,'not busy');
   
   % Delete log
 %   delete(app.StartupLogTextArea);

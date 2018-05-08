@@ -58,6 +58,9 @@ function fun(app, createCallbackFcn)
     if ~isfield(app.measure{meas_num}.algorithm_info,'maintainer')
       app.measure{meas_num}.algorithm_info.maintainer = 'Unknown';
     end
+    if ~isfield(app.measure{meas_num}.algorithm_info,'supports_3D')
+      app.measure{meas_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
+    end
 
     % Create algorithm selection dropdown box
     Callback = @(app, event) changed_MeasureAlgorithm(app, meas_num, createCallbackFcn);

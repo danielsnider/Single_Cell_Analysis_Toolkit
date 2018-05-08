@@ -80,10 +80,10 @@ function fun(app)
       if ~isfield(app.segment{seg_num},'result') || isempty(app.segment{seg_num}.result)
         continue
       end
-      seg = app.segment{seg_num}.result;
-      seg = zeros(size(im_norm));
-      seg(1:100,1:100,1)=255;
-      seg(1:100,1:100,2)=254;
+      seg = app.segment{seg_num}.result.matrix;
+      if size(seg,3) > 1
+          continue % 3D segments not supported yet
+      end
       gain = app.display.segment{seg_num}.gain_slider.Value/100;
       perimeter = app.display.segment{seg_num}.perimeter_toggle.Value;
       thickness = app.display.segment{seg_num}.perimeter_thickness.Value;

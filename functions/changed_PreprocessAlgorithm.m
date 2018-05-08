@@ -46,7 +46,9 @@ function result = fun(app, proc_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_preprocessing_(app, Update)
+    busy_state_change(app,'busy');
     do_preprocessing_on_current_image(app, proc_num);
+    busy_state_change(app,'not busy');
   end
 
     try

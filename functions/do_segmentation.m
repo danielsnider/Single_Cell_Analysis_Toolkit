@@ -70,11 +70,17 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
 
       try
         % Call algorithm
-          
-
         result = feval(algo_name, plugin_name, seg_num, algo_params{:});
+
+        % Handle non-3D results which have one component (matrix) but should resemble the 3D format which has 2 components (matrix and objects).
+          if ~isstruct(result)
+            matrix = result; % TODO: sanity check that plugin returned a matrix
+            result = {};
+            result.matrix = matrix;
+          end
+
+        % Save into app so that we can display it anytime using update_figure
         app.segment{seg_num}.result = result;
-  
 
       % Catch Plugin Error
       catch ME

@@ -15,6 +15,7 @@ function handle_plugin_error(app,ME,plugin_type,plugin_num)
     msg = msg;
     causeException = MException(msgID,msg);
     ME = addCause(ME,causeException);
+    busy_state_change(app,'not busy');
     rethrow(ME)
   else
     rethrow(ME)

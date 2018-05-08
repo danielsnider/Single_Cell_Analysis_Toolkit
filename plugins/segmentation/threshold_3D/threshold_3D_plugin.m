@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, min_area, max_area, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -9,130 +9,112 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
   end
 
   % Smooth
-  img_smooth = imgaussfilt(img,threshold_smooth_param);
+  img_smooth = imgaussfilt(img,smooth_param);
   if ismember(debug_level,{'All'})
     f = figure(886); clf; set(f,'name','smooth for threshold','NumberTitle', 'off');
-    imshow(img_smooth,[]);
+    imshow3D(img_smooth,[]);
   end
 
-
-  % threshold
-  img_thresh = img_smooth > thresh_param;
+  %% Threshold
+  % handle percentile threshold
+  if contains(thresh_param,'%')
+    percent_location = strfind(thresh_param,'%');
+    thresh_param = thresh_param(1:percent_location-1); % remove '%' sign
+    thresh_param = str2num(thresh_param); % convert to number
+    img_thresh = img_smooth > prctile(img_smooth(:), thresh_param);
+  % handle fixed intensity threshold
+  else 
+    img_thresh = img_smooth > thresh_param;
+  end
   if ismember(debug_level,{'All'})
     f = figure(885); clf; set(f,'name','threshold','NumberTitle', 'off');
-    imshow(img_thresh,[]);
-  end
-
-  % remove seeds outside of our img mask
-  if ~isequal(seeds,false)
-    seeds(img_thresh==0)=0;
-
-    % Debug with plot
-    if ismember(debug_level,{'All'})
-      [X Y] = find(seeds);
-      f = figure(826); clf; set(f,'name','input seeds','NumberTitle', 'off')
-      imshow(img,[]);
-      hold on;
-      plot(Y,X,'or','markersize',2,'markerfacecolor','r')
-    end
-  end
-
-  if isequal(watershed_smooth_param,false)
-    img_smooth2 = img;
-  else
-    img_smooth2 = imgaussfilt(img,watershed_smooth_param);
-  end
-  if ismember(debug_level,{'All'})
-    f = figure(889); clf; set(f,'name','smooth for watershed','NumberTitle', 'off');
-    imshow(img_smooth2,[]);
-  end
-
-
-  %% Watershed
-  if ~isequal(seeds,false)
-    img_min = imimposemin(max(img_smooth2(:))-img_smooth2,seeds); % set locations of seeds to be -Inf as per  matlab's watershed
-  else
-    img_min = max(img_smooth2(:))-img_smooth2;
-  end
-
-  if ismember(debug_level,{'All'})
-    f = figure(564); clf; set(f,'name','imimposemin','NumberTitle', 'off')
-    imshow(img_min,[]);
+    imshow3D(img_thresh,[]);
   end
   
-  img_ws = watershed(img_min);
-  if ismember(debug_level,{'All'})
-    f = figure(562); clf; set(f,'name','watershed','NumberTitle', 'off')
-    imshow(img_ws,[]);
-  end
-
-  img_ws(img_thresh==0)=0; % remove areas that aren't in our img mask
-  if ismember(debug_level,{'All'})
-    f = figure(561); clf; set(f,'name','watershed & threshold','NumberTitle', 'off')
-    imshow(img_ws,[]);
-  end
-
-  % Clear cells touching the boarder
-  bordercleared_img = imclearborder(img_ws);
-  if ismember(debug_level,{'All'})
-    f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
-    imshow(bordercleared_img,[]);
-  end
-
-  % Fill holes
-  filled_img = imfill(bordercleared_img,'holes');
-  if ismember(debug_level,{'All'})
-    f = figure(512); clf; set(f,'name','imfill','NumberTitle', 'off')
-    imshow(filled_img,[]);
-  end
-
-  % Remove segments that don't have a seed
-  if ~isequal(seeds,false)
-    reconstruct_img = imreconstruct(logical(seeds),logical(filled_img));
-    labelled_img = bwlabel(reconstruct_img);
-    if ismember(debug_level,{'All'})
-      f = figure(514); clf; set(f,'name','imreconstruct','NumberTitle', 'off')
-      imshow(reconstruct_img,[]);
-    end
-  else
-    labelled_img = bwlabel(filled_img);
-  end
-
   % Remove objects that are too small or too large
+  labelled_img = bwlabeln(img_thresh);
   stats = regionprops(labelled_img,'area');
-  area = cat(1,stats.Area);  
+  area = cat(1,stats.Area);
   labelled_img(ismember(labelled_img,find(area > max_area | area < min_area)))=0;
+  img_thresh = labelled_img > 0;
+  if ismember(debug_level,{'All'})
+    f = figure(886); clf; set(f,'name','obj size threshold','NumberTitle', 'off');
+    imshow3D(img_thresh,[]);
+  end
+
+  %% Calculate 3D shape
+  XYZ = [];
+  all_faces = {};
+  all_vertices = {};
+  z_depth = size(img,3);
+  figure(9762)
+  hold on
+  % Render 2D Slices. Needed because 3D render makes a single 2D slice disappear
+  for zid=1:z_depth
+    % Collect 3D points into XYZ for later 3D rendering
+    [Y X] = find(img_thresh(:,:,zid));
+    Z = zeros(length(X),1)+zid;
+    if isempty(Z)
+      continue
+    end
+    XYZ = [XYZ; X Y Z];
+
+    % Draw 2D slice
+    shp2d = alphaShape(X,Y); % the default behaviour of a 2d render with alphaShape is to draw green slices at z=0, the next line disables this
+    h2d = plot(shp2d); % hide the green 2d slices
+    h2d.Visible='off';
+    faces = h2d.Faces;
+    vertices = [h2d.Vertices Z.*13]; % we created a two 2D but want to put it in 3D
+    p = patch('Faces',faces,'Vertices',vertices);
+    p.FaceColor = 'red';
+    p.EdgeColor = 'none';
+
+    all_faces{zid} = faces;
+    all_vertices{zid} = vertices;
+  end
+
+  % Render 3D mito
+  shp = alphaShape(XYZ,4);
+  h = plot(shp);
+  h.FaceColor = 'red';
+  h.EdgeColor = 'none';
+  h.Vertices(:,3) = h.Vertices(:,3) .* 13; % z depth scale factor 13um
+  all_faces{zid+1} = h.Faces;
+  all_vertices{zid+1} = h.Vertices;
 
   % Return result
-  result = labelled_img;
+  result = {};
+  result.matrix = labelled_img;
+  result.faces = all_faces;
+  result.vertices = all_vertices;
 
-  if ismember(debug_level,{'All','Result Only','Result With Seeds'})
-    f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-    % Display original image
-    % Cast img as double, had issues with 32bit
-    img8 = im2uint8(double(img));
-    if min(img8(:)) < prctile(img8(:),99.5)
-        min_max = [min(img8(:)) prctile(img8(:),99.5)];
-    else
-        min_max = [];
-    end
-    imshow(img8,[min_max]);
-    hold on
-    % Display color overlay
-    labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
-    labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
-    himage = imshow(im2uint8(labelled_rgb),[min_max]);
-    himage.AlphaData = labelled_perim*1;
-    if ismember(debug_level,{'All','Result With Seeds'})
-      if ~isequal(seeds,false)
-        seeds(labelled_img<1)=0;
-        % Display red dots for seeds
-        [xm,ym]=find(seeds);
-        hold on
-        plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
-      end
-    end
-    hold off
-  end
+  % if ismember(debug_level,{'All','Result Only','Result With Seeds'})
+  %   f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
+  %   % Display original image
+  %   % Cast img as double, had issues with 32bit
+  %   img8 = im2uint8(double(img));
+  %   if min(img8(:)) < prctile(img8(:),99.5)
+  %       min_max = [min(img8(:)) prctile(img8(:),99.5)];
+  %   else
+  %       min_max = [];
+  %   end
+  %   imshow3D(img8,[min_max]);
+  %   hold on
+  %   % Display color overlay
+  %   labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
+  %   labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
+  %   himage = imshow3D(im2uint8(labelled_rgb),[min_max]);
+  %   himage.AlphaData = labelled_perim*1;
+  %   if ismember(debug_level,{'All','Result With Seeds'})
+  %     if ~isequal(seeds,false)
+  %       seeds(labelled_img<1)=0;
+  %       % Display red dots for seeds
+  %       [xm,ym]=find(seeds);
+  %       hold on
+  %       plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
+  %     end
+  %   end
+  %   hold off
+  % end
   
 end

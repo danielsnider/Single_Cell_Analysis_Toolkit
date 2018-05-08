@@ -70,8 +70,10 @@ function result = fun(app, an_num, createCallbackFcn)
 %     app.StartupLogTextArea = txt_update;
 %         pause(0.1); % enough time for the log text area to appear on screen
         
+        busy_state_change(app,'busy');
         do_analyze(app, an_num);
-        
+        busy_state_change(app,'not busy');
+
         % Delete log
 %         delete(app.StartupLogTextArea);
 % 	app.StartupLogTextArea.tx.String = {};

@@ -51,26 +51,24 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     seg_result{seg_num} = do_segmentation(app, seg_num, algo_name, imgs);
   end
 
-      
-
   %% Primary Segment Handling
   % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
   primary_seg_num = app.PrimarySegmentDropDown.Value;
   if ~isempty(primary_seg_num)
-    primary_seg_data = seg_result{primary_seg_num};
+    primary_seg_data = seg_result{primary_seg_num}.matrix;
     primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
-    seg_result{primary_seg_num} = primary_seg_data;
+    seg_result{primary_seg_num}.matrix = primary_seg_data;
     NumberOfCells = max(primary_seg_data(:));
     % Loop over non-primary segment results and properly set the pixel values to be what is found in the region of the primary id
     for seg_num=1:length(app.segment)
       if seg_num==primary_seg_num % skip primary segment, only operate on subcomponents
         continue
       end
-      sub_seg_data = seg_result{seg_num}; 
+      sub_seg_data = seg_result{seg_num}.matrix; 
       new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
       logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
       new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
-      seg_result{seg_num} = new_sub_seg_data;
+      seg_result{seg_num}.matrix = new_sub_seg_data;
     end
   end
   
