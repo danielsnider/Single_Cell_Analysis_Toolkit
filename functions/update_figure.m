@@ -24,16 +24,18 @@ function fun(app)
       min_dyn_range_percent = app.plates(plate_num).channel_min(chan_num)/100;
       max_dyn_range_percent = app.plates(plate_num).channel_max(chan_num)/100;
       im_norm = normalize0to1(double(img));
-      im_adj = imadjust(im_norm,[min_dyn_range_percent max_dyn_range_percent], [0 1]);
+      im_adj = imadjust(im_norm(:),[min_dyn_range_percent max_dyn_range_percent], [0 1]);
+      im_adj = reshape(im_adj,size(im_norm)); % imadjust doesn't support more than 2D so we are reshaping now back to 2D or 3D
       scaled_img = uint16(im_adj.*2^16); % increase intensity to use full range of uint16 values
       scaled_img = scaled_img./length(enabled_channels); % reduce intensity so not to go overbounds of uint16
 
       % Set color
       colour = app.plates(plate_num).channel_colors(chan_num,:);
       colour_img = uint16(zeros(size(composite_img)));
-      colour_img(:,:,1) = scaled_img .* colour(1);
-      colour_img(:,:,2) = scaled_img .* colour(2);
-      colour_img(:,:,3) = scaled_img .* colour(3);
+      otherdims=repmat({':'},1,ndims(composite_img)-1);
+      colour_img(otherdims{:},1) = scaled_img .* colour(1);
+      colour_img(otherdims{:},2) = scaled_img .* colour(2);
+      colour_img(otherdims{:},3) = scaled_img .* colour(3);
 
       % Composite
       composite_img = composite_img + colour_img;
@@ -52,7 +54,8 @@ function fun(app)
       min_dyn_range_value = prctile(img(:), min_dyn_range_percent);
       max_dyn_range_value = prctile(img(:), max_dyn_range_percent);
       im_norm = normalize0to1(double(img));
-      im_adj = imadjust(im_norm,[min_dyn_range_percent/100 max_dyn_range_percent/100], [0 1]);
+      im_adj = imadjust(im_norm(:),[min_dyn_range_percent/100 max_dyn_range_percent/100], [0 1]);
+      im_adj = reshape(im_adj,size(im_norm)); % imadjust doesn't support more than 2D so we are reshaping now back to 2D or 3D
       denormalized_im_adj = im_adj.*double(max_dyn_range_value-min_dyn_range_value);
       denormalized_im_adj = denormalized_im_adj + double(min_dyn_range_value);
 
@@ -62,7 +65,11 @@ function fun(app)
 
     % Display
     f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off');
-    imshow(composite_img,[]);
+    if ndims(composite_img) == 3
+      imshow(composite_img,[]);
+    elseif ndims(composite_img) == 4
+      imshow3D(composite_img,[]);
+    end
     hold on
 
     % Display segments as colorized layers
@@ -74,6 +81,9 @@ function fun(app)
         continue
       end
       seg = app.segment{seg_num}.result;
+      seg = zeros(size(img_norm))
+      seg(1:100,1:100,1)=255;
+      seg(1:100,1:100,2)=254;
       gain = app.display.segment{seg_num}.gain_slider.Value/100;
       perimeter = app.display.segment{seg_num}.perimeter_toggle.Value;
       thickness = app.display.segment{seg_num}.perimeter_thickness.Value;
@@ -85,9 +95,10 @@ function fun(app)
       colour = app.segment{seg_num}.display_color;
       if any(colour)
         seg_colors = uint8(zeros(size(composite_img)));
-        seg_colors(:,:,1) = logical(seg) .* colour(1) .* 255;
-        seg_colors(:,:,2) = logical(seg) .* colour(2) .* 255;
-        seg_colors(:,:,3) = logical(seg) .* colour(3) .* 255;
+        otherdims=repmat({':'},1,ndims(composite_img)-1);
+        seg_colors(otherdims{:},1) = logical(seg) .* colour(1) .* 255;
+        seg_colors(otherdims{:},2) = logical(seg) .* colour(2) .* 255;
+        seg_colors(otherdims{:},3) = logical(seg) .* colour(3) .* 255;
       else
         seg_colors = label2rgb(uint16(seg), 'jet', [0 0 0], 'shuffle'); % outputs uint8
       end
@@ -117,7 +128,8 @@ function fun(app)
             img_num = app.ExperimentDropDown.Value;
             filepart1 = app.plates(plate_num).img_files_subset(img_num).filepart1;
             selector = ismember(app.ResultTable_for_display.filepart1,filepart1);
-          elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'FlatFiles_SingleChannel')
+
+          elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'FlatFiles_SingleChannel','XYZCT-Bio-Formats'})
             img_num = app.ExperimentDropDown.Value;
             ImageName = app.plates(plate_num).img_files_subset(img_num).ImageName;
             selector = ismember(app.ResultTable_for_display.ImageName,ImageName);

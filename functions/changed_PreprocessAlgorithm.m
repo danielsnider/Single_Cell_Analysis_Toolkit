@@ -56,12 +56,8 @@ function result = fun(app, proc_num, createCallbackFcn)
     % Delete existing UI components before creating new ones on top
     delete_preprocess(app,[proc_num]);
 
-
-    % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);
-
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
-
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;
@@ -75,7 +71,6 @@ function result = fun(app, proc_num, createCallbackFcn)
       label_pos = [400 v_offset-5 200 22];
       help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
       param_index = NaN;
-
 
       % Change spacing if optional parameter to allow space for a checkbox
       if isfield(param,'optional') && ~isempty(param.optional)

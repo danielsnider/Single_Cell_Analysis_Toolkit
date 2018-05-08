@@ -1,5 +1,15 @@
 function fun(app)
   try
+    % Currently selected plate number
+    plate_num = app.PlateDropDown.Value;
+
+    % Don't create montage for Bio Formats (not yet implemented)
+    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+      msg = sprintf('Sorry, creating a montage is currently not supported for the "XYZCT-Bio-Formats" image format.');
+      uialert(app.UIFigure,msg,'Not Yet Implemented', 'Icon','warn');
+      return % don't create montage
+    end
+
     is_movie = app.MontageMovieCheckBox.Value;
     imgs_to_process = get_images_to_process(app);
     save_dir = uigetdir(app.ChooseplatemapEditField.Value,'Select Directory to Save Montage In');

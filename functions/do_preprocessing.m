@@ -1,27 +1,34 @@
 function img = do_preprocess_image(app, plate_num, chan_num, img_path)
   try
-    if ~exist(img_path) % If the file doesn't exist warn user
-      msg = sprintf('Could not find the image file at location: %s',img_path);
-      uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
-      error(msg);
-    end
 
-    [filepath,name,ext] = fileparts(img_path);
-    if isvalid(app.StartupLogTextArea.tx) == 1
-      msg = sprintf('Loading image %s', [name ext]);
-      if app.CheckBox_Parallel.Value && app.processing_running
-          disp(msg)
-%         send(app.ProcessingLogQueue, msg);
-      else
-        app.log_processing_message(app, msg);
+
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+      img = img_path; % data is already in memory here
+      
+    else % Read image from disk for all other formats 
+      if ~exist(img_path) % If the file doesn't exist warn user
+        msg = sprintf('Could not find the image file at location: %s',img_path);
+        uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
+        error(msg);
       end
-    end
 
-    img = imread(img_path);
+      [filepath,name,ext] = fileparts(img_path);
+      if isvalid(app.StartupLogTextArea.tx) == 1
+        msg = sprintf('Loading image %s', [name ext]);
+        if app.CheckBox_Parallel.Value && app.processing_running
+            disp(msg)
+  %         send(app.ProcessingLogQueue, msg);
+        else
+          app.log_processing_message(app, msg);
+        end
+      end
+
+      img = imread(img_path);
+    end
+      
     
     % Return if no preprocessing is configured
     if sum(ismember(fields(app),'preprocess_tabgp'))==0
-      go = 'away'
       return
     end
 

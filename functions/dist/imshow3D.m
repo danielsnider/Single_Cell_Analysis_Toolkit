@@ -1,22 +1,25 @@
 function  imshow3D( Img, disprange )
-%IMSHOW3D displays 3D grayscale images in slice by slice fashion with mouse
-%based slice browsing and window and level adjustment control.
+%IMSHOW3D displays 3D grayscale or RGB images in slice by slice fashion
+%with mouse based slice browsing and window and level adjustment control.
 %
 % Usage:
 % imshow3D ( Image )
 % imshow3D ( Image , [] )
 % imshow3D ( Image , [LOW HIGH] )
 %   
-%    Image:      3D image MxNxK (K slices of MxN images) 
+%    Image:      3D image MxNxKxC (K slices of MxN images) C is either 1
+%               (for grayscale images) or 3 (for RGB images)  
 %    [LOW HIGH]: display range that controls the display intensity range of
 %                a grayscale image (default: the widest available range)
 %
 % Use the scroll bar or mouse scroll wheel to switch between slices. To
 % adjust window and level values keep the mouse right button pressed and
 % drag the mouse up and down (for level adjustment) or right and left (for
-% window adjustment). 
+% window adjustment). Window and level adjustment control works only for
+% grayscale images.
 % 
-% "Auto W/L" button adjust the window and level automatically 
+% "Auto W/L" button adjust the window and level automatically for grayscale
+% images
 %
 % While "Fine Tune" check box is checked the window/level adjustment gets
 % 16 times less sensitive to mouse movement, to make it easier to control
@@ -26,6 +29,9 @@ function  imshow3D( Img, disprange )
 % based on the user defined display intensity range; the wider the range
 % the more sensitivity to mouse drag.
 % 
+% Note: IMSHOW3DFULL is a newer version of IMSHOW3D (also available on
+% MathWorks) that displays 3D grayscale or RGB images from three
+% perpendicular views (i.e. axial, sagittal, and coronal).
 % 
 %   Example
 %   --------
@@ -40,26 +46,26 @@ function  imshow3D( Img, disprange )
 %       imshow3D(Image,[20 100]);
 %
 %   See also IMSHOW.
- 
+
 %
 % - Maysam Shahedi (mshahedi@gmail.com)
 % - Released: 1.0.0   Date: 2013/04/15
 % - Revision: 1.1.0   Date: 2013/04/19
+% - Revision: 1.5.0   Date: 2016/09/22
 % 
- 
+
 sno = size(Img,3);  % number of slices
 S = round(sno/2);
-InColor = size(Img, 4) > 1;
- 
+
 global InitialCoord;
- 
+
 MinV = 0;
 MaxV = max(Img(:));
 LevV = (double( MaxV) + double(MinV)) / 2;
 Win = double(MaxV) - double(MinV);
 WLAdjCoe = (Win + 1)/1024;
 FineTuneC = [1 1/16];    % Regular/Fine-tune mode coefficients
- 
+
 if isa(Img,'uint8')
     MaxV = uint8(Inf);
     MinV = uint8(-Inf);
@@ -115,7 +121,7 @@ elseif isa(Img,'logical')
     Win = 1;
     WLAdjCoe = 0.1;
 end    
- 
+
 SFntSz = 9;
 LFntSz = 10;
 WFntSz = 10;
@@ -123,7 +129,7 @@ LVFntSz = 9;
 WVFntSz = 9;
 BtnSz = 10;
 ChBxSz = 10;
- 
+
 if (nargin < 2)
     [Rmin Rmax] = WL2R(Win, LevV);
 elseif numel(disprange) == 0
@@ -134,12 +140,9 @@ else
     WLAdjCoe = (Win + 1)/1024;
     [Rmin Rmax] = WL2R(Win, LevV);
 end
-if InColor
-    axes('position',[0,0.2,1,0.8]), imshow(cat(3, Img(:,:,S,1), Img(:,:,S,2), Img(:,:,S,3)), [Rmin Rmax])
-else
-    axes('position',[0,0.2,1,0.8]), imshow(Img(:,:,S), [Rmin Rmax])
-end
- 
+
+axes('position',[0,0.2,1,0.8]), imshow(squeeze(Img(:,:,S,:)), [Rmin Rmax])
+
 FigPos = get(gcf,'Position');
 S_Pos = [50 45 uint16(FigPos(3)-100)+1 20];
 Stxt_Pos = [50 65 uint16(FigPos(3)-100)+1 15];
@@ -153,7 +156,7 @@ if BtnStPnt < 300
 end
 Btn_Pos = [BtnStPnt 20 100 20];
 ChBx_Pos = [BtnStPnt+110 20 100 20];
- 
+
 if sno > 1
     shand = uicontrol('Style', 'slider','Min',1,'Max',sno,'Value',S,'SliderStep',[1/(sno-1) 10/(sno-1)],'Position', S_Pos,'Callback', {@SliceSlider, Img});
     stxthand = uicontrol('Style', 'text','Position', Stxt_Pos,'String',sprintf('Slice# %d / %d',S, sno), 'BackgroundColor', [0.8 0.8 0.8], 'FontSize', SFntSz);
@@ -166,14 +169,14 @@ lvalhand = uicontrol('Style', 'edit','Position', Lval_Pos,'String',sprintf('%6.0
 wvalhand = uicontrol('Style', 'edit','Position', Wval_Pos,'String',sprintf('%6.0f',Win), 'BackgroundColor', [1 1 1], 'FontSize', WVFntSz,'Callback', @WinLevChanged);
 Btnhand = uicontrol('Style', 'pushbutton','Position', Btn_Pos,'String','Auto W/L', 'FontSize', BtnSz, 'Callback' , @AutoAdjust);
 ChBxhand = uicontrol('Style', 'checkbox','Position', ChBx_Pos,'String','Fine Tune', 'BackgroundColor', [0.8 0.8 0.8], 'FontSize', ChBxSz);
- 
+
 set (gcf, 'WindowScrollWheelFcn', @mouseScroll);
 set (gcf, 'ButtonDownFcn', @mouseClick);
 set(get(gca,'Children'),'ButtonDownFcn', @mouseClick);
 set(gcf,'WindowButtonUpFcn', @mouseRelease)
 set(gcf,'ResizeFcn', @figureResized)
- 
- 
+
+
 % -=< Figure resize callback function >=-
     function figureResized(object, eventdata)
         FigPos = get(gcf,'Position');
@@ -196,15 +199,11 @@ set(gcf,'ResizeFcn', @figureResized)
         set(Btnhand,'Position', Btn_Pos);
         set(ChBxhand,'Position', ChBx_Pos);
     end
- 
+
 % -=< Slice slider callback function >=-
     function SliceSlider (hObj,event, Img)
         S = round(get(hObj,'Value'));
-        if InColor
-            set(get(gca,'children'),'cdata',cat(3, Img(:,:,S,1), Img(:,:,S,2), Img(:,:,S,3)))
-        else
-            set(get(gca,'children'),'cdata',Img(:,:,S))
-        end
+        set(get(gca,'children'),'cdata',squeeze(Img(:,:,S,:)))
         caxis([Rmin Rmax])
         if sno > 1
             set(stxthand, 'String', sprintf('Slice# %d / %d',S, sno));
@@ -212,7 +211,7 @@ set(gcf,'ResizeFcn', @figureResized)
             set(stxthand, 'String', '2D image');
         end
     end
- 
+
 % -=< Mouse scroll wheel callback function >=-
     function mouseScroll (object, eventdata)
         UPDN = eventdata.VerticalScrollCount;
@@ -228,18 +227,14 @@ set(gcf,'ResizeFcn', @figureResized)
         else
             set(stxthand, 'String', '2D image');
         end
-        if InColor
-            set(get(gca,'children'),'cdata',cat(3, Img(:,:,S,1), Img(:,:,S,2), Img(:,:,S,3)))
-        else
-            set(get(gca,'children'),'cdata',Img(:,:,S))
-        end
+        set(get(gca,'children'),'cdata',squeeze(Img(:,:,S,:)))
     end
- 
+
 % -=< Mouse button released callback function >=-
     function mouseRelease (object,eventdata)
         set(gcf, 'WindowButtonMotionFcn', '')
     end
- 
+
 % -=< Mouse click callback function >=-
     function mouseClick (object, eventdata)
         MouseStat = get(gcbf, 'SelectionType');
@@ -248,37 +243,37 @@ set(gcf,'ResizeFcn', @figureResized)
             set(gcf, 'WindowButtonMotionFcn', @WinLevAdj);
         end
     end
- 
+
 % -=< Window and level mouse adjustment >=-
     function WinLevAdj(varargin)
         PosDiff = get(0,'PointerLocation') - InitialCoord;
- 
+
         Win = Win + PosDiff(1) * WLAdjCoe * FineTuneC(get(ChBxhand,'Value')+1);
         LevV = LevV - PosDiff(2) * WLAdjCoe * FineTuneC(get(ChBxhand,'Value')+1);
         if (Win < 1)
             Win = 1;
         end
- 
+
         [Rmin, Rmax] = WL2R(Win,LevV);
         caxis([Rmin, Rmax])
         set(lvalhand, 'String', sprintf('%6.0f',LevV));
         set(wvalhand, 'String', sprintf('%6.0f',Win));
         InitialCoord = get(0,'PointerLocation');
     end
- 
+
 % -=< Window and level text adjustment >=-
     function WinLevChanged(varargin)
- 
+
         LevV = str2double(get(lvalhand, 'string'));
         Win = str2double(get(wvalhand, 'string'));
         if (Win < 1)
             Win = 1;
         end
- 
+
         [Rmin, Rmax] = WL2R(Win,LevV);
         caxis([Rmin, Rmax])
     end
- 
+
 % -=< Window and level to range conversion >=-
     function [Rmn Rmx] = WL2R(W,L)
         Rmn = L - (W/2);
@@ -287,7 +282,7 @@ set(gcf,'ResizeFcn', @figureResized)
             Rmx = Rmn + 1;
         end
     end
- 
+
 % -=< Window and level auto adjustment callback function >=-
     function AutoAdjust(object,eventdata)
         Win = double(max(Img(:))-min(Img(:)));
@@ -298,6 +293,6 @@ set(gcf,'ResizeFcn', @figureResized)
         set(lvalhand, 'String', sprintf('%6.0f',LevV));
         set(wvalhand, 'String', sprintf('%6.0f',Win));
     end
- 
+
 end
-% -=< Maysam Shahedi (mshahedi@gmail.com), April 19, 2013>=-
+% -=< Maysam Shahedi (mshahedi@gmail.com), September 22, 2016>=-

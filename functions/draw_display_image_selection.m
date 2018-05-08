@@ -15,7 +15,7 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
+  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','XYZCT-Bio-Formats'})
     app.ExperimentDropDown.Items = app.plates(plate_num).experiments;
     app.ExperimentDropDown.ItemsData = 1:length(app.plates(plate_num).experiments);
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
