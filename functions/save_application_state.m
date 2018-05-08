@@ -2,7 +2,7 @@ function fun(app)
   try
     % Display log
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-app.StartupLogTextArea = txt_update;
+    app.StartupLogTextArea = txt_update;
     app.log_processing_message(app, 'Please wait!');
     app.log_processing_message(app, 'Saving application state...');
 
