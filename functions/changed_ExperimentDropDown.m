@@ -16,7 +16,7 @@ function fun(app)
       app.RowDropDown.Value = row_num;
       app.ColumnDropDown.Value = col_num;
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
-      continue
+      % 
     end
 
     start_processing_of_one_image(app);

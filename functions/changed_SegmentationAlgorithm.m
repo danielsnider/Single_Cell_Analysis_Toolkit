@@ -98,6 +98,12 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
+    if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
+      app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
+    end
+    if ~isfield(app.segment{seg_num}.algorithm_info,'supports_3D')
+      app.segment{seg_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
+    end
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;

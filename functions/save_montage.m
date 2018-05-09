@@ -71,6 +71,7 @@ function fun(app)
 
     % Delete log
     app.log_processing_message(app, 'Finished');
+    uialert(app.UIFigure,'Montage complete.','Success', 'Icon','success');
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
 

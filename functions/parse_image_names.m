@@ -15,10 +15,29 @@ function fun(app)
       ME = MException('APP:Unkown_Image_File_Format','Unkown Image File Format');
       throw(ME)
     end
+
+    default_colors = [...
+      0 1 0;
+      1 0 0;
+      0 0 1;
+      1 1 0;
+      0 1 1;
+      1 0 1; % limitation introduced here on the number of channels
+    ];
+
     
     % Handle different supported cases
     if strcmp(naming_scheme, 'OperettaSplitTiffs')
       parse_input_structure_OperettaSplitTiffs(app, plate_num);
+
+      default_colors = [...
+        1 0 0;
+        0 1 0;
+        0 0 1;
+        1 1 0;
+        0 1 1;
+        1 0 1; % limitation introduced here on the number of channels
+      ];
 
     elseif strcmp(naming_scheme, 'ZeissSplitTiffs')
       parse_input_structure_ZeissSplitTiffs(app, plate_num);
@@ -38,14 +57,6 @@ function fun(app)
     app.plates(plate_num).channel_min = zeros(1,length(app.plates(plate_num).channels));
 
     % Default channels colors for display in the figure
-    default_colors = [...
-      0 1 0;
-      1 0 0;
-      0 0 1;
-      1 1 0;
-      0 1 1;
-      1 0 1; % limitation introduced here on the number of channels
-    ];
     app.plates(plate_num).channel_colors = default_colors(1:length(app.plates(plate_num).channels),:); % set each channel a default colour;
 
 

@@ -282,6 +282,31 @@ try
             app.analyze{an_num}.ResultTableBox{drop_num} = edit_field;
             app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx = idx;
             app.analyze{an_num}.ResultTableLabel{drop_num} = label;            
+
+        elseif strcmp(param.type,'ResultTable_for_current_display')
+            
+            % Set an index number for this component
+            if ~isfield(app.analyze{an_num},'ResultTableDisp')
+                app.analyze{an_num}.ResultTableDisp = {};
+            end
+            
+            drop_num = length(app.analyze{an_num}.ResultTableDisp) + 1;
+            param_index = drop_num;
+            % Create UI components
+            edit_field = uieditfield(current_tab, ...
+                'Position', param_pos, ...
+                'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+                'Value', 'ResultTable', ...
+                'BackgroundColor', [0.9 0.9 0.9], ...
+                'Editable', 'off');
+            label = uilabel(current_tab, ...
+                'Text', param.name, ...
+                'HorizontalAlignment', 'right', ...
+                'Position', label_pos);
+            % Save ui elements
+            app.analyze{an_num}.ResultTableDisp{drop_num} = edit_field;
+            app.analyze{an_num}.ResultTableDisp{drop_num}.UserData.param_idx = idx;
+            app.analyze{an_num}.ResultTableDispLabel{drop_num} = label;            
             
         elseif strcmp(param.type,'MeasurementListBox')
             % Set an index number for this component

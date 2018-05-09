@@ -38,6 +38,8 @@ function fun(app, NewResultCallback)
     finished_count  = 0; % for progess bar
     app.ProcessingLogTextArea.Value = '';
     app.processing_running = true;
+    app.log_processing_message(app, 'Start processing...');
+    pause(0.1);
 
     % Get image names to process
     if app.CheckBox_TestRun.Value

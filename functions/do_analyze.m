@@ -51,8 +51,19 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-        
         algo_params(param_idx) = {app.ResultTable};
+      end
+    end
+    
+    % ResultTable of the currently displayed image 
+    if isfield(app.analyze{an_num},'ResultTableDisp')
+      for drop_num=1:length(app.analyze{an_num}.ResultTableDisp)
+        param_idx = app.analyze{an_num}.ResultTableDisp{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.ResultTableDisp{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.ResultTableDisp{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        algo_params(param_idx) = {app.ResultTable_for_display};
       end
     end
     

@@ -15,10 +15,10 @@ function MeasureTable=func(plugin_name, plugin_num, img, seg)
   
   % Pull out segment data from struct. Example struct could be 'seg.Nucleus = [1024 x 1360]'
   seg_name = fields(seg);
-  seg_name = seg_name{1}; % expecting only one sement as defined by the plugin definition
+  seg_name = seg_name{1}; % expecting only one segment as defined by the plugin definition
   seg_data = seg.(seg_name);
 
-  % Do mearument
+  % Do measurement
   stats=regionprops(seg_data,img_data,'MeanIntensity');
   MeanIntensity = cat(1,stats.MeanIntensity);
 

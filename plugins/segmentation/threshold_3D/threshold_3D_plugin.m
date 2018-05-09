@@ -73,14 +73,16 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     all_vertices{zid} = vertices;
   end
 
-  % Render 3D mito
-  shp = alphaShape(XYZ,4);
-  h = plot(shp);
-  h.FaceColor = 'red';
-  h.EdgeColor = 'none';
-  h.Vertices(:,3) = h.Vertices(:,3) .* 13; % z depth scale factor 13um
-  all_faces{zid+1} = h.Faces;
-  all_vertices{zid+1} = h.Vertices;
+  if ~isempty(XYZ)
+    % Render 3D mito
+    shp = alphaShape(XYZ,4);
+    h = plot(shp);
+    h.FaceColor = 'red';
+    h.EdgeColor = 'none';
+    h.Vertices(:,3) = h.Vertices(:,3) .* 13; % z depth scale factor 13um
+    all_faces{zid+1} = h.Faces;
+    all_vertices{zid+1} = h.Vertices;
+  end
 
   % Return result
   result = {};

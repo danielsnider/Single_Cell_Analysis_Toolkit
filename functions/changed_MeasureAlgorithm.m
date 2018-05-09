@@ -15,7 +15,13 @@ function result = fun(app, meas_num, createCallbackFcn)
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
-
+    app.measure{meas_num}.algorithm_info = algorithm;
+    if ~isfield(app.measure{meas_num}.algorithm_info,'maintainer')
+      app.measure{meas_num}.algorithm_info.maintainer = 'Unknown';
+    end
+    if ~isfield(app.measure{meas_num}.algorithm_info,'supports_3D')
+      app.measure{meas_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
+    end
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 293;

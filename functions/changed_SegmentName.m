@@ -73,8 +73,8 @@ function fun(app)
     end
 
     %% Update the measure tab primary segment dropdown the segment names
-    app.PrimarySegmentDropDown.Items = app.segment_names;
-    app.PrimarySegmentDropDown.ItemsData = 1:length(app.segment_names);
+    app.PrimarySegmentDropDown.Items = ['None' app.segment_names];
+    app.PrimarySegmentDropDown.ItemsData = 0:length(app.segment_names);
 
     %% Update the dipslay tab segment selection area with the segment names
     draw_display_segment_selection(app);

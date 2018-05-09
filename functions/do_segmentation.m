@@ -28,6 +28,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
             continue
           end
           dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
+          algo_supports_3D = app.segment{seg_num}.algorithm_info.supports_3D;
           if isempty(dep_seg_num)
             input_name = app.segment{seg_num}.SegmentDropDownLabel{drop_num}.Text;
             msg = sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title);
@@ -37,6 +38,9 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
           end
           dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
           segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, imgs); % operate on the last loaded image in app.img
+          if ~algo_supports_3D
+            segment_result = segment_result.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
+          end
           algo_params(param_idx) = {segment_result};
         end
       end

@@ -20,7 +20,7 @@ end
     % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
     % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Derrick_Plate_Map.xlsx';
     % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Derrick_Plate_Map.xlsx';
-    plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Laura_Plate_Map_Laptop.xlsx';
+    % plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Laura_Plate_Map_Laptop.xlsx';
     if exist(plate_file)
       app.ChooseplatemapEditField.Value = plate_file;
       FileName = ''; % just helps testing
@@ -94,9 +94,10 @@ end
     % Delete log
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
-    app.ProcessingLogTextArea.Value = '';
-
+    % app.ProcessingLogTextArea.Value = '';
+    app.log_processing_message(app, 'Ready.');
     busy_state_change(app,'not busy');
+    % uialert(app.UIFigure,'Loading complete.','Ready', 'Icon','success');
 
   % Catch Application Error
   catch ME

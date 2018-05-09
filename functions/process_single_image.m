@@ -54,7 +54,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   %% Primary Segment Handling
   % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
   primary_seg_num = app.PrimarySegmentDropDown.Value;
-  if ~isempty(primary_seg_num)
+  if ~isempty(primary_seg_num) && primary_seg_num > 0 % if primary segment is None/0, skip
     primary_seg_data = seg_result{primary_seg_num}.matrix;
     primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
     seg_result{primary_seg_num}.matrix = primary_seg_data;
@@ -94,7 +94,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       MeasureTable = MeasureTable(:,new_col_names);
       if istable(MeasureTable)
         % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
-        if max(primary_seg_data(:)) > height(MeasureTable)
+        if exist('primary_seg_data','var') && max(primary_seg_data(:)) > height(MeasureTable)
           desired_height = max(primary_seg_data(:)); % desired height is the number of primary segments
           MeasureTable = append_missing_rows_for_table(MeasureTable, desired_height);
         end
@@ -109,15 +109,17 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
 
     %% Add X and Y coordinates for each primary label
-    stats = regionprops(primary_seg_data,'centroid');
-    centroids = cat(1, stats.Centroid);
-    if isempty(centroids)
-      return % nothing was found so return
+    if exist('primary_seg_data','var')
+        stats = regionprops(primary_seg_data,'centroid');
+        centroids = cat(1, stats.Centroid);
+        if isempty(centroids)
+          return % nothing was found so return
+        end
+
+        % Add X and Y coordinates for each primary label
+        iterTable.x_coord = floor(centroids(:,1));
+        iterTable.y_coord = floor(centroids(:,2));
     end
-    
-    % Add X and Y coordinates for each primary label
-    iterTable.x_coord = floor(centroids(:,1));
-    iterTable.y_coord = floor(centroids(:,2));
 
     % Add UUID for each row
     iterTable(:,'ID') = uuid_array(height(iterTable))';

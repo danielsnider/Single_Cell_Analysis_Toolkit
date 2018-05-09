@@ -21,7 +21,6 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
     percent_location = strfind(thresh_param,'%');
     thresh_param = thresh_param(1:percent_location-1); % remove '%' sign
     thresh_param = str2num(thresh_param); % convert to number
-    thresh_param = thresh_param / 100; % convert 95 to 0.95, needed for prctile
     img_thresh = img_smooth > prctile(img_smooth(:), thresh_param);
   % handle fixed intensity threshold
   else 
@@ -92,8 +91,8 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
   end
 
   % Return result
-  result = {};
-  result.matrix = labelled_img;
+  result = labelled_img;
+
 % 
 %   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
 %     f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')

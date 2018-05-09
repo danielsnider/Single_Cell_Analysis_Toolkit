@@ -56,9 +56,6 @@ function fun(app, createCallbackFcn)
     app.segment{seg_num} = {};
     app.segment{seg_num}.params = params;
     app.segment{seg_num}.algorithm_info = algorithm;
-    if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
-      app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
-    end
 
     % Create new tab
     tab = uitab(tabgp,'Title',sprintf('Segment %i',seg_num), ...

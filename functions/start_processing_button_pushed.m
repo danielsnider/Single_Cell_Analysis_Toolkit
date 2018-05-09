@@ -30,6 +30,7 @@ function fun(app)
   app.ResultTable_filtered = table();
 
   busy_state_change(app,'not busy');
+  uialert(app.UIFigure,'Processing complete.','Success', 'Icon','success');
   
   % Delete log
 %   delete(app.StartupLogTextArea);

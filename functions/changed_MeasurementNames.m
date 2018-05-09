@@ -46,6 +46,10 @@ function fun(app)
       
     % Populate filter sort by dropdown
     app.FilterSortByDropDown.Items = meas_names;
+      
+    % Populate track by measurements list box
+    app.TrackMeasuresListBox.Items = meas_names;
+    app.TimeColumnDropDown.Items = meas_names;
     
   % Catch Application Error
   catch ME

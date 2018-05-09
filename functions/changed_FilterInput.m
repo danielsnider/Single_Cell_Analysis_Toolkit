@@ -51,9 +51,9 @@ function func(app, plate_num)
       app.RowDropDownLabel.Visible = 'on';
       app.ColumnDropDownLabel.Visible = 'on';
       app.FieldDropDownLabel.Visible = 'on';
-      app.ZSliceDropDown.Visible = 'on';
+      app.TimepointDropDownLabel.Visible = 'on';
+      app.ZSliceDropDown.Visible = 'off';
       app.ZSliceDropDownLabel.Visible = 'off';
-      app.TimepointDropDownLabel.Visible = 'off';
 
       filter_names = { ...
         'rows', ...
