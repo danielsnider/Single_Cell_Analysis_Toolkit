@@ -1,5 +1,8 @@
-function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_differences, time_column_name)
+function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_differences, time_column_name, CentroidName)
 
+  % Algorithm requires table sorted by time
+  CellsTable = sortrows(CellsTable,time_column_name);
+    
   %% FIND CELL TRACES
   % Initialize all trace IDs to None
   Interval=[];
@@ -9,7 +12,7 @@ function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_
   diffTable=table(Interval,TraceId,Difference,Centroid_Difference); % used to aid debugging
   CellsTable(:,{'Trace'}) = {'None'};
   % Centroid Column Name In Input Table. Needed to limit the maximum centroid difference allowed.
-  CentroidName = 'PeroCentroid';
+  CentroidName = CentroidName;
   % For the first frame (ie. min(CellsTable{:,time_column_name}) initialize the cell traces to a random UUID
   first_timepoint_cells = 1:sum(CellsTable{:,time_column_name}==min(CellsTable{:,time_column_name}));
   CellsTable.Trace(first_timepoint_cells) = uuid_array(sum(CellsTable{:,time_column_name}==min(CellsTable{:,time_column_name})))';
@@ -46,8 +49,8 @@ function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_
           differences(current_cell_index,:) = NaN;
 
           % Find ID in results table using ID in differences matrix
-          [former_trace_id, former_cell_index_global] = lookup_trace_id(CellsTable, previous_timepoint, former_cell_index);
-          [current_trace_id, current_cell_index_global] = lookup_trace_id(CellsTable, current_timepoint, current_cell_index);
+          [former_trace_id, former_cell_index_global] = lookup_trace_id(CellsTable, previous_timepoint, former_cell_index, time_column_name);
+          [current_trace_id, current_cell_index_global] = lookup_trace_id(CellsTable, current_timepoint, current_cell_index, time_column_name);
           
           % translation differences between the centroid position of former
           % cell-current cell pairs to save in diffTable
@@ -125,8 +128,6 @@ function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_
      CellsTable.Trace(cells_entering_frame) = uuid_array(sum(cells_entering_frame));
   end
 
-
-
   %% Calculate Color Based on ID
   all_trace_ids_short = {};
   cmap = [];
@@ -148,8 +149,5 @@ function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_
   if strcmp('TraceUsed',CellsTable.Properties.VariableNames)
     CellsTable.TraceUsed = [];
   end
-
-  
-
 
 end

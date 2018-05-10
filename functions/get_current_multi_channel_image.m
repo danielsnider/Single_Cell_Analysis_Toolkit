@@ -37,8 +37,15 @@ function multi_channel_img = fun(app)
       multi_channel_img.chans(chan_num).name = image_name;
       multi_channel_img.chans(chan_num).path = image_path;
     end
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','XYZCT-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
-  end
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+    img_num = app.ExperimentDropDown.Value;
+    img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
+    timepoint = app.TimepointDropDown.Value;
+    selected_timepoint_idx = [app.ExperimentDropDown.UserData.timepoint] == timepoint;
+    selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
+    select_idx = selected_img_name_idx & selected_timepoint_idx;
+    multi_channel_img = app.ExperimentDropDown.UserData(select_idx);
 end

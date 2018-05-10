@@ -30,8 +30,13 @@ function fun(app, plate_num)
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   app.log_processing_message(app, 'Loading XYZCT-Bio-Formats images...');
   pause(0.1) % Give gui time to update
-  load('data-3-decon-cells.mat'); % short circuit what we need
-  % data = bfopen(fullfile(img_files(1).folder, img_files(1).name));
+
+  full_path = fullfile(img_files(1).folder, img_files(1).name); % use first becasue Currently the "XYZCT-Bio-Formats" file format only supports opening one consolidated file with multiple image sets within it. Improving upon this is hoped for in the near future.
+  if endsWith(full_path, '.mat')
+    load(full_path); % short circuit what we need
+  else
+    data = bfopen(full_path);
+  end
   app.log_processing_message(app, 'Finished loading images.');
   pause(0.1) % Give gui time to update
 
@@ -83,7 +88,8 @@ function fun(app, plate_num)
       multi_channel_img.plate_num = plate_num;
       multi_channel_img.timepoint = timepoint;
       multi_channel_img.chans = [];
-      img_name = sprintf('timepoint=%d %s', timepoint, img_stacks(idx).stack_name);
+      % img_name = sprintf('timepoint=%d %s', timepoint, img_stacks(idx).stack_name);
+      img_name = img_stacks(idx).stack_name;
       multi_channel_img.experiment = img_name;
       multi_channel_img.experiment_num = length(multi_channel_imgs)+1;
       multi_channel_img.ImageName = img_name;
@@ -97,7 +103,7 @@ function fun(app, plate_num)
 
   app.plates(plate_num).img_files = multi_channel_imgs;
   app.plates(plate_num).channels = 1:size(stack_,5);
-  app.plates(plate_num).experiments  = {multi_channel_imgs.ImageName};
+  app.plates(plate_num).experiments  = unique({multi_channel_imgs.ImageName});
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
 

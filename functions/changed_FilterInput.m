@@ -1,60 +1,21 @@
 function func(app, plate_num)
 
   try
+    busy_state_change(app,'busy');
 
     special_filters = { ...
     };
 
     if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
-
-      app.RowDropDown.Visible = 'off';
-      app.ColumnDropDown.Visible = 'off';
-      app.FieldDropDown.Visible = 'off';
-      app.TimepointDropDown.Visible = 'off';
-      app.RowDropDownLabel.Visible = 'off';
-      app.ColumnDropDownLabel.Visible = 'off';
-      app.FieldDropDownLabel.Visible = 'off';
-      app.TimepointDropDownLabel.Visible = 'off';
-      app.ZSliceDropDown.Visible = 'off';
-      app.ZSliceDropDownLabel.Visible = 'off';
-      app.plates(plate_num).img_files_subset = app.plates(plate_num).img_files;
-
-      filter_names = {}; % hashtag no filter
-
+      filter_names = {}; % no filter is supported yet for these types
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
-
-      app.RowDropDown.Visible = 'off';
-      app.RowDropDownLabel.Visible = 'off';
-      app.ColumnDropDown.Visible = 'off';
-      app.ColumnDropDownLabel.Visible = 'off';
-      app.FieldDropDown.Visible = 'off';
-      app.FieldDropDownLabel.Visible = 'off';
-      app.TimepointDropDown.Visible = 'on';
-      app.TimepointDropDownLabel.Visible = 'on';
-      app.ZSliceDropDown.Visible = 'on';
-      app.ZSliceDropDownLabel.Visible = 'on';
-      app.plates(plate_num).img_files_subset = app.plates(plate_num).img_files;
-
       filter_names = { ...
         'timepoints', ...
       };
-
       special_filters = { ...
         'zslices' ...
       };
-
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
-      app.RowDropDown.Visible = 'on';
-      app.ColumnDropDown.Visible = 'on';
-      app.FieldDropDown.Visible = 'on';
-      app.TimepointDropDown.Visible = 'on';
-      app.RowDropDownLabel.Visible = 'on';
-      app.ColumnDropDownLabel.Visible = 'on';
-      app.FieldDropDownLabel.Visible = 'on';
-      app.TimepointDropDownLabel.Visible = 'on';
-      app.ZSliceDropDown.Visible = 'off';
-      app.ZSliceDropDownLabel.Visible = 'off';
-
       filter_names = { ...
         'rows', ...
         'columns', ...
@@ -125,12 +86,16 @@ function func(app, plate_num)
     for filter_name = special_filters
       filter_name = filter_name{:};
       if strcmp(filter_name, 'zslices') % Special filter for zslices
-        % all zslices for each image are stored together in img_files_subset.chans.data
+        % Reduce number of zslices. all zslices for each image are stored together in img_files_subset.chans.data
         for img_num=1:length(app.plates(plate_num).img_files_subset)
           for chan_num=app.plates(plate_num).img_files_subset(img_num).channel_nums
             keep_zslices = app.plates(plate_num).(['keep_' filter_name]);
             app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data = app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data(:,:,keep_zslices);
           end
+        end
+        % Reduce number of zslices for app.image(chan_num).data
+        for chan_num=length(app.image)
+          app.image(chan_num).data = app.image(chan_num).data(:,:,keep_zslices);
         end
       end
     end
@@ -139,7 +104,9 @@ function func(app, plate_num)
     app.plates(plate_num).NumberOfImagesField.Value = num2str(length(app.plates(plate_num).img_files_subset));
 
     % Update Display UI 
-    % draw_display_image_selection(app);
+    draw_display_image_selection(app);
+
+    busy_state_change(app,'not busy');
 
   % Catch Application Error
   catch ME

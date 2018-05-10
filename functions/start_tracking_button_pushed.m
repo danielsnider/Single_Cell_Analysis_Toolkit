@@ -21,24 +21,34 @@ function fun(app)
   % Higher value is more important.
   % Metrics that don't have a weight setting will be ignored.
   weights = {};
-  for meas_name = app.TrackMeasuresListBox.Value
-    meas_name = meas_name{:};
-    weights.(meas_name) = 1;
-  end
+%   for meas_name = app.TrackMeasuresListBox.Value
+%     meas_name = meas_name{:};
+%     weights.(meas_name) = 1;
+%   end
+  meas_name = app.TrackMeasuresListBox.Value;
+  weights.(meas_name) = 1; % Only one weight limitation
+  CentroidName = meas_name; % Only one weight limitation
 
   % The column in the measurements table that denotes time passing
   time_column_name = app.TimeColumnDropDown.Value;
 
-  %% CALC DIFFERENCES BETWEEN FRAMES
-  T = app.ResultTable;
-  app.log_processing_message(app, 'Measuring differences between frames...');
-  [raw_differences, normalized_differences, composite_differences] = DifferentialMeasurements(T,weights,time_column_name);
+  % Loop over images tracking each one
+  TrackedTable = table();
+  for image_name = unique(app.ResultTable.ImageName)'
+    %% CALC DIFFERENCES BETWEEN FRAMES
+    imageTable = app.ResultTable(ismember(app.ResultTable.ImageName,image_name),:);
+    app.log_processing_message(app, 'Measuring differences between frames...');
+    [raw_differences, normalized_differences, composite_differences] = DifferentialMeasurements(imageTable,weights,time_column_name);
 
-  %% TRACK CELLS
-  app.log_processing_message(app, 'Tracking...');
-  [T,DiffTable] = cell_tracking_v1_simple(T, composite_differences, time_column_name);
-  app.ResultTable = T;
+    %% TRACK CELLS
+    app.log_processing_message(app, 'Tracking...');
+    [imageTable,DiffTable] = cell_tracking_v1_simple(imageTable, composite_differences, time_column_name, CentroidName);
   
+    % Store result
+    TrackedTable = [TrackedTable; imageTable];
+  end
+  app.ResultTable = TrackedTable;
+
   % Get the new results for the objects currently in the display figure, find them by UUID 
   app.ResultTable_for_display = app.ResultTable(ismember(app.ResultTable.ID,app.ResultTable_for_display.ID),:); 
 

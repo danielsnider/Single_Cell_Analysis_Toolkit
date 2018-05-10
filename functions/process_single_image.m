@@ -13,12 +13,18 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
+    progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+    'Message',msg);
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
   plate=app.plates(plate_num);
 
   % Load all image channels
+  if ~is_parallel_processing
+    progressdlg.Message = sprintf('%s\n%s',msg,'Loading image...')
+    progressdlg.Value = (0.1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   imgs = [];
   for chan_num=[image_file.channel_nums]
     % Load Image
@@ -35,6 +41,10 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
 
   %% Perform Segmentation
+  if ~is_parallel_processing
+    progressdlg.Message = sprintf('%s\n%s',msg,'Segmenting image...')
+    progressdlg.Value = (0.33 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   % Loop over each configured segment and execute the segmentation algorithm
   seg_result = {};
   for seg_num=1:length(app.segment)
@@ -74,6 +84,10 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
 
   %% Perform Measurements
+  if ~is_parallel_processing
+    progressdlg.Message = sprintf('%s\n%s',msg,'Measuring image...')
+    progressdlg.Value = (0.75 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   iterTable = table();
   if ~isempty(primary_seg_num)
     % Loop over each configured measurement and execute the measurement code
@@ -161,6 +175,12 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
   end
+  if ~is_parallel_processing
+    progressdlg.Message = sprintf('%s\n%s',msg,'Finished.')
+    progressdlg.Value = (1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+    pause(.1)
+  end
+  
   if is_parallel_processing
     send(NewResultCallback,iterTable);
   else

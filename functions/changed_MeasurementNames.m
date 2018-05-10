@@ -47,13 +47,19 @@ function fun(app)
     % Populate filter sort by dropdown
     app.FilterSortByDropDown.Items = meas_names;
       
+    %% Tracking tab
     % Populate track by measurements list box
     app.TrackMeasuresListBox.Items = meas_names;
-    app.TimeColumnDropDown.Items = meas_names;
+    app.TimeColumnDropDown.Items = meas_names;    
     % Automatically try to find the right measurements for the tracking tab
-    % 
-
-
+    if isempty(app.TrackMeasuresListBox.Value)
+      auto_chosen_measure_names = meas_names(contains(lower(meas_names),'centroid'));
+      app.TrackMeasuresListBox.Value = auto_chosen_measure_names;
+    end
+    if isempty(app.TimeColumnDropDown.Value)
+      auto_chosen_time_name = meas_names(contains(lower(meas_names),'time'));
+      app.TimeColumnDropDown.Value = auto_chosen_time_name{1};
+    end
     
   % Catch Application Error
   catch ME

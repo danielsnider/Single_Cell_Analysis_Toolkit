@@ -11,13 +11,13 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     trace_pos = ismember(ResultTable.(track_by.name),trace_id);
     TraceTable = ResultTable(trace_pos,:);
     distances = TraceTable.(analyze_value.name);
-    is_less_than_in_contact_timepoints = ones(1,length(distances));
-    is_greater_than_in_contact_timepoints = ones(1,length(distances));
+    is_less_than_in_contact_timepoints = ones(1,length(distances))';
+    is_greater_than_in_contact_timepoints = ones(1,length(distances))';
     if is_less_than
-      is_less_than_in_contact_timepoints = distances<is_less_than;
+      is_less_than_in_contact_timepoints = [distances<is_less_than];
     end
     if is_greater_than
-      is_greater_than_in_contact_timepoints = distances>is_greater_than;
+      is_greater_than_in_contact_timepoints = [distances>is_greater_than];
     end
     in_contact_timepoints = is_less_than_in_contact_timepoints & is_greater_than_in_contact_timepoints;
     % Example: in_contact_timepoints                             = [0 1 0 1 1 0 0 1 1 1 0 1 1 0 1 1] 
@@ -50,13 +50,16 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     in_contact_timepoints = in_contact_timepoints(2:end); % remove first item in list because this algorithm only added it to facilitate calculation
     in_contact_bool = [in_contact_bool in_contact_timepoints'];
 
+
      % Get locations of these traces within the T table. The order is important because when we add data back to the table it has to be sorted the same as the table. The table is sorted by timepoint (see create_table_pero_2DResultTable.m) but this function sorts data by Trace. We will correct locations.
     all_trace_pos = [all_trace_pos; find(trace_pos)];
 
   end
 
   % Remove 0s we anly want to know trace lengths greater than 0
-  all_additional_info(contact_durations==0)=[];
+  if ~isequal(save_additional_info,false)
+    all_additional_info(contact_durations==0)=[];
+  end
   contact_durations(contact_durations==0)=[];
 
   %% For adding a stats to table
@@ -86,9 +89,68 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     ConsecutiveTable(:,save_additional_info.name) = all_additional_info';
   end
 
+  % Check if save path is empty, ask the human
+  if isempty(save_path)
+    save_path = uigetdir('\','Choose a folder to save to');
+  end
+  if isempty(save_path)
+      save_path = '';
+  end
+  % save_path = ['\' save_path]; TODO USE FULLPATH
+
   %% Save table
   date_str = datestr(now,'yyyymmddTHHMMSS');
   safe_save_path = sprintf('%s_%s.csv', save_path, date_str); % add date string to avoid overwritting and busy permission denied errors
   writetable(ConsecutiveTable,safe_save_path);
+
+  %% Calculate Summary Table
+  SummaryTable = table();
+  if ~isequal(save_additional_info,false)
+    unique_groups = unique(ResultTable{:,save_additional_info.name});
+  else
+    unique_groups = {'only one group'};
+  end
+  for group=unique_groups'
+    if strcmp(group, 'only one group')
+      GroupConsecTable = ConsecutiveTable;
+      GroupResultTable = ResultTable;
+      group = {'all data'};
+    else
+      GroupConsecTable = ConsecutiveTable(ismember(ConsecutiveTable{:,save_additional_info.name}, group), 'ConsecutiveTime');
+      GroupResultTable = ResultTable(ismember(ResultTable{:,save_additional_info.name}, group), :);
+    end
+
+    iterSummaryTable = table();
+    iterSummaryTable.tracked_samples = length(unique(GroupResultTable.(track_by.name)));
+    iterSummaryTable.total_samples = height(GroupResultTable);
+    iterSummaryTable.count_contact = height(GroupConsecTable);
+    iterSummaryTable.percentage_contact = height(GroupConsecTable) / height(GroupResultTable);
+    iterSummaryTable.sum_contact = sum(GroupConsecTable.ConsecutiveTime);
+    iterSummaryTable.mean_contact = mean(GroupConsecTable.ConsecutiveTime);
+    iterSummaryTable.median_contact = median(GroupConsecTable.ConsecutiveTime);
+    iterSummaryTable.mode_contact = mode(GroupConsecTable.ConsecutiveTime);
+    range_contact = range(GroupConsecTable.ConsecutiveTime);
+    if isempty(range_contact)
+        range_contact = NaN;
+    end
+    iterSummaryTable.range_contact = range_contact;
+    iterSummaryTable.std_dev_contact = std(GroupConsecTable.ConsecutiveTime);
+    min_contact = min(GroupConsecTable.ConsecutiveTime);
+    if isempty(min_contact)
+      min_contact = NaN;
+    end
+    iterSummaryTable.min_contact = min_contact;
+    max_contact = max(GroupConsecTable.ConsecutiveTime);
+    if isempty(max_contact)
+      max_contact = NaN;
+    end
+    iterSummaryTable.max_contact = max_contact;
+    iterSummaryTable.Properties.RowNames = group;
+
+    SummaryTable = [SummaryTable; iterSummaryTable];
+  end
+
+  summary_save_path = sprintf('%s_%s_summary.csv', save_path, date_str); % add date string to avoid overwritting and busy permission denied errors
+  writetable(SummaryTable,summary_save_path,'WriteRowNames',true);
 
 end

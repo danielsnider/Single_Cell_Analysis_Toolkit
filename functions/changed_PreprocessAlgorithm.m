@@ -29,9 +29,9 @@ function result = fun(app, proc_num, createCallbackFcn)
     userdata.param_index = param_index;
     default_state = true;
     default_enable = 'on';
-    if isfield(param,'optional_default_state') && ~isempty(param.optional_default_state)
-      default_state = param.optional_default_state;
-      default_enable = 'off';
+    if isfield(param,'optional_default_state') && isequal(param.optional_default_state,false)
+        default_state = false;
+        default_enable = 'off';
     end
     checkbox = uicheckbox(app.preprocess{proc_num}.tab, ...
     'Position', check_pos, ...

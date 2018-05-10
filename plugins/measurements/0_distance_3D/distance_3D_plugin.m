@@ -27,7 +27,7 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   %% Do distance measurement
   % Get centers of from objects
   from_stats = regionprops3(from_matrix, 'Centroid', 'Volume', 'EquivDiameter');
-  from_stats.Centroid(:,3) = from_stats.Centroid(:,3) .* z_res_multiplier;  % z depth scale factor
+  from_stats.Centroid(:,3) = from_stats.Centroid(:,3) .* z_res_multiplier;  % z depth scale factor. How many times larger is one discrete step in the Z dimension than one step in the X dimension.
   points = from_stats.Centroid;
   % points = points(54:60,:); % limit pero for debugging
   

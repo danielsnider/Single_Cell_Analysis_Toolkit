@@ -33,9 +33,9 @@ function result = fun(app, seg_num, createCallbackFcn)
     userdata.param_index = param_index;
     default_state = true;
     default_enable = 'on';
-    if isfield(param,'optional_default_state') && ~isempty(param.optional_default_state)
-      default_state = param.optional_default_state;
-      default_enable = 'off';
+    if isfield(param,'optional_default_state') && isequal(param.optional_default_state,false)
+        default_state = false;
+        default_enable = 'off';
     end
     checkbox = uicheckbox(app.segment{seg_num}.tab, ...
     'Position', check_pos, ...
@@ -59,6 +59,11 @@ function result = fun(app, seg_num, createCallbackFcn)
 %     app.StartupLogTextArea = txt_update;
 %     pause(0.1); % enough time for the log text area to appear on screen
 
+    
+    msg = sprintf('Refreshing segmentation...')
+    progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+    'Message',msg,'Indeterminate','on');
+
     busy_state_change(app, 'busy');
     prev_fig = get(groot,'CurrentFigure'); % Save current figure
 
@@ -81,6 +86,7 @@ function result = fun(app, seg_num, createCallbackFcn)
     if ~isempty(prev_fig)
       figure(prev_fig); % Set back current figure to focus
     end
+    close(progressdlg);
     busy_state_change(app, 'not busy');
 
     

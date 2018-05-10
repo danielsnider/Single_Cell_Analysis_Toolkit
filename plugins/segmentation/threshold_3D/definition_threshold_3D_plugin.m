@@ -38,6 +38,12 @@ function [params, algorithm] = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
+  params(n).name = 'Distance Z unit / X unit';
+  params(n).default = 1;
+  params(n).help = 'How many times larger is one discrete step in the Z dimension than one step in the X dimension.';
+  params(n).type = 'numeric';
+
+  n = n + 1;
   params(n).name = 'Display Figures';
   params(n).default = 'Result With Seeds';
   params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';

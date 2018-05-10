@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, min_area, max_area, z_res_multiplier, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -64,7 +64,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     h2d = plot(shp2d); % hide the green 2d slices
     h2d.Visible='off';
     faces = h2d.Faces;
-    vertices = [h2d.Vertices Z.*13]; % we created a two 2D but want to put it in 3D
+    vertices = [h2d.Vertices Z .* z_res_multiplier]; % we created a two 2D but want to put it in 3D and scale it up by how many times larger is one discrete step in the Z dimension than one step in the X dimension.
     p = patch('Faces',faces,'Vertices',vertices);
     p.FaceColor = 'red';
     p.EdgeColor = 'none';
@@ -79,7 +79,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     h = plot(shp);
     h.FaceColor = 'red';
     h.EdgeColor = 'none';
-    h.Vertices(:,3) = h.Vertices(:,3) .* 13; % z depth scale factor 13um
+    h.Vertices(:,3) = h.Vertices(:,3) .* z_res_multiplier; % z depth scale factor. How many times larger is one discrete step in the Z dimension than one step in the X dimension.
     all_faces{zid+1} = h.Faces;
     all_vertices{zid+1} = h.Vertices;
   end
