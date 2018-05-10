@@ -38,7 +38,12 @@ function fun(app)
   app.log_processing_message(app, 'Tracking...');
   [T,DiffTable] = cell_tracking_v1_simple(T, composite_differences, time_column_name);
   app.ResultTable = T;
-  % app.ResultTable_for_display = need to find the right data in the full table;
+  
+  % Get the new results for the objects currently in the display figure, find them by UUID 
+  app.ResultTable_for_display = app.ResultTable(ismember(app.ResultTable.ID,app.ResultTable_for_display.ID),:); 
+
+  % Update list of measurements in the analyze tab
+  changed_MeasurementNames(app);
 
   app.log_processing_message(app, 'Finished tracking.');
   busy_state_change(app,'not busy');
@@ -49,4 +54,4 @@ function fun(app)
   % Delete log
 %   delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
-endope
+end

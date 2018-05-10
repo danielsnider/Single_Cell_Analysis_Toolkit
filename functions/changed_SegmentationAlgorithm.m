@@ -216,8 +216,7 @@ function result = fun(app, seg_num, createCallbackFcn)
         if ~isfield(app.segment{seg_num},'ChannelDropDown')
           app.segment{seg_num}.ChannelDropDown = {};
         end
-        chan_num = length(app.segment{seg_num}.ChannelDropDown) + 1;
-        param_index = chan_num;
+        param_index = length(app.segment{seg_num}.ChannelDropDown) + 1;
         % Get channel names based on the currently displaying plate
         plate_num = app.PlateDropDown.Value;
         if ~isnumeric(app.PlateDropDown.Value)
@@ -236,13 +235,13 @@ function result = fun(app, seg_num, createCallbackFcn)
           'HorizontalAlignment', 'right', ...
           'Position', label_pos);
         % Save ui elements
-        app.segment{seg_num}.ChannelDropDown{chan_num} = dropdown;
-        app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.param_idx = idx;
-        app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.chan_names = chan_names;
-        app.segment{seg_num}.ChannelDropDownLabel{chan_num} = label;
+        app.segment{seg_num}.ChannelDropDown{param_index} = dropdown;
+        app.segment{seg_num}.ChannelDropDown{param_index}.UserData.param_idx = idx;
+        app.segment{seg_num}.ChannelDropDown{param_index}.UserData.chan_names = chan_names;
+        app.segment{seg_num}.ChannelDropDownLabel{param_index} = label;
         % Handle if this parameter is optional 
         if isfield(param,'optional') && ~isempty(param.optional)
-          app.segment{seg_num}.ChannelDropDown{chan_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
+          app.segment{seg_num}.ChannelDropDown{param_index}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, seg_num, param, param_index);
         end
 
       else
@@ -275,7 +274,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       'Position',[50,60,350,280], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
     help_text = uitextarea(algo_help_panel,'Value',algorithm.help, 'Position',[0,0,350,261],'Editable','off');
 
-    % Fill in the names of segments across the GUI
+    % Fill in the names of segments across the GUI including here
     changed_SegmentName(app);
 
   % Catch Application Error

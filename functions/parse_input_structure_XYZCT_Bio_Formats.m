@@ -29,9 +29,11 @@ function fun(app, plate_num)
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   app.log_processing_message(app, 'Loading XYZCT-Bio-Formats images...');
+  pause(0.1) % Give gui time to update
   load('data-3-decon-cells.mat'); % short circuit what we need
   % data = bfopen(fullfile(img_files(1).folder, img_files(1).name));
   app.log_processing_message(app, 'Finished loading images.');
+  pause(0.1) % Give gui time to update
 
   %% Get OME Metadata
   any_series_id = 1;

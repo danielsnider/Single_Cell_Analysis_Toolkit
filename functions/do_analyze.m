@@ -1,5 +1,7 @@
 function fun(app, an_num)
   try
+    busy_state_change(app,'busy');
+
     algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
     algo_params = {};
 
@@ -27,6 +29,49 @@ function fun(app, an_num)
       end
     end
 
+    % Create list of segmentation results to be passed to the plugin
+    if isfield(app.analyze{an_num}, 'SegmentDropDown')
+      for drop_num=1:length(app.analyze{an_num}.SegmentDropDown)
+        param_idx = app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.SegmentDropDown{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        dep_seg_num = app.analyze{an_num}.SegmentDropDown{drop_num}.Value;
+        algo_supports_3D = app.analyze{an_num}.algorithm_info.supports_3D;
+        if isempty(dep_seg_num)
+          input_name = app.analyze{an_num}.SegmentDropDownLabel{drop_num}.Text;
+          msg = sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" analyze configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.analyze{an_num}.tab.Title);
+          uialert(app.UIFigure,msg,'Missing Input', 'Icon','error');
+          result = [];
+          return
+        end
+        dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
+        segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, app.image); % operate on the last loaded image in app.img
+        if ~algo_supports_3D
+          segment_result = segment_result.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
+        end
+        algo_params(param_idx) = {segment_result};
+      end
+    end
+
+    % Create list of input channels to be passed to the plugin
+    if isfield(app.analyze{an_num},'ChannelDropDown')
+      for idx=1:length(app.analyze{an_num}.ChannelDropDown)
+        param_idx = app.analyze{an_num}.ChannelDropDown{idx}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.ChannelDropDown{idx}.UserData.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        drop_num = app.analyze{an_num}.ChannelDropDown{idx}.Value;
+        chan_name = app.analyze{an_num}.ChannelDropDown{idx}.UserData.chan_names(drop_num);
+        plate_num = app.PlateDropDown.Value;
+        dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
+        image_data = app.image(dep_chan_num).data;
+        algo_params(param_idx) = {image_data};
+      end
+    end
+
     % Create list of measurements to be passed to the plugin
     if isfield(app.analyze{an_num},'MeasurementDropDown')
       for drop_num=1:length(app.analyze{an_num}.MeasurementDropDown)
@@ -37,7 +82,8 @@ function fun(app, an_num)
         end
         meas = {};
         meas_name = app.analyze{an_num}.MeasurementDropDown{drop_num}.Value;
-        meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
+        meas.name = meas_name;
+        meas.pretty_name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
         meas.data = ResultTable{:,meas_name};
         algo_params(param_idx) = {meas};
       end
@@ -77,7 +123,8 @@ function fun(app, an_num)
         end
         meas = {};
         meas_name = app.analyze{an_num}.MeasurementListBox{drop_num}.Value;
-        meas.name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
+        meas.name = meas_name;
+        meas.pretty_name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
         meas.data = ResultTable{:,meas_name};
         algo_params(param_idx) = {meas};
       end
@@ -132,6 +179,8 @@ function fun(app, an_num)
   try
     % Call algorithm
     feval(algo_name, plugin_name, an_num, algo_params{:});
+
+    busy_state_change(app,'not busy');
 
   % Catch Plugin Error
   catch ME

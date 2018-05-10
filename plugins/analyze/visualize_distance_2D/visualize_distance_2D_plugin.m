@@ -1,6 +1,5 @@
-function fun(plugin_name, plugin_num, img1, img2, seg1, seg2, Distances, start_points, end_points, title_param, zslice_num, ObjectsInFrame)
+function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_points, end_points, zslice_num, font_size, ObjectsInFrame)
   Distances = Distances.data;
-  title_param = sprintf('%s: %s' title_param.name, title_param.data);
   start_points = start_points.data;
   end_points = end_points.data;
   num_chans = 2;
@@ -11,7 +10,23 @@ function fun(plugin_name, plugin_num, img1, img2, seg1, seg2, Distances, start_p
   img2_perim_color = [1 .5 .5];
   x_res = size(img1,1);
   y_res = size(img1,2);
-  any_objects = ~isempty(Distance);
+  timepoint = unique(ObjectsInFrame.timepoint);
+
+  % This plugin visualizes only 2D so take only one slice from our 3D stacks
+  img1 = img1(:,:,zslice_num);
+  seg1 = bwlabel(seg1(:,:,zslice_num));
+  img2 = img2(:,:,zslice_num);
+  seg2 = seg2(:,:,zslice_num);
+  
+  % Keep only the arrow start point that are for objects that can be seen
+  % in this slice 
+  keepers = unique(seg1(:));
+  keepers(keepers==0)=[]; % remove zeros
+  start_points = start_points(keepers,1:2);
+  end_points = end_points(keepers,1:2);
+  ObjectsInFrame = ObjectsInFrame(keepers,:);
+  Distances = Distances(keepers);
+  any_objects = ~isempty(Distances);
 
   % Create figure
   f = figure(plugin_num+4211); clf; set(f,'name',plugin_name,'NumberTitle', 'off');
@@ -72,25 +87,26 @@ function fun(plugin_name, plugin_num, img1, img2, seg1, seg2, Distances, start_p
     himage.AlphaData = logical(seg1)*1;
 
     % Display distance lines
-    quiver(start_points(1, :), start_points(2, :), end_points(1,:) - start_points(1, :), end_points(2, :) - start_points(2, :), 0, 'c');
+    quiver(start_points(:,1), start_points(:,2), end_points(:,1) - start_points(:,1), end_points(:,2) - start_points(:,2), 0, 'c');
 
     %% Display amount of distances as text
-    h = text(start_points(1,:)'+3,start_points(2,:)'-1,cellstr(num2str(round(Distances'))),'Color','cyan','FontSize',12,'Clipping','on','Interpreter','none');
+    h = text(start_points(:,1)'+3,start_points(:,2)'-1,cellstr(num2str(round(Distances)))','Color','cyan','FontSize',font_size,'Clipping','on','Interpreter','none');
 
     %% Display trace ID
     for i=1:height(ObjectsInFrame)
-      h = text(start_points(1,i)'-13,start_points(2,i)'-1,all_trace_ids_short{i},'Color',ObjectsInFrame.TraceColor(i,:),'FontSize',12,'Clipping','on','Interpreter','none');
+      h = text(start_points(i,1)'-10,start_points(i,2)'-1,all_trace_ids_short{i},'Color',ObjectsInFrame.TraceColor(i,:),'FontSize',font_size,'Clipping','on','Interpreter','none','HorizontalAlignment','right');
     end
   end
 
   % Information Box
-  txt = sprintf('Slice: %s\nimg1xisomes Count: %d\nConvex Area: %.0f px\n%s',USE_SLICE,length(start_points), ConvexAreaPX,stack_name); % '%.1f um^2',ConvexAreaSqrUM
-  h = text(10,y_res-45,txt,'Color','white','FontSize',12,'Clipping','on','HorizontalAlignment','left','Interpreter','none');
-
-  frame_txt = sprintf('Frame: %d', tid);
-  t_val = 5.203*(tid-1);
+  %txt = sprintf('Slice: %s\nPeroxisomes Count: %d\nConvex Area: %.0f px\n%s',USE_SLICE,length(start_points), ConvexAreaPX,stack_name); % '%.1f um^2',ConvexAreaSqrUM
+  slice_txt = sprintf('Slice: %d',zslice_num);
+  %h = text(15,y_res-45,txt,'Color','white','FontSize',font_size,'Clipping','on','HorizontalAlignment','left','Interpreter','none');
+  % Frame Info
+  frame_txt = sprintf('Timepoint: %d', timepoint);
+  t_val = 5.203*(timepoint-1);
   t_unit = 's';
-  txt = sprintf('+%.3f %s\n%s', t_val, t_unit, frame_txt);
-  h = text(10,30,txt,'Color','white','FontSize',16,'Clipping','on','HorizontalAlignment','left','Interpreter','none');
+  txt = sprintf('+%.3f %s\n%s\n%s', t_val, t_unit, frame_txt, slice_txt);
+  h = text(20,20,txt,'Color','white','FontSize',font_size+4,'Clipping','on','HorizontalAlignment','left','VerticalAlignment','top','Interpreter','none');
 
 end

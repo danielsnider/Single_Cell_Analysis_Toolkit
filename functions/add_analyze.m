@@ -30,7 +30,9 @@ function fun(app, createCallbackFcn)
 %     app.StartupLogTextArea = txt_update;
 %     pause(0.1); % enough time for the log text area to appear on screen
 
-    do_analyze(app, an_num);
+    if app.analyze{an_num}.run_button.Value
+      do_analyze(app, an_num);
+    end
 
     % Delete log
 %     delete(app.StartupLogTextArea);
@@ -63,9 +65,6 @@ function fun(app, createCallbackFcn)
     app.analyze{an_num} = {};
         app.analyze{an_num}.params = params;
     app.analyze{an_num}.algorithm_info = algorithm;
-    if ~isfield(app.analyze{an_num}.algorithm_info,'maintainer')
-      app.analyze{an_num}.algorithm_info.maintainer = 'Unknown';
-    end
 
     app.Button_RunAllAnalysis.Visible = 'on';
 

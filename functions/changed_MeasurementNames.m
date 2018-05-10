@@ -50,6 +50,10 @@ function fun(app)
     % Populate track by measurements list box
     app.TrackMeasuresListBox.Items = meas_names;
     app.TimeColumnDropDown.Items = meas_names;
+    % Automatically try to find the right measurements for the tracking tab
+    % 
+
+
     
   % Catch Application Error
   catch ME
