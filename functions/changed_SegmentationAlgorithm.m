@@ -54,45 +54,36 @@ function result = fun(app, seg_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_segmentation_(app, Update)
-    % Display log
-%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-%     app.StartupLogTextArea = txt_update;
-%     pause(0.1); % enough time for the log text area to appear on screen
+    if app.segment{seg_num}.run_button{1}.Value
+      msg = sprintf('Refreshing segmentation...')
+      progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+      'Message',msg,'Indeterminate','on');
 
-    
-    msg = sprintf('Refreshing segmentation...')
-    progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
-    'Message',msg,'Indeterminate','on');
+      busy_state_change(app, 'busy');
+      prev_fig = get(groot,'CurrentFigure'); % Save current figure
 
-    busy_state_change(app, 'busy');
-    prev_fig = get(groot,'CurrentFigure'); % Save current figure
-
-    % Preprocess list of input channels to be passed to the plugin
-    for idx=1:length(app.segment{seg_num}.ChannelDropDown)
-      if isfield(app.segment{seg_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.ChannelDropDown{idx}.UserData.Value
-        algo_params(length(algo_params)+1) = {false};
-        continue
+      % Preprocess list of input channels to be passed to the plugin
+      for idx=1:length(app.segment{seg_num}.ChannelDropDown)
+        if isfield(app.segment{seg_num}.ChannelDropDown{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.ChannelDropDown{idx}.UserData.Value
+          algo_params(length(algo_params)+1) = {false};
+          continue
+        end
+        drop_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
+        chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData.chan_names(drop_num);
+        plate_num = app.PlateDropDown.Value;
+        dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
+        image_path = get_current_image_path(app,dep_chan_num);
+        app.image(dep_chan_num).data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
       end
-      drop_num = app.segment{seg_num}.ChannelDropDown{idx}.Value;
-      chan_name = app.segment{seg_num}.ChannelDropDown{idx}.UserData.chan_names(drop_num);
-      plate_num = app.PlateDropDown.Value;
-      dep_chan_num = find(strcmp(app.plates(plate_num).chan_names,chan_name));
-      image_path = get_current_image_path(app,dep_chan_num);
-      app.image(dep_chan_num).data = do_preprocessing(app,plate_num,dep_chan_num,image_path);
-    end
 
-    app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
-    update_figure(app);
-    if ~isempty(prev_fig)
-      figure(prev_fig); % Set back current figure to focus
+      app.segment{seg_num}.result = do_segmentation(app, seg_num, algo_name, app.image);
+      update_figure(app);
+      if ~isempty(prev_fig)
+        figure(prev_fig); % Set back current figure to focus
+      end
+      close(progressdlg);
+      busy_state_change(app, 'not busy');
     end
-    close(progressdlg);
-    busy_state_change(app, 'not busy');
-
-    
-    % Delete log
-%     delete(app.StartupLogTextArea);
-%     app.StartupLogTextArea.tx.String = {};
   end
 
   try
@@ -110,6 +101,15 @@ function result = fun(app, seg_num, createCallbackFcn)
     if ~isfield(app.segment{seg_num}.algorithm_info,'supports_3D')
       app.segment{seg_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
     end
+
+    % Run button
+    app.segment{seg_num}.run_button{1} = uibutton(app.segment{seg_num}.tab, 'state', ...
+      'Text','',...
+      'Icon', 'play-button.png', ...
+      'Value',0,...
+      'BackgroundColor', [.95 .95 .95], ...
+      'ValueChangedFcn', createCallbackFcn(app, @do_segmentation_, true), ...
+      'Position', [369,352,26,23]);
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;

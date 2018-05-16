@@ -85,9 +85,14 @@ function fun(app, NewResultCallback)
       end
       for current_img_number = 1:NumberOfImages
         process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,callback_fnc);
+        if app.progressdlg.CancelRequested
+            close(app.progressdlg);
+            return
+        end
       end 
     end
 
+    close(app.progressdlg);
     app.log_processing_message(app, 'Finished.');
     app.ProgressSlider.Value = 1; % set progress bar to 100%
     % delete(gcp('nocreate')); %Shuts down parrallel pool

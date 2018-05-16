@@ -94,9 +94,9 @@ function func(app, plate_num)
           end
         end
         % Reduce number of zslices for app.image(chan_num).data
-        for chan_num=length(app.image)
-          app.image(chan_num).data = app.image(chan_num).data(:,:,keep_zslices);
-        end
+%         for chan_num=length(app.image)
+%           app.image(chan_num).data = app.image(chan_num).data(:,:,keep_zslices);
+%         end
       end
     end
 

@@ -30,7 +30,8 @@ function fun(app)
   CentroidName = meas_name; % Only one weight limitation
 
   % The column in the measurements table that denotes time passing
-  time_column_name = app.TimeColumnDropDown.Value;
+  % time_column_name = app.TimeColumnDropDown.Value;
+  time_column_name = 'timepoints';
 
   % Loop over images tracking each one
   TrackedTable = table();

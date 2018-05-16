@@ -4,7 +4,6 @@ function start_processing_of_one_image(app)
     app.ResultTable_for_display = iterTable;
   end
 
-
   try
     temp2 = app.CheckBox_Parallel.Value;
     app.CheckBox_Parallel.Value = false;

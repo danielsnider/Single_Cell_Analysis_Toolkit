@@ -50,7 +50,7 @@ end
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
     app.StartupLogTextArea = txt_update;
     app.log_processing_message(app, 'Starting...');
-    progressdlg.Message = sprintf('%s\n%s',msg,'Parsing plate map...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Parsing plate map...');
     progressdlg.Value = 0.1;
     pause(0.1); % enough time for the log text area to appear on screen
 
@@ -77,7 +77,7 @@ end
     end
 
     % Draw Plates
-    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing input UI...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing input UI...');;
     progressdlg.Value = 0.2;
     draw_input_data(app, createCallbackFcn);
 
@@ -93,17 +93,17 @@ end
     end
 
     % Initialize Display Tab
-    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing display UI...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing display UI...');
     progressdlg.Value = 0.6;
     draw_display(app);
 
     % Process one image
-    progressdlg.Message = sprintf('%s\n%s',msg,'Processing first image...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Processing first image...');
     progressdlg.Value = 0.75;
     start_processing_of_one_image(app);
     
     % Load the first image into the app!
-    progressdlg.Message = sprintf('%s\n%s',msg,'Displaying first image...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Displaying first image...');
     progressdlg.Value = 0.9;
     update_figure(app);
 
@@ -111,7 +111,7 @@ end
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
     % app.ProcessingLogTextArea.Value = '';
-    progressdlg.Message = sprintf('%s\n%s',msg,'Finished.')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Finished.');
     progressdlg.Value = 1;
     close(progressdlg);
     app.log_processing_message(app, 'Ready.');

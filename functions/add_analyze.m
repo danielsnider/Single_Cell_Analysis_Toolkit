@@ -24,20 +24,10 @@ function fun(app, createCallbackFcn)
   end
     
 
-  function Run_Analysis_Callback(app,event)
-    % Display log
-%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-%     app.StartupLogTextArea = txt_update;
-%     pause(0.1); % enough time for the log text area to appear on screen
-
+  function Play_Callback(app,event)
     if app.analyze{an_num}.run_button.Value
       do_analyze(app, an_num);
     end
-
-    % Delete log
-%     delete(app.StartupLogTextArea);
-% 	app.StartupLogTextArea.tx.String = {};
-           
   end
 
   try
@@ -110,7 +100,6 @@ function fun(app, createCallbackFcn)
       'Position', [480,421,218,41]);
 
     % Delete button
-
     delete_button = uibutton(tab, ...
       'Text', [app.Delete_Unicode.Text ''], ...
       'BackgroundColor', [.95 .95 .95], ...
@@ -123,12 +112,9 @@ function fun(app, createCallbackFcn)
       'Icon', 'play-button.png', ...
       'Value',0,...
       'BackgroundColor', [.95 .95 .95], ...
-      'ValueChangedFcn', createCallbackFcn(app, @Run_Analysis_Callback, true), ...
+      'ValueChangedFcn', createCallbackFcn(app, @Play_Callback, true), ...
       'Position', [369,352,26,23]);
 
- %       'Icon', 'play-button.png', ...
-
-    
     %% Set a display color to see in the figure
     app.analyze{an_num}.display_color = [];
 
