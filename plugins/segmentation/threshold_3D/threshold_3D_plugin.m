@@ -47,7 +47,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
   all_faces = {};
   all_vertices = {};
   z_depth = size(img,3);
-  figure(9762)
+  fig_3d = figure(9762); clf; set(fig_3d,'name','3D','NumberTitle', 'off');
   hold on
   % Render 2D Slices. Needed because 3D render makes a single 2D slice disappear
   for zid=1:z_depth
@@ -84,39 +84,55 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     all_vertices{zid+1} = h.Vertices;
   end
 
+  if ismember(debug_level,{'All','Result Only'})
+    axis tight
+    view(3)
+    rotate3d on
+    axis vis3d % disable strech-to-fill
+    set(gca, 'color','none')
+    set(gcf, 'color',[1 1 1])
+    camlight 
+    lighting gouraud
+    h.AmbientStrength = 0.3;
+    h.DiffuseStrength = 0.8;
+    h.SpecularStrength = 0.9;
+    h.SpecularExponent = 25;
+  else
+    delete(fig_3d);
+  end
+
   % Return result
   result = {};
   result.matrix = labelled_img;
   result.faces = all_faces;
   result.vertices = all_vertices;
 
-  % if ismember(debug_level,{'All','Result Only','Result With Seeds'})
-  %   f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-  %   % Display original image
-  %   % Cast img as double, had issues with 32bit
-  %   img8 = im2uint8(double(img));
-  %   if min(img8(:)) < prctile(img8(:),99.5)
-  %       min_max = [min(img8(:)) prctile(img8(:),99.5)];
-  %   else
-  %       min_max = [];
-  %   end
-  %   imshow3D(img8,[min_max]);
-  %   hold on
-  %   % Display color overlay
-  %   labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
-  %   labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
-  %   himage = imshow3D(im2uint8(labelled_rgb),[min_max]);
-  %   himage.AlphaData = labelled_perim*1;
-  %   if ismember(debug_level,{'All','Result With Seeds'})
-  %     if ~isequal(seeds,false)
-  %       seeds(labelled_img<1)=0;
-  %       % Display red dots for seeds
-  %       [xm,ym]=find(seeds);
-  %       hold on
-  %       plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
-  %     end
-  %   end
-  %   hold off
-  % end
-  
+  % Debug segmentation with color overlay
+  if ismember(debug_level,{'All','Result Only'})
+    num_objects = max(labelled_img(:));
+    max_intensity = max(img(:));
+    %colors = get_n_length_colormap('hsv',num_objects,'shuffle');
+    colors = [1 0 0];
+    seg_colored_img = cat(4, img, img, img);
+
+    % Make perimeter image
+    perim_labelled_img = [];
+    for zid = 1:size(labelled_img,3)
+      perim_labelled_img(:,:,zid) = bwperim(labelled_img(:,:,zid));
+    end
+    % perim_labelled_img = perim_labelled_img .* labelled_img; % reapply labels
+
+    % Burn in color segmentation lines
+    for idx=1:num_objects
+      object = perim_labelled_img == idx;
+      seg_colored_img(find(object)) = colors(1) * max_intensity;
+      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)) = colors(2) * max_intensity;
+      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)*2) = colors(3) * max_intensity;
+    end
+
+    % Display
+    f = figure(7409); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
+    imshow3D(uint16(seg_colored_img),[])
+  end
+
 end

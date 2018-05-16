@@ -11,6 +11,13 @@ function fun(app,ME)
     msg = msg;
     causeException = MException(msgID,msg);
     ME = addCause(ME,causeException);
+
+    busy_state_change(app,'not busy');
+
+    if isfield(app, 'progressdlg') && isvalid(app.progressdlg)
+      close(app.progressdlg)
+    end
+
     rethrow(ME)
   else
     rethrow(ME)

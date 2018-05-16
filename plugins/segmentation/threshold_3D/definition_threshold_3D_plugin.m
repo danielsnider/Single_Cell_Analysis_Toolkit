@@ -45,7 +45,7 @@ function [params, algorithm] = fun()
 
   n = n + 1;
   params(n).name = 'Display Figures';
-  params(n).default = 'Result With Seeds';
+  params(n).default = 'Result Only';
   params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';
   params(n).type = 'dropdown';
   params(n).options = {'All','Result Only','Off'};

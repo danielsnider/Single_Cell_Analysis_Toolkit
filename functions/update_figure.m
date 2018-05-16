@@ -11,7 +11,8 @@ function fun(app)
     %% Display Images
     % Initialize image of a composite of one or more channels
     first_chan_num = app.plates(plate_num).channels(1); % may not always be 1 in position 1, it's a crazy world out there
-    composite_img = uint16(zeros([size(app.image(first_chan_num).data),3]));
+    first_chan_2D_data = app.image(first_chan_num).data(:,:,1); % force 2D because update_figure only supports 2D slices
+    composite_img = uint16(zeros([size(first_chan_2D_data),3])); % 2D RGB image
 
     % Build composite image from enabled channels
     channel_nums = app.plates(plate_num).channels;
@@ -19,6 +20,12 @@ function fun(app)
     enabled_channel_nums = channel_nums(enabled_channels);
     for chan_num=[enabled_channel_nums]
       img = app.image(chan_num).data;
+
+      % Handle 3D by choosing one 2D slice
+      if size(img,3) > 1
+        z_slice = app.ZSliceDropDown.Value;
+        img = img(:,:,z_slice);
+      end
 
       % Scale image values according to the min max display sliders
       min_dyn_range_percent = app.plates(plate_num).channel_min(chan_num)/100;
@@ -81,8 +88,10 @@ function fun(app)
         continue
       end
       seg = app.segment{seg_num}.result.matrix;
+      % Handle 3D by choosing one 2D slice
       if size(seg,3) > 1
-          continue % 3D segments not supported yet
+        z_slice = app.ZSliceDropDown.Value;
+        seg = seg(:,:,z_slice);
       end
       gain = app.display.segment{seg_num}.gain_slider.Value/100;
       perimeter = app.display.segment{seg_num}.perimeter_toggle.Value;

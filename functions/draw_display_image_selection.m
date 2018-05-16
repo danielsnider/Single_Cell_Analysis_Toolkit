@@ -40,6 +40,8 @@ function fun(app)
     app.FieldDropDownLabel.Visible = 'off';
     app.TimepointDropDown.Visible = 'on';
     app.TimepointDropDownLabel.Visible = 'on';
+    app.ZSliceDropDown.Visible = 'on';
+    app.ZSliceDropDownLabel.Visible = 'on';
 
     % Populate Experiment Dropdown
     app.ExperimentDropDown.Items = app.plates(plate_num).experiments;
@@ -50,13 +52,26 @@ function fun(app)
     app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).timepoints);
     app.TimepointDropDown.ItemsData = app.plates(plate_num).keep_timepoints;
 
-    % Move Dropdown position up
+    % Populate ZSlice Dropdown
+    avail_z_slices = 1:size(app.plates(plate_num).img_files(1).chans(1).data,3);
+    app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},avail_z_slices);
+    app.ZSliceDropDown.ItemsData = avail_z_slices;
+
+    % Move TimepointDropDown position up
     pos = app.TimepointDropDown.Position;
     pos(2) = 255; % move vertically
     app.TimepointDropDown.Position = pos;
     pos = app.TimepointDropDownLabel.Position;
     pos(2) = 259; % move vertically
     app.TimepointDropDownLabel.Position = pos;
+
+    % Move ZSliceDropDown position up
+    pos = app.ZSliceDropDown.Position;
+    pos(2) = 226; % move vertically
+    app.ZSliceDropDown.Position = pos;
+    pos = app.ZSliceDropDownLabel.Position;
+    pos(2) = 230; % move vertically
+    app.ZSliceDropDownLabel.Position = pos;
 
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
     app.RowDropDown.Visible = 'on';

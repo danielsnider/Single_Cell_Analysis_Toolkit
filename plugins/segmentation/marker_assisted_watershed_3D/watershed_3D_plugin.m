@@ -78,7 +78,6 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
   %   imshow3D(bordercleared_img,[]);
   % end
 
-
   %% Remove objects that are too small or too large
   labelled_img = bwlabeln(filled_img);
   stats = regionprops(labelled_img,'area');
@@ -93,36 +92,31 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
   % Return result
   result = labelled_img;
 
-% 
-%   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
-%     f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-%     % Display original image
-%     % Cast img as double, had issues with 32bit
-%     img8 = im2uint8(double(img));
-%     if min(img8(:)) < prctile(img8(:),99.5)
-%         min_max = [min(img8(:)) prctile(img8(:),99.5)];
-%     else
-%         min_max = [];
-%     end
-%     imshow3D(img8,[min_max]);
-%     
-%     figure(7801) % hold on
-% 
-%     % Display color overlay
-%     labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
-%     labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
-%     himage = imshow3D(im2uint8(labelled_rgb),[min_max]);
-%     himage.AlphaData = labelled_perim*1;
-%     % if ismember(debug_level,{'All','Result With Seeds'})
-%     %   if ~isequal(seeds,false)
-%     %     seeds(labelled_img<1)=0;
-%     %     % Display red dots for seeds
-%     %     [xm,ym]=find(seeds);
-%     %     hold on
-%     %     plot(ym,xm,'or','markersize',2,'markerfacecolor','r','markeredgecolor','r')
-%     %   end
-%     % end
-%     hold off
-%   end
-%   
+  % Debug segmentation with color overlay
+  if ismember(debug_level,{'All','Result Only','Result With Seeds'})
+    num_objects = max(labelled_img(:));
+    max_intensity = max(img(:));
+    colors = get_n_length_colormap('hsv',num_objects,'shuffle');
+    seg_colored_img = cat(4, img, img, img);
+
+    % Make labelled perimeters
+    perim_labelled_img = [];
+    for zid = 1:size(labelled_img,3)
+      perim_labelled_img(:,:,zid) = bwperim(labelled_img(:,:,zid));
+    end
+    perim_labelled_img = perim_labelled_img .* labelled_img; % reapply labels
+
+    % Burn in color segmentation lines
+    for idx=1:num_objects
+      object = perim_labelled_img == idx;
+      seg_colored_img(find(object)) = colors(idx,1) * max_intensity;
+      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)) = colors(idx,2) * max_intensity;
+      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)*2) = colors(idx,3) * max_intensity;
+    end
+
+    % Display
+    f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
+    imshow3D(uint16(seg_colored_img),[])
+  end
+
 end
