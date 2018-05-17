@@ -1,7 +1,7 @@
 function fun(app)
 
   % Delete input data plates
-  if isfield(app, 'input_data')
+  if isprop(app, 'input_data')
     if isfield(app.input_data, 'tabgp')
       delete(app.input_data.tabgp);
     end

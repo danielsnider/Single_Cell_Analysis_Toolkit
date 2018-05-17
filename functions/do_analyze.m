@@ -3,6 +3,7 @@ function fun(app, an_num)
     busy_state_change(app,'busy');
 
     algo_name = app.analyze{an_num}.AlgorithmDropDown.Value;
+    algo_name_pretty = app.analyze{an_num}.AlgorithmDropDown.Items{find(strcmp(app.analyze{an_num}.AlgorithmDropDown.ItemsData,app.analyze{an_num}.AlgorithmDropDown.Value))};
     algo_params = {};
 
     if ~isempty(app.ResultTable_filtered)
@@ -16,6 +17,10 @@ function fun(app, an_num)
       uialert(app.UIFigure,msg,'Result Data Not Found', 'Icon','error');
       return
     end
+
+    progressdlg_msg = sprintf('Running analysis %s', algo_name_pretty);
+    app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', progressdlg_msg, 'Cancelable', 'on');
+    assignin('base','progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
     % Create list of algorithm parameter values to be passed to the plugin
     if isfield(app.analyze{an_num},'fields')
@@ -31,7 +36,8 @@ function fun(app, an_num)
 
     % Create list of segmentation results to be passed to the plugin
     if isfield(app.analyze{an_num}, 'SegmentDropDown')
-      for drop_num=1:length(app.analyze{an_num}.SegmentDropDown)
+      num_segments = length(app.analyze{an_num}.SegmentDropDown);
+      for drop_num=1:num_segments
         param_idx = app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.param_idx;
         if isfield(app.analyze{an_num}.SegmentDropDown{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck.Value
           algo_params(param_idx) = {false};
@@ -47,6 +53,11 @@ function fun(app, an_num)
           return
         end
         dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
+        dep_seg_name = app.segment{dep_seg_num}.Name.Value;
+
+        app.progressdlg.Message = sprintf('%s\n%s',progressdlg_msg,sprintf('Segmenting %s...', dep_seg_name));
+        app.progressdlg.Value = (0.5 / num_segments) + ((drop_num-1) / num_segments);
+
         segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, app.image); % operate on the last loaded image in app.img
         if ~algo_supports_3D
           segment_result = segment_result.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
@@ -177,9 +188,13 @@ function fun(app, an_num)
   end
 
   try
+    app.progressdlg.Message = sprintf('%s...',progressdlg_msg);
+    app.progressdlg.Value = 0.7;
+
     % Call algorithm
     feval(algo_name, plugin_name, an_num, algo_params{:});
 
+    close(app.progressdlg);
     busy_state_change(app,'not busy');
 
   % Catch Plugin Error

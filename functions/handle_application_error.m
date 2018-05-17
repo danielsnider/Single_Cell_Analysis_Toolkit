@@ -16,7 +16,7 @@ function handle_application_error(app,ME)
 
     busy_state_change(app,'not busy');
 
-    if isfield(app, 'progressdlg') && isvalid(app.progressdlg)
+    if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
       close(app.progressdlg)
     end
 

@@ -55,7 +55,7 @@ function result = fun(app, seg_num, createCallbackFcn)
   % Callback for when parameter value is changed by the user
   function do_segmentation_(app, Update)
     if app.segment{seg_num}.run_button{1}.Value
-      msg = sprintf('Refreshing segmentation...')
+      msg = sprintf('Refreshing segmentation...');
       progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
       'Message',msg,'Indeterminate','on');
 

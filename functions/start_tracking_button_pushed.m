@@ -31,7 +31,7 @@ function fun(app)
 
   % The column in the measurements table that denotes time passing
   % time_column_name = app.TimeColumnDropDown.Value;
-  time_column_name = 'timepoints';
+  time_column_name = 'timepoint';
 
   % Loop over images tracking each one
   TrackedTable = table();

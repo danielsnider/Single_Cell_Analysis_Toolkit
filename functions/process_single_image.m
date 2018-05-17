@@ -13,8 +13,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
-    app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
-    'Message', msg, 'Cancelable', 'on');
+    app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', msg, 'Cancelable', 'on');
+    assignin('base','progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;

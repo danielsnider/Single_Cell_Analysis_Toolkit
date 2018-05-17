@@ -20,6 +20,15 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   seg_to_name = fields(seg_to);
   seg_to_name = seg_to_name{1}; % expecting only one segment as defined by the plugin definition
   seg_to = seg_to.(seg_to_name);
+
+  if ~isfield(seg_to,'faces') | ~isfield(seg_to,'vertices')
+    title_ = 'Input Segment Error';
+    msg = sprintf('Error in ''%s'' plugin. The input segment ''%s'' that the user has chosen is not in the correct 3D format. Please double check the algorithm choice in the settings for the ''%s'' segment. Nothing to do.', plugin_name, seg_to_name, seg_to_name);
+    f = errordlg(msg,title_);
+    err = MException('PLUGIN:input_error_3D',msg);
+    throw(err);
+  end
+
   to_matrix = seg_to.matrix; % expecting this to be available
   to_faces = seg_to.faces; % expecting this to be available 
   to_vertices = seg_to.vertices; % expecting this to be available
