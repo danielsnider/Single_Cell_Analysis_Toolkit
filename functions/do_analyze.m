@@ -120,7 +120,8 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-        algo_params(param_idx) = {app.ResultTable_for_display};
+        subsetTable = get_current_displayed_resultTable(app);
+        algo_params(param_idx) = {subsetTable};
       end
     end
     

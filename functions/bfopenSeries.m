@@ -1,4 +1,4 @@
-function [result] = bfopen(id, varargin)
+function [result] = bfopen(id, series_num, varargin)
 % Open microscopy images using Bio-Formats.
 %
 % SYNOPSIS r = bfopen(id)
@@ -128,99 +128,100 @@ if planeSize/(1024)^3 >= 2,
 end
 
 numSeries = r.getSeriesCount();
-result = cell(numSeries, 2);
+result = cell(1, 2);
 
 globalMetadata = r.getGlobalMetadata();
 
-for s = 1:numSeries
-    fprintf('Reading series #%d', s);
-    r.setSeries(s - 1);
-    pixelType = r.getPixelType();
-    bpp = javaMethod('getBytesPerPixel', 'loci.formats.FormatTools', ...
-                     pixelType);
-    bppMax = power(2, bpp * 8);
-    numImages = r.getImageCount();
-    imageList = cell(numImages, 2);
-    colorMaps = cell(numImages);
-    for i = 1:numImages
-        if mod(i, 72) == 1
-            fprintf('\n    ');
-        end
-        % fprintf('.');
-        arr = bfGetPlane(r, i, varargin{:});
+s = series_num;
 
-        % retrieve color map data
-        if bpp == 1
-            colorMaps{s, i} = r.get8BitLookupTable()';
-        else
-            colorMaps{s, i} = r.get16BitLookupTable()';
-        end
+fprintf('Reading series #%d', s);
+r.setSeries(s - 1);
+pixelType = r.getPixelType();
+bpp = javaMethod('getBytesPerPixel', 'loci.formats.FormatTools', ...
+                 pixelType);
+bppMax = power(2, bpp * 8);
+numImages = r.getImageCount();
+imageList = cell(numImages, 2);
+colorMaps = cell(numImages);
+for i = 1:numImages
+    if mod(i, 72) == 1
+        fprintf('\n    ');
+    end
+    % fprintf('.');
+    arr = bfGetPlane(r, i, varargin{:});
 
-        warning_state = warning ('off');
-        if ~isempty(colorMaps{s, i})
-            newMap = single(colorMaps{s, i});
-            newMap(newMap < 0) = newMap(newMap < 0) + bppMax;
-            colorMaps{s, i} = newMap / (bppMax - 1);
-        end
-        warning (warning_state);
-
-
-        % build an informative title for our figure
-        label = id;
-        if numSeries > 1
-            seriesName = char(r.getMetadataStore().getImageName(s - 1));
-            if ~isempty(seriesName)
-                label = [label, '; ', seriesName];
-            else
-                qs = int2str(s);
-                label = [label, '; series ', qs, '/', int2str(numSeries)];
-            end
-        end
-        if numImages > 1
-            qi = int2str(i);
-            label = [label, '; plane ', qi, '/', int2str(numImages)];
-            if r.isOrderCertain()
-                lz = 'Z';
-                lc = 'C';
-                lt = 'T';
-            else
-                lz = 'Z?';
-                lc = 'C?';
-                lt = 'T?';
-            end
-            zct = r.getZCTCoords(i - 1);
-            sizeZ = r.getSizeZ();
-            if sizeZ > 1
-                qz = int2str(zct(1) + 1);
-                label = [label, '; ', lz, '=', qz, '/', int2str(sizeZ)];
-            end
-            sizeC = r.getSizeC();
-            if sizeC > 1
-                qc = int2str(zct(2) + 1);
-                label = [label, '; ', lc, '=', qc, '/', int2str(sizeC)];
-            end
-            sizeT = r.getSizeT();
-            if sizeT > 1
-                qt = int2str(zct(3) + 1);
-                label = [label, '; ', lt, '=', qt, '/', int2str(sizeT)];
-            end
-        end
-
-        % save image plane and label into the list
-        imageList{i, 1} = arr;
-        imageList{i, 2} = label;
+    % retrieve color map data
+    if bpp == 1
+        colorMaps{s, i} = r.get8BitLookupTable()';
+    else
+        colorMaps{s, i} = r.get16BitLookupTable()';
     end
 
-    % save images and metadata into our master series list
-    result{s, 1} = imageList;
+    warning_state = warning ('off');
+    if ~isempty(colorMaps{s, i})
+        newMap = single(colorMaps{s, i});
+        newMap(newMap < 0) = newMap(newMap < 0) + bppMax;
+        colorMaps{s, i} = newMap / (bppMax - 1);
+    end
+    warning (warning_state);
 
-    % extract metadata table for this series
-    seriesMetadata = r.getSeriesMetadata();
-    javaMethod('merge', 'loci.formats.MetadataTools', ...
-               globalMetadata, seriesMetadata, 'Global ');
-    result{s, 2} = seriesMetadata;
-    result{s, 3} = colorMaps;
-    result{s, 4} = r.getMetadataStore();
-    fprintf('\n');
+
+    % build an informative title for our figure
+    label = id;
+    if numSeries > 1
+        seriesName = char(r.getMetadataStore().getImageName(s - 1));
+        if ~isempty(seriesName)
+            label = [label, '; ', seriesName];
+        else
+            qs = int2str(s);
+            label = [label, '; series ', qs, '/', int2str(numSeries)];
+        end
+    end
+    if numImages > 1
+        qi = int2str(i);
+        label = [label, '; plane ', qi, '/', int2str(numImages)];
+        if r.isOrderCertain()
+            lz = 'Z';
+            lc = 'C';
+            lt = 'T';
+        else
+            lz = 'Z?';
+            lc = 'C?';
+            lt = 'T?';
+        end
+        zct = r.getZCTCoords(i - 1);
+        sizeZ = r.getSizeZ();
+        if sizeZ > 1
+            qz = int2str(zct(1) + 1);
+            label = [label, '; ', lz, '=', qz, '/', int2str(sizeZ)];
+        end
+        sizeC = r.getSizeC();
+        if sizeC > 1
+            qc = int2str(zct(2) + 1);
+            label = [label, '; ', lc, '=', qc, '/', int2str(sizeC)];
+        end
+        sizeT = r.getSizeT();
+        if sizeT > 1
+            qt = int2str(zct(3) + 1);
+            label = [label, '; ', lt, '=', qt, '/', int2str(sizeT)];
+        end
+    end
+
+    % save image plane and label into the list
+    imageList{i, 1} = arr;
+    imageList{i, 2} = label;
 end
+
+% save images and metadata into our master series list
+result{1, 1} = imageList;
+
+% extract metadata table for this series
+seriesMetadata = r.getSeriesMetadata();
+javaMethod('merge', 'loci.formats.MetadataTools', ...
+           globalMetadata, seriesMetadata, 'Global ');
+result{1, 2} = seriesMetadata;
+result{1, 3} = colorMaps;
+result{1, 4} = r.getMetadataStore();
+fprintf('\n');
+
 r.close();

@@ -49,11 +49,20 @@ function fun(app)
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
 
     % Populate Timepoint Dropdown
-    app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},app.plates(plate_num).timepoints);
+    app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},unique([app.plates(plate_num).img_files_subset.timepoint]));
     app.TimepointDropDown.ItemsData = app.plates(plate_num).keep_timepoints;
 
     % Populate ZSlice Dropdown
-    avail_z_slices = 1:size(app.plates(plate_num).img_files(1).chans(1).data,3);
+    img_num = app.ExperimentDropDown.Value;
+    img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
+    timepoint = app.TimepointDropDown.Value;
+    selected_timepoint_idx = [app.ExperimentDropDown.UserData.timepoint] == timepoint;
+    selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
+    select_idx = selected_img_name_idx & selected_timepoint_idx;
+    avail_z_slices = app.plates(plate_num).keep_zslices;
+    if ~isempty(app.ExperimentDropDown.UserData(select_idx).chans)
+      avail_z_slices = 1:size(app.ExperimentDropDown.UserData(select_idx).chans(1).data,3);
+    end
     app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},avail_z_slices);
     app.ZSliceDropDown.ItemsData = avail_z_slices;
 

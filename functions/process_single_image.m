@@ -13,6 +13,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
+    if isvalid(app.progressdlg)
+      close(app.progressdlg)
+    end
     app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', msg, 'Cancelable', 'on');
     assignin('base','progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   end
@@ -33,6 +36,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     % Load Image
     if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
       img_path = image_file.chans(chan_num).data; % data is already in memory here
+      % img_path = image_file;
     else
       img_path = image_file.chans(chan_num).path;
     end

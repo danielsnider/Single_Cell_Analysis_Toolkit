@@ -16,6 +16,17 @@ function img_path = fun(app, chan_num)
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
+    if isempty(multi_channel_img.chans)
+      % The data for the current image is not in memory so load whole series. this is needed because we only load one series at a time into memory
+      series_name = multi_channel_img.experiment;
+      series_id = find(strcmp(app.ExperimentDropDown.Items,series_name));
+      app.ExperimentDropDown.Value = series_id;
+      plate_num = app.PlateDropDown.Value;
+      parse_input_structure_XYZCT_Bio_Formats(app,plate_num);
+      changed_FilterInput(app, plate_num);
+      multi_channel_img = get_current_multi_channel_image(app);
+    end
+
     img_data = multi_channel_img.chans(chan_num).data;
     img_path = img_data; % overloading functionality, putting data where the path to the data usually is because the data is already in memory and the path is not neccessary
 

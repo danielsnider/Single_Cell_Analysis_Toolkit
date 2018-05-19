@@ -90,7 +90,9 @@ function func(app, plate_num)
         for img_num=1:length(app.plates(plate_num).img_files_subset)
           for chan_num=app.plates(plate_num).img_files_subset(img_num).channel_nums
             keep_zslices = app.plates(plate_num).(['keep_' filter_name]);
-            app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data = app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data(:,:,keep_zslices);
+            if ~isempty(app.plates(plate_num).img_files_subset(img_num).chans)
+              app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data = app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data(:,:,keep_zslices);
+            end
           end
         end
         % Reduce number of zslices for app.image(chan_num).data

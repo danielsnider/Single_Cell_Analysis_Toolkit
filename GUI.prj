@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration file="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="1561907173" file="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
@@ -94,6 +94,7 @@
       <file>${PROJECT_ROOT}\015-interface-1.png</file>
       <file>${PROJECT_ROOT}\016-interface.png</file>
       <file>${PROJECT_ROOT}\017-photo.png</file>
+      <file>${PROJECT_ROOT}\analyze_plugins.mat</file>
       <file>${PROJECT_ROOT}\camera.png</file>
       <file>${PROJECT_ROOT}\check-box-empty.png</file>
       <file>${PROJECT_ROOT}\darker-or-brightter-button.png</file>
@@ -111,10 +112,12 @@
       <file>${PROJECT_ROOT}\filter-tool-black-shape.png</file>
       <file>${PROJECT_ROOT}\font-size.png</file>
       <file>${PROJECT_ROOT}\functions</file>
+      <file>${PROJECT_ROOT}\github.png</file>
       <file>${PROJECT_ROOT}\GUI.mlapp</file>
       <file>${PROJECT_ROOT}\GUI.prj</file>
       <file>${PROJECT_ROOT}\GUI2017b.mlapp</file>
       <file>${PROJECT_ROOT}\list.png</file>
+      <file>${PROJECT_ROOT}\measure_plugins.mat</file>
       <file>${PROJECT_ROOT}\open-folder-outline.png</file>
       <file>${PROJECT_ROOT}\open-folder.png</file>
       <file>${PROJECT_ROOT}\painter-palette.png</file>
@@ -127,6 +130,7 @@
       <file>${PROJECT_ROOT}\ruler.PNG</file>
       <file>${PROJECT_ROOT}\saved_app_last_closed.mat</file>
       <file>${PROJECT_ROOT}\saved_app_last_closed2.mat</file>
+      <file>${PROJECT_ROOT}\segment_plugins.mat</file>
       <file>${PROJECT_ROOT}\select.png</file>
       <file>${PROJECT_ROOT}\undo-arrow_shift_right.png</file>
     </fileset.resources>

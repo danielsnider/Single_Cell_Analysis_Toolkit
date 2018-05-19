@@ -116,7 +116,7 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
 
     % Display
     f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-    imshow3D(uint16(seg_colored_img),[])
+    imshow3D(uint8(seg_colored_img),[])
   end
 
 end

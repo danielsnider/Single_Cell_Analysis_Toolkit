@@ -1,7 +1,7 @@
 function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_points, end_points, dist_font_size, id_font_size, color_by_tracking_ids, ObjectsInFrame)
-  Distances = Distances.data;
-  start_points = start_points.data;
-  end_points = end_points.data;
+  Distances = ObjectsInFrame.(Distances.name);
+  start_points = ObjectsInFrame.(start_points.name);
+  end_points = ObjectsInFrame.(end_points.name);
   num_chans = 2;
   timepoint = unique(ObjectsInFrame.timepoint);
   any_objects = ~isempty(Distances);

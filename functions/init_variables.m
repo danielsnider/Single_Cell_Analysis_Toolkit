@@ -51,6 +51,9 @@ function fun(app)
   app.Button_ViewFilteredData.Visible = 'off';
   app.Button_ViewOverlaidMeasurements.Visible = 'off';
 
+  app.progressdlg = uiprogressdlg(app.UIFigure,'Title','','Message', '');
+  close(app.progressdlg);
+
   app.FiltersTextArea.UserData.LastValue = {''};
   app.ProcessingLogTextArea.Value = {''};
 
@@ -64,5 +67,7 @@ function fun(app)
   app.DisplayMeasureCheckBox.Value = false;
   app.DisplayMeasureDropDown.Items = {};
 
+  busy_state_change(app,'not busy');
+  
   app.ProgressSlider.Value = 0; % reset progress bar to 0
 end

@@ -21,7 +21,10 @@ function fun(app, createCallbackFcn)
   
   try
     plate_num = app.PlateDropDown.Value;
-    plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
+    plugin_definitions = dir('./plugins/segmoeuentation/**/definition*.m');
+    if isempty(plugin_definitions)
+        load('segment_plugins.mat');
+    end
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)

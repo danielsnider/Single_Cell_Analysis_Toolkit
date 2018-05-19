@@ -30,6 +30,9 @@ function fun(app, createCallbackFcn)
   try
     plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/preprocess/**/definition*.m');
+    if isempty(plugin_definitions)
+        load('preprocess_plugins.mat');
+    end
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)

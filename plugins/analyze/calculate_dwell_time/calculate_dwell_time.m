@@ -96,12 +96,12 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
   if isempty(save_path)
       save_path = '';
   end
-  % save_path = ['\' save_path]; TODO USE FULLPATH
 
   %% Save table
   date_str = datestr(now,'yyyymmddTHHMMSS');
-  safe_save_path = sprintf('%s_%s.csv', save_path, date_str); % add date string to avoid overwritting and busy permission denied errors
-  writetable(ConsecutiveTable,safe_save_path);
+  safe_save_path = sprintf('%s_stats.csv', date_str); % add date string to avoid overwritting and busy permission denied errors
+  full_path = fullfile(save_path,safe_save_path);
+  writetable(ConsecutiveTable,full_path);
 
   %% Calculate Summary Table
   SummaryTable = table();
@@ -124,7 +124,7 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     iterSummaryTable.tracked_samples = length(unique(GroupResultTable.(track_by.name)));
     iterSummaryTable.total_samples = height(GroupResultTable);
     iterSummaryTable.count_contact = height(GroupConsecTable);
-    iterSummaryTable.percentage_contact = height(GroupConsecTable) / height(GroupResultTable);
+    iterSummaryTable.percentage_contact = height(GroupConsecTable) / length(unique(GroupResultTable.(track_by.name)));
     iterSummaryTable.sum_contact = sum(GroupConsecTable.ConsecutiveTime);
     iterSummaryTable.mean_contact = mean(GroupConsecTable.ConsecutiveTime);
     iterSummaryTable.median_contact = median(GroupConsecTable.ConsecutiveTime);
@@ -150,7 +150,8 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     SummaryTable = [SummaryTable; iterSummaryTable];
   end
 
-  summary_save_path = sprintf('%s_%s_summary.csv', save_path, date_str); % add date string to avoid overwritting and busy permission denied errors
-  writetable(SummaryTable,summary_save_path,'WriteRowNames',true);
+  summary_save_path = sprintf('%s_summary.csv', date_str); % add date string to avoid overwritting and busy permission denied errors
+  full_path = fullfile(save_path,summary_save_path);
+  writetable(SummaryTable,full_path,'WriteRowNames',true);
 
 end

@@ -31,6 +31,9 @@ function fun(app, createCallbackFcn)
     end
 
     plugin_definitions = dir('./plugins/measurements/**/definition*.m');
+    if isempty(plugin_definitions)
+        load('measure_plugins.mat');
+    end
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
@@ -40,6 +43,15 @@ function fun(app, createCallbackFcn)
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{plugin_num} = plugin_name{2};
       plugin_pretty_names{plugin_num} = algorithm.name;
+    end
+
+    if isempty(plugin_names)
+      msg = 'Sorry, no measurement plugins found.';
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
+      end
+      uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');
+      return
     end
 
     % Setup
