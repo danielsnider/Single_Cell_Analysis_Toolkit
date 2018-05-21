@@ -1,12 +1,12 @@
 function [params, algorithm] = fun()
 
   algorithm.name = 'Count Sub-Segments';
-  algorithm.help = '';
+  algorithm.help = 'Count the number of objects found within a segment.';
   algorithm.maintainer = 'Justin Sing <justincsing@gmail.com>';
 
   n = 0;
   n = n + 1;
-  params(n).name = 'Segments to Measure';
+  params(n).name = 'Primary Segments to Measure';
   params(n).default = '';
   params(n).help = 'The primary segment you wish to measure';
   params(n).type = 'segment_listbox';
