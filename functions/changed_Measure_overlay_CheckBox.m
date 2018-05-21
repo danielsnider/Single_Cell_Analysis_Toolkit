@@ -1,4 +1,8 @@
 function fun(app)
+  if no_images_loaded(app)
+      return
+  end
+
   value = app.DisplayMeasureCheckBox.Value;
   
   % Currently selected plate number

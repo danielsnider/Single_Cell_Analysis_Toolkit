@@ -17,7 +17,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       close(app.progressdlg)
     end
     app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', msg, 'Cancelable', 'on');
-    assignin('base','progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+    assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
@@ -78,20 +78,31 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     primary_seg_data = seg_result{primary_seg_num}.matrix;
     primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
     seg_result{primary_seg_num}.matrix = primary_seg_data;
-    NumberOfCells = max(primary_seg_data(:));
     % Loop over non-primary segment results and properly set the pixel values to be what is found in the region of the primary id
     for seg_num=1:length(app.segment)
       if seg_num==primary_seg_num % skip primary segment, only operate on subcomponents
         continue
       end
       sub_seg_data = seg_result{seg_num}.matrix; 
-      new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
-      logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
-      new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
+      if app.RemoveSecondarySegments_CheckBox.Value
+        % Remove all segments found outside of the primary segment.
+        new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
+        logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
+        new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
+      else
+        % Do not remove all segments found outside of the primary segment.
+        new_sub_seg_data = sub_seg_data;
+      end
       seg_result{seg_num}.matrix = new_sub_seg_data;
     end
+    % Remove primary segments found outside of a chosen secondary segment.
+    if app.RemovePrimarySegments_CheckBox.Value
+      secondary_seg_data = seg_result{app.RemovePrimarySegmentsOutside.Value}.matrix;
+      primary_seg_data(secondary_seg_data==0)=0; % do remove of primary segments found outside of a chosen secondary segment
+      primary_seg_data = bwlabel(primary_seg_data);
+      seg_result{primary_seg_num}.matrix = primary_seg_data;
+    end
   end
-  
 
   %% Perform Measurements
   if ~is_parallel_processing

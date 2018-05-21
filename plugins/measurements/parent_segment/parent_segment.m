@@ -20,7 +20,7 @@ function MeasureTable = func(plugin_name, plugin_num, primary_seg, sub_seg)
   primary_seg = primary_seg.(primary_seg_name); % expecting only a matrix of the segmented objects
 
   % Get centroid locations of subsegments in linear index form
-  sub_seg_stats = regionprops('table',sub_seg,'Centroid');
+  sub_seg_stats = regionprops('table',bwlabel(sub_seg),'Centroid');
   sub_seg_centroid_x = round(sub_seg_stats.Centroid(:,2));
   sub_seg_centroid_y = round(sub_seg_stats.Centroid(:,1));
   sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y);

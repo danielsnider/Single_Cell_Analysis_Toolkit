@@ -20,7 +20,7 @@ function fun(app, an_num)
 
     progressdlg_msg = sprintf('Running analysis %s', algo_name_pretty);
     app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', progressdlg_msg, 'Cancelable', 'on');
-    assignin('base','progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+    assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
     % Create list of algorithm parameter values to be passed to the plugin
     if isfield(app.analyze{an_num},'fields')

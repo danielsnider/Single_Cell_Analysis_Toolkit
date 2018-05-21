@@ -52,6 +52,7 @@ function fun(app)
   app.Button_ViewOverlaidMeasurements.Visible = 'off';
 
   app.progressdlg = uiprogressdlg(app.UIFigure,'Title','','Message', '');
+  assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   close(app.progressdlg);
 
   app.FiltersTextArea.UserData.LastValue = {''};
@@ -64,10 +65,13 @@ function fun(app)
 
   app.ChooseplatemapEditField.Value = '';
 
+
+  % Measure Tab
   app.DisplayMeasureCheckBox.Value = false;
   app.DisplayMeasureDropDown.Items = {};
+  app.RemoveSecondarySegments_CheckBox.Enable = false;
+  app.RemovePrimarySegments_CheckBox.Enable = false;
+  app.RemovePrimarySegmentsOutside.Enable = false;
 
   busy_state_change(app,'not busy');
-  
-  app.ProgressSlider.Value = 0; % reset progress bar to 0
 end

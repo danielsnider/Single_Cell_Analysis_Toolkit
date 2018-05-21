@@ -1,5 +1,9 @@
 function fun(app)
   try
+    if no_images_loaded(app)
+        return
+    end
+
     % Currently selected plate number
     plate_num = app.PlateDropDown.Value;
 

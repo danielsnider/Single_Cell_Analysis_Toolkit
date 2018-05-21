@@ -1,4 +1,7 @@
 function fun(app, createCallbackFcn)
+  if no_images_loaded(app)
+      return
+  end
 
   function changed_MeasureName(app, event)
     % Update tab title

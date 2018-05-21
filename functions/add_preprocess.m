@@ -1,4 +1,7 @@
 function fun(app, createCallbackFcn)
+  if no_images_loaded(app)
+      return
+  end
   
   function Delete_Callback(app, event)
     if proc_num < length(app.preprocess)
