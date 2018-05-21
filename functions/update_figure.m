@@ -55,6 +55,12 @@ function fun(app)
       chan_num = app.display.channel_override;
       img = app.image(chan_num).data;
 
+      % Handle 3D by choosing one 2D slice
+      if size(img,3) > 1
+        z_slice = app.ZSliceDropDown.Value;
+        img = img(:,:,z_slice);
+      end
+
       % Scale image values according to the min max display sliders
       min_dyn_range_percent = app.plates(plate_num).channel_min(chan_num);
       max_dyn_range_percent = app.plates(plate_num).channel_max(chan_num);
@@ -72,7 +78,7 @@ function fun(app)
 
     % Display
     f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off');
-    if ndims(composite_img) == 3
+    if ndims(composite_img) <= 3
       imshow(composite_img,[]);
     elseif ndims(composite_img) == 4
       imshow3D(composite_img,[]);

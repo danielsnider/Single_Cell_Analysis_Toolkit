@@ -30,6 +30,7 @@ function fun(app, createCallbackFcn)
       return
     end
 
+    plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/measurements/**/definition*.m');
     if isempty(plugin_definitions)
         load('measure_plugins.mat');
@@ -40,9 +41,14 @@ function fun(app, createCallbackFcn)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       [params, algorithm] = eval(plugin_name);
+      if ~strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if isfield(algorithm,'supports_3D') && algorithm.supports_3D
+          continue % unsupported plugin due to it having 3D support
+        end
+      end
       plugin_name = strsplit(plugin_name,'definition_');
-      plugin_names{plugin_num} = plugin_name{2};
-      plugin_pretty_names{plugin_num} = algorithm.name;
+      plugin_names{length(plugin_names)+1} = plugin_name{2};
+      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
     end
 
     if isempty(plugin_names)

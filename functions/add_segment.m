@@ -36,6 +36,11 @@ function fun(app, createCallbackFcn)
           continue % unsupported plugin due to lack of 3D support
         end
       end
+      if ~strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if isfield(algorithm,'supports_3D') && algorithm.supports_3D
+          continue % unsupported plugin due to it having 3D support
+        end
+      end
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{length(plugin_names)+1} = plugin_name{2};
       plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;

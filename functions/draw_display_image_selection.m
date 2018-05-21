@@ -79,7 +79,7 @@ function fun(app)
     pos(2) = 226; % move vertically
     app.ZSliceDropDown.Position = pos;
     pos = app.ZSliceDropDownLabel.Position;
-    pos(2) = 230; % move vertically
+    pos(2) = 234; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
