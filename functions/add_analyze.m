@@ -33,6 +33,7 @@ function fun(app, createCallbackFcn)
   try
     plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/analyze/**/definition*.m');
+    % save('analyze_plugins.mat','plugin_definitions');
     if isempty(plugin_definitions)
         load('analyze_plugins.mat');
     end

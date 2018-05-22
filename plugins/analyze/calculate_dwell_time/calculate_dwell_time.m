@@ -89,6 +89,14 @@ function fun(plugin_name, plugin_num, analyze_value, is_less_than, is_greater_th
     ConsecutiveTable(:,save_additional_info.name) = all_additional_info';
   end
 
+  % Check if empty
+  if isempty(ConsecutiveTable)
+    title_ = 'No Consecutive Values Found!';
+    msg = sprintf('No values were found to be within the range provided by the user. Try collecting more data or loosening the allowed range in the parameter section of the ''%s'' plugin.', plugin_name);
+    f = errordlg(msg,title_);
+    return
+  end
+
   % Check if save path is empty, ask the human
   if isempty(save_path)
     save_path = uigetdir('\','Choose a folder to save to');

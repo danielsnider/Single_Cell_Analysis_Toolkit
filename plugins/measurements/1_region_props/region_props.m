@@ -1,4 +1,5 @@
 function MeasureTable = func(plugin_name, plugin_num, segments, stats_per_label, imgs, stats_per_channel)
+  % TODO: Known issue: if the number of labels varies between segments you'll end up with NaNs for missing things. The core issue is that this plugin assumes there to be the same number of segments per segment channel.
 
   MeasureTable = table();
 

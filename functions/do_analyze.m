@@ -134,10 +134,13 @@ function fun(app, an_num)
           continue
         end
         meas = {};
-        meas_name = app.analyze{an_num}.MeasurementListBox{drop_num}.Value;
-        meas.name = meas_name;
-        meas.pretty_name = strrep(meas_name, '_', ' '); % replace underscores with spaces for added prettyness
-        meas.data = ResultTable{:,meas_name};
+        meas_names = app.analyze{an_num}.MeasurementListBox{drop_num}.Value;
+        meas.names = meas_names;
+        meas.pretty_names = strrep(meas_names, '_', ' '); % replace underscores with spaces for added prettyness
+        for meas_name = meas_names
+          meas_name = meas_name{:};
+          meas.(meas_name) = ResultTable{:,meas_name};
+        end
         algo_params(param_idx) = {meas};
       end
     end

@@ -44,6 +44,6 @@ function MeasureTable = func(plugin_name, plugin_num, primary_seg, sub_seg)
   end
 
   % Save Output
-  MeasureTable.parent_id = parent_ids;
-  MeasureTable.parent_UUID = parent_UUIDs';
+  MeasureTable.([primary_seg_name '_Num']) = parent_ids;
+  MeasureTable.([primary_seg_name '_UUID']) = parent_UUIDs';
 end

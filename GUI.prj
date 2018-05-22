@@ -3,7 +3,7 @@
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.0</param.version>
+    <param.version>1.1</param.version>
     <param.authnamewatermark />
     <param.email />
     <param.company />
@@ -40,7 +40,6 @@
     <unset>
       <param.icon />
       <param.icons />
-      <param.version />
       <param.authnamewatermark />
       <param.email />
       <param.company />
@@ -124,6 +123,7 @@
       <file>${PROJECT_ROOT}\play-button.png</file>
       <file>${PROJECT_ROOT}\plugins</file>
       <file>${PROJECT_ROOT}\plus-black-symbol.png</file>
+      <file>${PROJECT_ROOT}\preprocess_plugins.mat</file>
       <file>${PROJECT_ROOT}\question-mark.png</file>
       <file>${PROJECT_ROOT}\question-sign.png</file>
       <file>${PROJECT_ROOT}\rounded-black-square-shape.png</file>

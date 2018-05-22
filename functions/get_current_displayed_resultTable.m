@@ -22,9 +22,8 @@ function subsetTable = fun(app)
       ImageName = app.plates(plate_num).img_files_subset(img_num).ImageName;
       selector = ismember(app.ResultTable_for_display.ImageName,ImageName);
     elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
-      img_num = app.ExperimentDropDown.Value;
       timepoint = app.TimepointDropDown.Value;
-      ImageName = app.plates(plate_num).img_files_subset(img_num).ImageName;
+      ImageName = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
       selector1 = ismember(app.ResultTable_for_display.ImageName,ImageName);
       selector2 = ismember(app.ResultTable_for_display.timepoint,timepoint);
       selector = selector1 & selector2;

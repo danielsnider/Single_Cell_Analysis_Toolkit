@@ -32,12 +32,14 @@ function fun(app, plate_num)
   %   close(app.progressdlg)
   % end
   img_num = app.ExperimentDropDown.Value;
-  if ~ischar(img_num) % only happens on first startup
-      img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
-      msg = sprintf('Loading image stack %s', img_name);
-      progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
-      'Message',msg, 'Indeterminate','on');
+  if ~isempty(img_num) % only happens on first startup
+    img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
+    msg = sprintf('Loading image stack %s', img_name);
+  else
+    msg = sprintf('Scanning image stacks.');
   end
+  progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+  'Message',msg, 'Indeterminate','on');
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   app.log_processing_message(app, 'Loading XYZCT-Bio-Formats images...');
@@ -86,7 +88,7 @@ function fun(app, plate_num)
     img_stacks(idx).series_id = series_id;
     img_stacks(idx).idx = idx;
     img_stacks(idx).cell_num_txt = sprintf('Cell %d',idx);
-    if ~ischar(app.ExperimentDropDown.Value) && strcmp(stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
+    if ~isempty(app.ExperimentDropDown.Value) && strcmp(stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
       series_data = bfopenSeries(full_path,series_id);
       dat=series_data{1};
       stack_ = [];
@@ -128,7 +130,7 @@ function fun(app, plate_num)
       multi_channel_img.experiment = img_name;
       multi_channel_img.experiment_num = length(multi_channel_imgs)+1;
       multi_channel_img.ImageName = img_name;
-      if ~ischar(app.ExperimentDropDown.Value) && strcmp(img_stacks(idx).stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
+      if ~isempty(app.ExperimentDropDown.Value) && strcmp(img_stacks(idx).stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
         for chan_num=[multi_channel_img.channel_nums]
           multi_channel_img.chans(chan_num).data = img_stacks(idx).data(:,:,:,timepoint,chan_num);
           multi_channel_img.chans(chan_num).path = 'in memory';
