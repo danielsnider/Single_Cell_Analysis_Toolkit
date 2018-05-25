@@ -39,6 +39,10 @@ function plates = func(full_path)
         break
       end
       key = string(raw{starty,iter_xoffset});
+      if isempty(key) | ismissing(key)==1 % reached empty cell 
+        break
+      end
+      key = genvarname(key);
       value = raw{starty+1,iter_xoffset};
       if key == "Ch2" % dealing with empty channels
           if isempty(value)
@@ -52,9 +56,6 @@ function plates = func(full_path)
           if isempty(value)
               value = 'NONE';
           end    
-      elseif isempty(key) | isempty(value) | ismissing(key)==1 % reached empty cell 
-        break
-
       end
 %       fprintf('Reading plate metadata: %s = %s\n',string(key),value);
 %       pause()

@@ -8,7 +8,6 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
   end
   try
     try
-
       % Create list of algorithm parameter values to be passed to the plugin
       algo_params = {};
       for idx=1:length(app.segment{seg_num}.fields)
@@ -29,6 +28,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
             continue
           end
           dep_seg_num = app.segment{seg_num}.SegmentDropDown{drop_num}.Value;
+          algo_supports_3D = app.segment{seg_num}.algorithm_info.supports_3D;
           if isempty(dep_seg_num)
             input_name = app.segment{seg_num}.SegmentDropDownLabel{drop_num}.Text;
             msg = sprintf('Missing input required for the "%s" parameter to the algorithm "%s". Please see the "%s" segment configuration tab and correct this before running the algorithm or changing the other input parameters to the algorithm.', input_name, algo_name, app.segment{seg_num}.tab.Title);
@@ -38,6 +38,9 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
           end
           dep_algo_name = app.segment{dep_seg_num}.AlgorithmDropDown.Value;
           segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, imgs); % operate on the last loaded image in app.img
+          if ~algo_supports_3D
+            segment_result = segment_result.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
+          end
           algo_params(param_idx) = {segment_result};
         end
       end
@@ -61,8 +64,7 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
         segment_name = app.segment{seg_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', segment_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running
-            disp(msg)
-%           send(app.ProcessingLogQueue, msg);
+           send(app.ProcessingLogQueue, msg);
         else
           app.log_processing_message(app, msg);
         end
@@ -73,6 +75,15 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
       try
         % Call algorithm
         result = feval(algo_name, plugin_name, seg_num, algo_params{:});
+
+        % Handle non-3D results which have one component (matrix) but should resemble the 3D format which has 2 components (matrix and objects).
+          if ~isstruct(result)
+            matrix = result; % TODO: sanity check that plugin returned a matrix
+            result = {};
+            result.matrix = matrix;
+          end
+
+        % Save into app so that we can display it anytime using update_figure
         app.segment{seg_num}.result = result;
 
       % Catch Plugin Error

@@ -11,7 +11,7 @@ function fun(app,createCallbackFcn)
     app.TabGroup.SelectedTab = app.Tab_Input;
 
     % Open browse by default
-    browse_button_pushed(app,createCallbackFcn);
+    % browse_button_pushed(app,createCallbackFcn);
 
   % Catch Application Error
   catch ME

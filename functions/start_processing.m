@@ -38,6 +38,8 @@ function fun(app, NewResultCallback)
     finished_count  = 0; % for progess bar
     app.ProcessingLogTextArea.Value = '';
     app.processing_running = true;
+    app.log_processing_message(app, 'Start processing...');
+    pause(0.1);
 
     % Get image names to process
     if app.CheckBox_TestRun.Value
@@ -82,10 +84,33 @@ function fun(app, NewResultCallback)
         callback_fnc = NewResultCallback;
       end
       for current_img_number = 1:NumberOfImages
+        if isempty(imgs_to_process(current_img_number).chans)
+          % The data for the current image is not in memory so load whole series. this is needed because we only load one series at a time into memory
+          series_name = imgs_to_process(current_img_number).experiment;
+          series_id = find(strcmp(app.ExperimentDropDown.Items,series_name));
+          app.ExperimentDropDown.Value = series_id;
+          plate_num = app.PlateDropDown.Value;
+          parse_input_structure_XYZCT_Bio_Formats(app,plate_num);
+          changed_FilterInput(app, plate_num);
+          % Get image names to process
+          if app.CheckBox_TestRun.Value
+            % Limit to only one image if requested by check box
+            imgs_to_process = [get_current_multi_channel_image(app)];
+          else
+            % Get image names that weren't filtered from all plates
+            imgs_to_process = get_images_to_process(app);
+          end
+        end
+
         process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,callback_fnc);
+        if app.progressdlg.CancelRequested
+            close(app.progressdlg);
+            return
+        end
       end 
     end
 
+    close(app.progressdlg);
     app.log_processing_message(app, 'Finished.');
     app.ProgressSlider.Value = 1; % set progress bar to 100%
     % delete(gcp('nocreate')); %Shuts down parrallel pool
@@ -98,12 +123,12 @@ function fun(app, NewResultCallback)
     
     % User Automated ResultTable Saving
     % Work on path validation
-    if ~strcmp(app.SavetoEditField.Value,'choose a path')  
+    if ~strcmp(app.SavetoEditField.Value,'choose a path') &  ~strcmp(app.SavetoEditField.Value,'') & ~isempty(app.ResultTable)
         tStart = tic; % Start Timer
         ResultTable_To_Save = app.ResultTable;
         Check_Object_Memory_Size(ResultTable_To_Save,'ResultTable',app.SavetoEditField.Value);   
         tEnd = toc(tStart); % Stop Timer
-        fprintf('Saving ResultsTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+        fprintf('Saving ResultTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
     elseif isempty(app.SavetoEditField.Value)
         app.SavetoEditField.Value = 'choose a path';
     end

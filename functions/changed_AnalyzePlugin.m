@@ -13,6 +13,10 @@ function result = fun(app, an_num, createCallbackFcn)
             app.analyze{an_num}.fields{param_index}.Enable = val;
         elseif strcmp(param.type,'measurement_dropdown')
             app.analyze{an_num}.MeasurementDropDown{param_index}.Enable = val;
+        elseif strcmp(param.type,'segment_dropdown')
+            app.analyze{an_num}.SegmentDropDown{param_index}.Enable = val;
+        elseif strcmp(param.type,'image_channel_dropdown')
+            app.analyze{an_num}.ChannelDropDown{param_index}.Enable = val;
         elseif strcmp(param.type,'WellConditionListBox')
             app.analyze{an_num}.WellConditionListBox{param_index}.Enable = val;
         end
@@ -38,8 +42,8 @@ function result = fun(app, an_num, createCallbackFcn)
         userdata.param_index = param_index;
         default_state = true;
         default_enable = 'on';
-        if isfield(param,'optional_default_state') && ~isempty(param.optional_default_state)
-            default_state = param.optional_default_state;
+        if isfield(param,'optional_default_state') && isequal(param.optional_default_state,false)
+            default_state = false;
             default_enable = 'off';
         end
         checkbox = uicheckbox('parent',current_tab, ...
@@ -52,6 +56,8 @@ function result = fun(app, an_num, createCallbackFcn)
             app.analyze{an_num}.fields{param_index}.Enable = default_enable;
         elseif strcmp(param.type,'analyze_dropdown')
             app.analyze{an_num}.MeasurementDropDown{param_index}.Enable = default_enable;
+        elseif strcmp(param.type,'segment_dropdown')
+            app.analyze{an_num}.SegmentDropDown{param_index}.Enable = default_enable;
         elseif strcmp(param.type,'image_channel_dropdown')
             app.analyze{an_num}.ChannelDropDown{param_index}.Enable = default_enable;
         elseif strcmp(param.type,'WellConditionListBox')
@@ -71,7 +77,7 @@ function result = fun(app, an_num, createCallbackFcn)
 %         pause(0.1); % enough time for the log text area to appear on screen
         
         do_analyze(app, an_num);
-        
+
         % Delete log
 %         delete(app.StartupLogTextArea);
 % 	app.StartupLogTextArea.tx.String = {};
@@ -89,7 +95,13 @@ try
     % Re-initialize paramater info and algorithm info for current algorithm plugin.
     app.analyze{an_num}.params = params;
     app.analyze{an_num}.algorithm_info = algorithm;
-    
+    if ~isfield(app.analyze{an_num}.algorithm_info,'maintainer')
+      app.analyze{an_num}.algorithm_info.maintainer = 'Unknown';
+    end
+    if ~isfield(app.analyze{an_num}.algorithm_info,'supports_3D')
+      app.analyze{an_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
+    end
+
     % Create subtabs for parameters
     if isfield(params,'sub_tab')
         tmp_params_table= struct2table(params);
@@ -255,9 +267,68 @@ try
                 app.analyze{an_num}.MeasurementDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
             end
             
+        % Create segment selection dropdown box
+        elseif strcmp(param.type,'segment_dropdown')
+          % Set an index number for this component
+          if ~isfield(app.analyze{an_num},'SegmentDropDown')
+            app.analyze{an_num}.SegmentDropDown = {};
+          end
+          drop_num = length(app.analyze{an_num}.SegmentDropDown) + 1;
+          param_index = drop_num;
+          % Create UI components
+          dropdown = uidropdown(app.analyze{an_num}.tab, ...
+            'Position', param_pos, ...
+            'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+            'Items', {} );
+          label = uilabel(app.analyze{an_num}.tab, ...
+            'Text', param.name, ...
+            'HorizontalAlignment', 'right', ...
+            'Position', label_pos);
+          % Save ui elements
+          app.analyze{an_num}.SegmentDropDown{drop_num} = dropdown;
+          app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.param_idx = idx;
+          app.analyze{an_num}.SegmentDropDownLabel{drop_num} = label;
+          % Handle if this parameter is optional 
+          if isfield(param,'optional') && ~isempty(param.optional)
+            app.analyze{an_num}.SegmentDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index);
+          end
+
+        % Create image selection dropdown box
+        elseif strcmp(param.type,'image_channel_dropdown')
+            % Set an index number for this component
+            if ~isfield(app.analyze{an_num},'ChannelDropDown')
+                app.analyze{an_num}.ChannelDropDown = {};
+            end
+            drop_num = length(app.analyze{an_num}.ChannelDropDown) + 1;
+            param_index = drop_num;
+            % Get channel names based on the currently displaying plate
+            plate_num = app.PlateDropDown.Value;
+            if ~isnumeric(app.PlateDropDown.Value)
+                plate_num=1; % bad startup value
+            end
+            chan_names = app.plates(plate_num).chan_names;
+            chan_nums = app.plates(plate_num).channels;
+            % Create UI components
+            dropdown = uidropdown(current_tab, ...
+                'Position', param_pos, ...
+                'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+                'Items', chan_names, ...
+                'ItemsData', chan_nums );
+            label = uilabel(current_tab, ...
+                'Text', param.name, ...
+                'HorizontalAlignment', 'right', ...
+                'Position', label_pos);
+            % Save ui elements
+            app.analyze{an_num}.ChannelDropDown{drop_num} = dropdown;
+            app.analyze{an_num}.ChannelDropDown{drop_num}.UserData.param_idx = idx;
+            app.analyze{an_num}.ChannelDropDown{param_index}.UserData.chan_names = chan_names;
+            app.analyze{an_num}.ChannelDropDownLabel{drop_num} = label;
+            % Handle if this parameter is optional
+            if isfield(param,'optional') && ~isempty(param.optional)
+                app.analyze{an_num}.ChannelDropDown{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
+            end
             
         elseif strcmp(param.type,'ResultTable_Box')
-            
             % Set an index number for this component
             if ~isfield(app.analyze{an_num},'ResultTableBox')
                 app.analyze{an_num}.ResultTableBox = {};
@@ -280,6 +351,31 @@ try
             app.analyze{an_num}.ResultTableBox{drop_num} = edit_field;
             app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx = idx;
             app.analyze{an_num}.ResultTableLabel{drop_num} = label;            
+
+        elseif strcmp(param.type,'ResultTable_for_current_display')
+            
+            % Set an index number for this component
+            if ~isfield(app.analyze{an_num},'ResultTableDisp')
+                app.analyze{an_num}.ResultTableDisp = {};
+            end
+            
+            drop_num = length(app.analyze{an_num}.ResultTableDisp) + 1;
+            param_index = drop_num;
+            % Create UI components
+            edit_field = uieditfield(current_tab, ...
+                'Position', param_pos, ...
+                'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+                'Value', 'ResultTable', ...
+                'BackgroundColor', [0.9 0.9 0.9], ...
+                'Editable', 'off');
+            label = uilabel(current_tab, ...
+                'Text', param.name, ...
+                'HorizontalAlignment', 'right', ...
+                'Position', label_pos);
+            % Save ui elements
+            app.analyze{an_num}.ResultTableDisp{drop_num} = edit_field;
+            app.analyze{an_num}.ResultTableDisp{drop_num}.UserData.param_idx = idx;
+            app.analyze{an_num}.ResultTableDispLabel{drop_num} = label;            
             
         elseif strcmp(param.type,'MeasurementListBox')
             % Set an index number for this component
@@ -416,6 +512,9 @@ try
     
     % Update list of measurements in the analyze tab
     changed_MeasurementNames(app);
+
+    % Fill in the names of segments across the GUI including here
+    changed_SegmentName(app);
     
     % Catch Application Error
 catch ME

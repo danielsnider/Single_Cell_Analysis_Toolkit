@@ -5,12 +5,20 @@ function fun(app,ME)
 %       delete(app.StartupLogTextArea);
 %     	app.StartupLogTextArea.tx.String = {};
     end
-    msg = sprintf('Sorry, filtering could not complete. Perhaps you have entered an incorrect filter or perhaps there is a bug. See the Matlab console for the full error message. If you are unable fix the error yourself please report it in detail to: https://github.com/danielsnider/Single_Cell_Analysis_Toolkit/issues');
+    error_msg = getReport(ME,'extended','hyperlinks','off');
+    msg = sprintf('Sorry, filtering could not complete. Perhaps you have entered an incorrect filter or perhaps there is a bug. See the error below. If you are unable fix the error yourself please report it in detail to: https://github.com/danielsnider/Single_Cell_Analysis_Toolkit/issues\n\nThe error was:\n\n%s',error_msg);
     uialert(app.UIFigure,msg,'Filter Error', 'Icon','warn');
     msgID = 'APP:FilterError';
     msg = msg;
     causeException = MException(msgID,msg);
     ME = addCause(ME,causeException);
+
+    busy_state_change(app,'not busy');
+
+    if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
+      close(app.progressdlg)
+    end
+
     rethrow(ME)
   else
     rethrow(ME)

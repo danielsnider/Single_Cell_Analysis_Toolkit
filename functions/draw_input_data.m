@@ -58,6 +58,21 @@ function fun(app, createCallbackFcn)
       count = count + 1;
     end
 
+    %% Default Positions
+    Plate_Map_Table_position = [163,276,73,20];
+    Plate_Map_Table_label_position = [163,15,624,254];
+    Filter_Data_label_position = [15,276,93,20];
+    Filter_Row_label_position = [48,248,34,20];
+    Filter_Row_position = [87,247,56,22];
+    Filter_Columns_label_position = [26,219,56,20];
+    Filter_Columns_position = [87,218,56,22];
+    Filter_Fields_label_position = [43,190,39,20];
+    Filter_Fields_position = [87,189,56,22];
+    Filter_Timepoints_label_position = [15,161,67,20];
+    Filter_Timepoints_position = [87,160,56,22];
+    Filter_zslices_label_position = [35,130,47,22];
+    Filter_zslices_position = [87,131,56,22];
+
     %% Meta Data Table
     metadata_table = uitable(tab,'Data',values,'ColumnName', keys, ...
       'RowName',{'MetaData'}, 'Position',[163,305,626,74], ...
@@ -95,50 +110,91 @@ function fun(app, createCallbackFcn)
       'Text', '', ...
       'ValueChangedFcn', createCallbackFcn(app, @CheckCallback, true));
 
-    visibility = 'on';
-    if strcmp(plate.metadata.ImageFileFormat, 'ZeissSplitTiffs')
+
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs'})
+      Plate_Map_Table_visibility = 'on';
+      Filter_Data_visibility = 'on';
+      Filter_Row_visibility = 'on';
+      Filter_Columns_visibility = 'on';
+      Filter_Fields_visibility = 'on';
+      Filter_Timepoints_visibility = 'on';
+      Filter_zslices_visibility = 'off';
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
+      Plate_Map_Table_visibility = 'off';
+      Filter_Data_visibility = 'off';
+      Filter_Row_visibility = 'off';
+      Filter_Columns_visibility = 'off';
+      Filter_Fields_visibility = 'off';
+      Filter_Timepoints_visibility = 'off';
+      Filter_zslices_visibility = 'off';
       pos = numimages_label.Position;
       numimages_label.Position = [pos(1) 276 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
       pos = app.plates(plate_num).NumberOfImagesField.Position;
       app.plates(plate_num).NumberOfImagesField.Position = [pos(1) 249 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
-      visibility = 'off'; % hide the rest of the input fields, they are from row, column, etc. Operetta stuff
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+      %first labal 248
+      %first edit box 247
+      %secon edit box 218 (29 diff)
+      Plate_Map_Table_visibility = 'off';
+      Filter_Data_visibility = 'on';
+      Filter_Row_visibility = 'off';
+      Filter_Columns_visibility = 'off';
+      Filter_Fields_visibility = 'off';
+      Filter_Timepoints_visibility = 'on';
+      Filter_zslices_visibility = 'on';
+      % Move up because some fields will be missing for Bio-formats
+      Filter_Timepoints_label_position = [15,248,67,20];
+      Filter_Timepoints_position = Filter_Row_position;
+      Filter_zslices_label_position = [35,219,47,22];
+      Filter_zslices_position = Filter_Columns_position;
+      pos = numimages_label.Position;
+      numimages_label.Position = [pos(1) 190 pos(3) pos(4)]; % Move up because some fields will be missing for Bio-formats
+      pos = app.plates(plate_num).NumberOfImagesField.Position;
+      app.plates(plate_num).NumberOfImagesField.Position = [pos(1) 163 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
     end
 
-    %% Plate Map Table
-    well_table = uitable(tab,'Data',plate.wells,'Visible', visibility, 'Position',[163,15,624,254], ...
+    % Plate Map Table
+    well_label = uilabel(tab, 'Text', 'Plate Map:', 'Visible', Plate_Map_Table_visibility, 'Position', Plate_Map_Table_label_position, 'FontSize', 14, 'FontName', 'Yu Gothic UI');
+    well_table = uitable(tab,'Data',plate.wells,'Visible', Plate_Map_Table_visibility, 'Position', Plate_Map_Table_position, ...
       'ColumnEditable',true, 'RowName',letters);
-    well_label = uilabel(tab, 'Text', 'Plate Map:', 'Visible', visibility, 'Position', [163,276,73,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
 
-    %% Filter Data
-    filter_label = uilabel(tab, 'Text', 'Filter Input:', 'Visible', visibility, 'Position', [15,276,93,20], 'FontSize', 14, 'FontName', 'Yu Gothic UI');
+    % Filter Data Title
+    filter_label = uilabel(tab, 'Text', 'Filter Input:', 'Visible', Filter_Data_visibility, 'Position', Filter_Data_label_position, 'FontSize', 14, 'FontName', 'Yu Gothic UI');
 
-    rows_label = uilabel(tab, 'Text', 'Rows:', 'Visible', visibility, 'Position', [48,248,34,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    app.plates(plate_num).filter_rows = uieditfield(tab, 'Visible', visibility, 'Position', [87,247,56,22], ...
+    % Filter Columns
+    rows_label = uilabel(tab, 'Text', 'Rows:', 'Visible', Filter_Row_visibility, 'Position', Filter_Row_label_position, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    app.plates(plate_num).filter_rows = uieditfield(tab, 'Visible', Filter_Row_visibility, 'Position', Filter_Row_position, ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
     % Filter Columns
-    columns_label = uilabel(tab, 'Text', 'Columns:', 'Visible', visibility, 'Position', [26,219,56,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    app.plates(plate_num).filter_columns = uieditfield(tab, 'Visible', visibility, 'Position', [87,218,56,22], ...
+    columns_label = uilabel(tab, 'Text', 'Columns:', 'Visible', Filter_Columns_visibility, 'Position', Filter_Columns_label_position, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    app.plates(plate_num).filter_columns = uieditfield(tab, 'Visible', Filter_Columns_visibility, 'Position', Filter_Columns_position, ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
     % Filter Fields
-    fields_label = uilabel(tab, 'Text', 'Fields:', 'Visible', visibility, 'Position', [43,190,39,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    app.plates(plate_num).filter_fields = uieditfield(tab, 'Visible', visibility, 'Position', [87,189,56,22], ...
+    fields_label = uilabel(tab, 'Text', 'Fields:', 'Visible', Filter_Fields_visibility, 'Position', Filter_Fields_label_position, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    app.plates(plate_num).filter_fields = uieditfield(tab, 'Visible', Filter_Fields_visibility, 'Position', Filter_Fields_position, ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
     % Filter Timepoints
-    timepoints_label = uilabel(tab, 'Text', 'Timepoints:', 'Visible', visibility, 'Position', [15,161,67,20], 'FontSize', 12, 'FontName', 'Yu Gothic UI');
-    app.plates(plate_num).filter_timepoints = uieditfield(tab, 'Visible', visibility, 'Position', [87,160,56,22], ...
+    timepoints_label = uilabel(tab, 'Text', 'Timepoints:', 'Visible', Filter_Timepoints_visibility, 'Position', Filter_Timepoints_label_position, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    app.plates(plate_num).filter_timepoints = uieditfield(tab, 'Visible', Filter_Timepoints_visibility, 'Position', Filter_Timepoints_position, ...
       'UserData', plate_num, ...
       'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
     );
 
+    % Filter Z Slices
+    zslices_label = uilabel(tab, 'Text', 'Z Slices:', 'Visible', Filter_zslices_visibility, 'Position', Filter_zslices_label_position, 'FontSize', 12, 'FontName', 'Yu Gothic UI');
+    app.plates(plate_num).filter_zslices = uieditfield(tab, 'Visible', Filter_zslices_visibility, 'Position', Filter_zslices_position, ...
+      'UserData', plate_num, ...
+      'ValueChangedFcn', createCallbackFcn(app, @changed_FilterInput_, true) ...
+    );
 
   end
 

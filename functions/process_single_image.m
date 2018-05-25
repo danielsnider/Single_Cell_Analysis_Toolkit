@@ -9,28 +9,52 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
   msg = sprintf('Processing image %d of %d',current_img_number,NumberOfImages);
   if is_parallel_processing
-    disp(msg)
-%     send(ProcessingLogQueue,msg);
+%    disp(msg)
+    send(ProcessingLogQueue,msg);
   else
     app.log_processing_message(app, msg);
+    if isvalid(app.progressdlg)
+      close(app.progressdlg)
+    end
+    app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message', msg, 'Cancelable', 'on');
+    assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
   plate=app.plates(plate_num);
 
   % Load all image channels
+  if ~is_parallel_processing
+    if app.progressdlg.CancelRequested
+        return
+    end
+    app.progressdlg.Message = sprintf('%s\n%s',msg,'Loading image...');
+    app.progressdlg.Value = (0.1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   imgs = [];
   for chan_num=[image_file.channel_nums]
     % Load Image
-     % imgs(chan_num).data= imread(image_file.chans(chan_num).path);
-    imgs(chan_num).data = do_preprocessing(app,plate_num,chan_num,image_file.chans(chan_num).path);
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+      img_path = image_file.chans(chan_num).data; % data is already in memory here
+      % img_path = image_file;
+    else
+      img_path = image_file.chans(chan_num).path;
+    end
+
+    imgs(chan_num).data = do_preprocessing(app,plate_num,chan_num,img_path);
     if ~is_parallel_processing
       app.image(chan_num).data = imgs(chan_num).data; % make available to display tab
     end
   end
 
-
   %% Perform Segmentation
+  if ~is_parallel_processing
+    if app.progressdlg.CancelRequested
+        return
+    end
+    app.progressdlg.Message = sprintf('%s\n%s',msg,'Segmenting image...');
+    app.progressdlg.Value = (0.33 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   % Loop over each configured segment and execute the segmentation algorithm
   seg_result = {};
   for seg_num=1:length(app.segment)
@@ -50,25 +74,44 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   %% Primary Segment Handling
   % Update subcomponent segment-ids to match the id of the primary segment that they are and must be contained in
   primary_seg_num = app.PrimarySegmentDropDown.Value;
-  if ~isempty(primary_seg_num)
-    primary_seg_data = seg_result{primary_seg_num};
+  if ~isempty(primary_seg_num) && primary_seg_num > 0 % if primary segment is None/0, skip
+    primary_seg_data = seg_result{primary_seg_num}.matrix;
     primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
-    seg_result{primary_seg_num} = primary_seg_data;
-    NumberOfCells = max(primary_seg_data(:));
+    seg_result{primary_seg_num}.matrix = primary_seg_data;
     % Loop over non-primary segment results and properly set the pixel values to be what is found in the region of the primary id
     for seg_num=1:length(app.segment)
       if seg_num==primary_seg_num % skip primary segment, only operate on subcomponents
         continue
       end
-      sub_seg_data = seg_result{seg_num}; 
-      new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
-      logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
-      new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
-      seg_result{seg_num} = new_sub_seg_data;
+      sub_seg_data = seg_result{seg_num}.matrix; 
+      if app.RemoveSecondarySegments_CheckBox.Value
+        % Remove all segments found outside of the primary segment.
+        new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
+        logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
+        new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
+      else
+        % Do not remove all segments found outside of the primary segment.
+        new_sub_seg_data = sub_seg_data;
+      end
+      seg_result{seg_num}.matrix = new_sub_seg_data;
+    end
+    % Remove primary segments found outside of a chosen secondary segment.
+    if app.RemovePrimarySegments_CheckBox.Value
+      secondary_seg_data = seg_result{app.RemovePrimarySegmentsOutside.Value}.matrix;
+      primary_seg_data(secondary_seg_data==0)=0; % do remove of primary segments found outside of a chosen secondary segment
+      primary_seg_data = bwlabel(primary_seg_data);
+      seg_result{primary_seg_num}.matrix = primary_seg_data;
     end
   end
 
   %% Perform Measurements
+  if ~is_parallel_processing
+    if app.progressdlg.CancelRequested
+        return
+    end
+    app.progressdlg.Message = sprintf('%s\n%s',msg,'Measuring image...');
+    app.progressdlg.Value = (0.75 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
   iterTable = table();
   if ~isempty(primary_seg_num)
     % Loop over each configured measurement and execute the measurement code
@@ -89,10 +132,15 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       MeasureTable = MeasureTable(:,new_col_names);
       if istable(MeasureTable)
         % Check if less segments were found in this segment than the primary one and if so fill in the missing data with NaN for numeric, empty cells, and structs with NaNs
-        if max(primary_seg_data(:)) > height(MeasureTable)
+        if exist('primary_seg_data','var') && max(primary_seg_data(:)) > height(MeasureTable)
           desired_height = max(primary_seg_data(:)); % desired height is the number of primary segments
           MeasureTable = append_missing_rows_for_table(MeasureTable, desired_height);
         end
+        if ~isempty(iterTable) && height(iterTable) ~= height(MeasureTable)
+          msg = sprintf('Two of your configured measurements returned different number of results. For example one plugin measured 4 cells and another measured 100 peroxisomes. We are unable to combine this into the same table. This is usually fixed by using primary segment settings which can force measuring 4 cells OR 100 peroxisomes.');
+          throw_application_error(app,msg);
+        end
+
         % Append new measurements
         iterTable=[iterTable MeasureTable];
       end
@@ -101,17 +149,20 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if isempty(iterTable)
       return
     end
+  
 
     %% Add X and Y coordinates for each primary label
-    stats = regionprops(primary_seg_data,'centroid');
-    centroids = cat(1, stats.Centroid);
-    if isempty(centroids)
-      return % nothing was found so return
+    if exist('primary_seg_data','var')
+        stats = regionprops(primary_seg_data,'centroid');
+        centroids = cat(1, stats.Centroid);
+        if isempty(centroids)
+          return % nothing was found so return
+        end
+
+        % Add X and Y coordinates for each primary label
+        iterTable.x_coord = floor(centroids(:,1));
+        iterTable.y_coord = floor(centroids(:,2));
     end
-    
-    % Add X and Y coordinates for each primary label
-    iterTable.x_coord = floor(centroids(:,1));
-    iterTable.y_coord = floor(centroids(:,2));
 
     % Add UUID for each row
     iterTable(:,'ID') = uuid_array(height(iterTable))';
@@ -153,6 +204,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
   end
+  if ~is_parallel_processing
+    app.progressdlg.Message = sprintf('%s\n%s',msg,'Finished.');
+    app.progressdlg.Value = (1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
+  
   if is_parallel_processing
     send(NewResultCallback,iterTable);
   else

@@ -29,9 +29,9 @@ function result = fun(app, proc_num, createCallbackFcn)
     userdata.param_index = param_index;
     default_state = true;
     default_enable = 'on';
-    if isfield(param,'optional_default_state') && ~isempty(param.optional_default_state)
-      default_state = param.optional_default_state;
-      default_enable = 'off';
+    if isfield(param,'optional_default_state') && isequal(param.optional_default_state,false)
+        default_state = false;
+        default_enable = 'off';
     end
     checkbox = uicheckbox(app.preprocess{proc_num}.tab, ...
     'Position', check_pos, ...
@@ -46,7 +46,9 @@ function result = fun(app, proc_num, createCallbackFcn)
 
   % Callback for when parameter value is changed by the user
   function do_preprocessing_(app, Update)
+    busy_state_change(app,'busy');
     do_preprocessing_on_current_image(app, proc_num);
+    busy_state_change(app,'not busy');
   end
 
     try
@@ -55,13 +57,14 @@ function result = fun(app, proc_num, createCallbackFcn)
 
     % Delete existing UI components before creating new ones on top
     delete_preprocess(app,[proc_num]);
-
-
-    % app.preprocess{proc_num}.do_preprocessing = @() do_preprocessing(app, proc_num, algo_name, app.image);
+    
+    % Return if no algorithms (3D supports fewer algorithms)
+    if isempty(algo_name)
+      return
+    end
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
-
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;
@@ -75,7 +78,6 @@ function result = fun(app, proc_num, createCallbackFcn)
       label_pos = [400 v_offset-5 200 22];
       help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
       param_index = NaN;
-
 
       % Change spacing if optional parameter to allow space for a checkbox
       if isfield(param,'optional') && ~isempty(param.optional)

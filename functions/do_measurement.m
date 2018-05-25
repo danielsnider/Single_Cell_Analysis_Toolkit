@@ -1,6 +1,7 @@
 function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs)
   try
     algo_params = {};
+    algo_supports_3D = app.measure{meas_num}.algorithm_info.supports_3D;
 
     % Create list of algorithm parameter values to be passed to the plugin
     if isfield(app.measure{meas_num},'fields')
@@ -29,6 +30,9 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
               seg_name = sprintf('Segment %i', seg_num);
             end
             seg_data = seg_result{seg_num};
+            if ~algo_supports_3D
+              seg_data = seg_data.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
+            end
             segment_data.(matlab.lang.makeValidName(seg_name)) = seg_data;
           end
           algo_params(param_idx) = {segment_data};
@@ -71,8 +75,8 @@ function iterTable = do_measurement(app, plate, meas_num, algo_name, seg_result,
       measure_name = app.measure{meas_num}.tab.Title;
       msg = sprintf('%s ''%s.m''', measure_name, algo_name);
       if app.CheckBox_Parallel.Value && app.processing_running
-          disp(msg)
-%         send(app.ProcessingLogQueue, msg);
+         disp(msg)
+         send(app.ProcessingLogQueue, msg);
       else
         app.log_processing_message(app, msg);
       end

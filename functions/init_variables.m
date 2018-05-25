@@ -1,7 +1,7 @@
 function fun(app)
 
   % Delete input data plates
-  if isfield(app, 'input_data')
+  if isprop(app, 'input_data')
     if isfield(app.input_data, 'tabgp')
       delete(app.input_data.tabgp);
     end
@@ -51,6 +51,10 @@ function fun(app)
   app.Button_ViewFilteredData.Visible = 'off';
   app.Button_ViewOverlaidMeasurements.Visible = 'off';
 
+  app.progressdlg = uiprogressdlg(app.UIFigure,'Title','','Message', '');
+  assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+  close(app.progressdlg);
+
   app.FiltersTextArea.UserData.LastValue = {''};
   app.ProcessingLogTextArea.Value = {''};
 
@@ -61,8 +65,13 @@ function fun(app)
 
   app.ChooseplatemapEditField.Value = '';
 
+
+  % Measure Tab
   app.DisplayMeasureCheckBox.Value = false;
   app.DisplayMeasureDropDown.Items = {};
+  app.RemoveSecondarySegments_CheckBox.Enable = false;
+  app.RemovePrimarySegments_CheckBox.Enable = false;
+  app.RemovePrimarySegmentsOutside.Enable = false;
 
-  app.ProgressSlider.Value = 0; % reset progress bar to 0
+  busy_state_change(app,'not busy');
 end

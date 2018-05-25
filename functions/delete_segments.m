@@ -2,12 +2,6 @@ function fun(app, seg_nums, how_much_to_detele)
   if ~any(ismember(fields(app),'segment'))
     return
   end
-
-  % if any(ismember(fields(app),'segment_tabgp'))
-  %   delete(app.segment_tabgp)
-  %   app.segment_tabgp = [];
-  % end
-
   component_names = { ...
     'fields', ...
     'labels', ...
@@ -15,6 +9,7 @@ function fun(app, seg_nums, how_much_to_detele)
     'SegmentDropDownLabel', ...
     'ChannelDropDown', ...
     'ChannelDropDownLabel', ...
+    'run_button', ...
     'HelpButton', ...
   };
   for seg_num=seg_nums
@@ -27,16 +22,10 @@ function fun(app, seg_nums, how_much_to_detele)
           end
           delete(app.segment{seg_num}.(comp_name){idx});
           app.segment{seg_num}.(comp_name){idx} = [];
-          
         end
         app.segment{seg_num}.(comp_name) = {};
       end
     end
-    % if isfield(app.segment{seg_num},'tab')
-    %   delete(app.segment{seg_num}.tab);
-    %   app.segment{seg_num}.tab = [];
-    % end
-    % app.segment{seg_num} = {};
   end
-  % app.segment = {};
+
 end

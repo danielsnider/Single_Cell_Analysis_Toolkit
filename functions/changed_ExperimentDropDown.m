@@ -15,6 +15,16 @@ function fun(app)
 
       app.RowDropDown.Value = row_num;
       app.ColumnDropDown.Value = col_num;
+    elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+      parse_input_structure_XYZCT_Bio_Formats(app,plate_num);
+      img_num = app.ExperimentDropDown.Value;
+      img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
+      selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
+      available_multi_channel_img = app.ExperimentDropDown.UserData(selected_img_name_idx);
+      timepoints = [available_multi_channel_img.timepoint];
+
+      app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},timepoints);
+      app.TimepointDropDown.ItemsData = timepoints;
     end
 
     start_processing_of_one_image(app);

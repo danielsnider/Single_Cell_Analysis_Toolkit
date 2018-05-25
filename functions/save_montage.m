@@ -1,5 +1,15 @@
 function fun(app)
   try
+    % Currently selected plate number
+    plate_num = app.PlateDropDown.Value;
+
+    % Don't create montage for Bio Formats (not yet implemented)
+    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+      msg = sprintf('Sorry, creating a montage is currently not supported for the "XYZCT-Bio-Formats" image format.');
+      uialert(app.UIFigure,msg,'Not Yet Implemented', 'Icon','warn');
+      return % don't create montage
+    end
+
     is_movie = app.MontageMovieCheckBox.Value;
     imgs_to_process = get_images_to_process(app);
     save_dir = uigetdir(app.ChooseplatemapEditField.Value,'Select Directory to Save Montage In');
@@ -35,7 +45,7 @@ function fun(app)
         end
         filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
 
-      elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
+      elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
         app.ExperimentDropDown.Value = img.experiment_num;
         filename = sprintf('%s/montage_%s_%s.png', save_dir, date_str, img.experiment);
       end
@@ -61,6 +71,7 @@ function fun(app)
 
     % Delete log
     app.log_processing_message(app, 'Finished');
+    uialert(app.UIFigure,'Montage complete.','Success', 'Icon','success');
 %     delete(app.StartupLogTextArea);
 %     app.StartupLogTextArea.tx.String = {};
 

@@ -1,4 +1,7 @@
 function fun(app, createCallbackFcn)
+  if no_images_loaded(app)
+      return
+  end
 
   function changed_SegmentName_(app, event)
     changed_SegmentName(app);
@@ -9,6 +12,15 @@ function fun(app, createCallbackFcn)
       uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Segment which is not the last one.','Sorry', 'Icon','warn');
       return
     end
+    
+    progressdlg_created_here = false;
+    if ~isvalid(app.progressdlg)
+      progressdlg_created_here = true;
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Deleting segment', 'Indeterminate','on');
+      assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+      pause(0.1);
+    end
+
     delete_segments(app, seg_num);
     app.segment(seg_num) = [];
     delete(tab);
@@ -17,20 +29,57 @@ function fun(app, createCallbackFcn)
       app.segment_tabgp = [];
     end
     changed_SegmentName(app)
+
+    if progressdlg_created_here
+      pause(0.1);
+      close(app.progressdlg);
+    end
   end
   
   try
+    if ~isvalid(app.progressdlg)
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Adding segment', 'Indeterminate','on');
+      assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+      pause(0.1);
+    end
+
+    plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
+    if isempty(plugin_definitions)
+        load('segment_plugins.mat');
+        app.Button_ViewMeasurements.Enable = false;
+    end
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       [params, algorithm] = eval(plugin_name);
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if ~isfield(algorithm,'supports_3D') || ~algorithm.supports_3D
+          continue % unsupported plugin due to lack of 3D support
+        end
+      end
+      if ~strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if isfield(algorithm,'supports_3D') && algorithm.supports_3D
+          continue % unsupported plugin due to it having 3D support
+        end
+      end
       plugin_name = strsplit(plugin_name,'definition_');
-      plugin_names{plugin_num} = plugin_name{2};
-      plugin_pretty_names{plugin_num} = algorithm.name;
+      plugin_names{length(plugin_names)+1} = plugin_name{2};
+      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
     end
+
+    if isempty(plugin_names)
+      msg = 'Sorry, no segmentation plugins found.';
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
+      end
+      uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');
+      close(progressdlg);
+      return
+    end
+
 
     % Setup
     if isempty(app.segment_tabgp)
@@ -41,9 +90,6 @@ function fun(app, createCallbackFcn)
     app.segment{seg_num} = {};
     app.segment{seg_num}.params = params;
     app.segment{seg_num}.algorithm_info = algorithm;
-    if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
-      app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
-    end
 
     % Create new tab
     tab = uitab(tabgp,'Title',sprintf('Segment %i',seg_num), ...
@@ -105,8 +151,14 @@ function fun(app, createCallbackFcn)
     % Switch to new tab
     app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
+    
     % Populate GUI components in new tab
     app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
+
+    if isvalid(app.progressdlg)
+      pause(0.1);
+      close(app.progressdlg);
+    end
 
   % Catch Application Error
   catch ME

@@ -72,9 +72,22 @@ function fun(app)
       end
     end
 
+    %% Update the analyze tab with available segment values in dropdown section boxes
+    for n=1:length(app.analyze)
+      if isfield(app.analyze{n},'SegmentDropDown')
+        for drop_num=1:length(app.analyze{n}.SegmentDropDown)
+          % Set dropdown data
+          app.analyze{n}.SegmentDropDown{drop_num}.Items = app.segment_names;
+          app.analyze{n}.SegmentDropDown{drop_num}.ItemsData = 1:length(app.segment_names);
+        end
+      end
+    end
+
     %% Update the measure tab primary segment dropdown the segment names
-    app.PrimarySegmentDropDown.Items = app.segment_names;
-    app.PrimarySegmentDropDown.ItemsData = 1:length(app.segment_names);
+    app.PrimarySegmentDropDown.Items = ['None' app.segment_names];
+    app.PrimarySegmentDropDown.ItemsData = 0:length(app.segment_names);
+    app.RemovePrimarySegmentsOutside.Items = app.segment_names;
+    app.RemovePrimarySegmentsOutside.ItemsData = 1:length(app.segment_names);
 
     %% Update the dipslay tab segment selection area with the segment names
     draw_display_segment_selection(app);

@@ -1,5 +1,9 @@
 function fun(app)
   try
+    if no_images_loaded(app)
+        return
+    end
+
     % Currently selected plate number
     plate_num = app.PlateDropDown.Value;
 
@@ -11,7 +15,8 @@ function fun(app)
     %% Display Images
     % Initialize image of a composite of one or more channels
     first_chan_num = app.plates(plate_num).channels(1); % may not always be 1 in position 1, it's a crazy world out there
-    composite_img = uint16(zeros([size(app.image(first_chan_num).data),3]));
+    first_chan_2D_data = app.image(first_chan_num).data(:,:,1); % force 2D because update_figure only supports 2D slices
+    composite_img = uint16(zeros([size(first_chan_2D_data),3])); % 2D RGB image
 
     % Build composite image from enabled channels
     channel_nums = app.plates(plate_num).channels;
@@ -20,20 +25,28 @@ function fun(app)
     for chan_num=[enabled_channel_nums]
       img = app.image(chan_num).data;
 
+      % Handle 3D by choosing one 2D slice
+      if size(img,3) > 1
+        z_slice = app.ZSliceDropDown.Value;
+        img = img(:,:,z_slice);
+      end
+
       % Scale image values according to the min max display sliders
       min_dyn_range_percent = app.plates(plate_num).channel_min(chan_num)/100;
       max_dyn_range_percent = app.plates(plate_num).channel_max(chan_num)/100;
       im_norm = normalize0to1(double(img));
-      im_adj = imadjust(im_norm,[min_dyn_range_percent max_dyn_range_percent], [0 1]);
+      im_adj = imadjust(im_norm(:),[min_dyn_range_percent max_dyn_range_percent], [0 1]);
+      im_adj = reshape(im_adj,size(im_norm)); % imadjust doesn't support more than 2D so we are reshaping now back to 2D or 3D
       scaled_img = uint16(im_adj.*2^16); % increase intensity to use full range of uint16 values
       scaled_img = scaled_img./length(enabled_channels); % reduce intensity so not to go overbounds of uint16
 
       % Set color
       colour = app.plates(plate_num).channel_colors(chan_num,:);
       colour_img = uint16(zeros(size(composite_img)));
-      colour_img(:,:,1) = scaled_img .* colour(1);
-      colour_img(:,:,2) = scaled_img .* colour(2);
-      colour_img(:,:,3) = scaled_img .* colour(3);
+      otherdims=repmat({':'},1,ndims(composite_img)-1);
+      colour_img(otherdims{:},1) = scaled_img .* colour(1);
+      colour_img(otherdims{:},2) = scaled_img .* colour(2);
+      colour_img(otherdims{:},3) = scaled_img .* colour(3);
 
       % Composite
       composite_img = composite_img + colour_img;
@@ -46,13 +59,20 @@ function fun(app)
       chan_num = app.display.channel_override;
       img = app.image(chan_num).data;
 
+      % Handle 3D by choosing one 2D slice
+      if size(img,3) > 1
+        z_slice = app.ZSliceDropDown.Value;
+        img = img(:,:,z_slice);
+      end
+
       % Scale image values according to the min max display sliders
       min_dyn_range_percent = app.plates(plate_num).channel_min(chan_num);
       max_dyn_range_percent = app.plates(plate_num).channel_max(chan_num);
       min_dyn_range_value = prctile(img(:), min_dyn_range_percent);
       max_dyn_range_value = prctile(img(:), max_dyn_range_percent);
       im_norm = normalize0to1(double(img));
-      im_adj = imadjust(im_norm,[min_dyn_range_percent/100 max_dyn_range_percent/100], [0 1]);
+      im_adj = imadjust(im_norm(:),[min_dyn_range_percent/100 max_dyn_range_percent/100], [0 1]);
+      im_adj = reshape(im_adj,size(im_norm)); % imadjust doesn't support more than 2D so we are reshaping now back to 2D or 3D
       denormalized_im_adj = im_adj.*double(max_dyn_range_value-min_dyn_range_value);
       denormalized_im_adj = denormalized_im_adj + double(min_dyn_range_value);
 
@@ -62,7 +82,11 @@ function fun(app)
 
     % Display
     f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off');
-    imshow(composite_img,[]);
+    if ndims(composite_img) <= 3
+      imshow(composite_img,[]);
+    elseif ndims(composite_img) == 4
+      imshow3D(composite_img,[]);
+    end
     hold on
 
     % Display segments as colorized layers
@@ -73,7 +97,12 @@ function fun(app)
       if ~isfield(app.segment{seg_num},'result') || isempty(app.segment{seg_num}.result)
         continue
       end
-      seg = app.segment{seg_num}.result;
+      seg = app.segment{seg_num}.result.matrix;
+      % Handle 3D by choosing one 2D slice
+      if size(seg,3) > 1
+        z_slice = app.ZSliceDropDown.Value;
+        seg = seg(:,:,z_slice);
+      end
       gain = app.display.segment{seg_num}.gain_slider.Value/100;
       perimeter = app.display.segment{seg_num}.perimeter_toggle.Value;
       thickness = app.display.segment{seg_num}.perimeter_thickness.Value;
@@ -85,9 +114,10 @@ function fun(app)
       colour = app.segment{seg_num}.display_color;
       if any(colour)
         seg_colors = uint8(zeros(size(composite_img)));
-        seg_colors(:,:,1) = logical(seg) .* colour(1) .* 255;
-        seg_colors(:,:,2) = logical(seg) .* colour(2) .* 255;
-        seg_colors(:,:,3) = logical(seg) .* colour(3) .* 255;
+        otherdims=repmat({':'},1,ndims(composite_img)-1);
+        seg_colors(otherdims{:},1) = logical(seg) .* colour(1) .* 255;
+        seg_colors(otherdims{:},2) = logical(seg) .* colour(2) .* 255;
+        seg_colors(otherdims{:},3) = logical(seg) .* colour(3) .* 255;
       else
         seg_colors = label2rgb(uint16(seg), 'jet', [0 0 0], 'shuffle'); % outputs uint8
       end
@@ -105,20 +135,8 @@ function fun(app)
       if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
         measure_name = app.DisplayMeasureDropDown.Value;
         if ismember(measure_name,app.ResultTable_for_display.Properties.VariableNames)
-          if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
-            % Currently selected image is uniquely identified by row, column, field, and timepoint
-            row = app.RowDropDown.Value;
-            column = app.ColumnDropDown.Value;
-            field = app.FieldDropDown.Value;
-            timepoint = app.TimepointDropDown.Value;
-            selector = ismember(app.ResultTable_for_display.row,row) & ismember(app.ResultTable_for_display.column,column) & ismember(app.ResultTable_for_display.field,field) & ismember(app.ResultTable_for_display.timepoint,timepoint) & ismember(app.ResultTable_for_display.PlateName,PlateName);
-          elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'ZeissSplitTiffs')
-            % Currently selected image is uniquely identified by the first part of the filename
-            img_num = app.ExperimentDropDown.Value;
-            filepart1 = app.plates(plate_num).img_files_subset(img_num).filepart1;
-            selector = ismember(app.ResultTable_for_display.filepart1,filepart1);
-          end
-          data = app.ResultTable_for_display(selector,{measure_name,'x_coord','y_coord'});
+          subsetTable = get_current_displayed_resultTable(app);
+          data = subsetTable(:,{measure_name,'x_coord','y_coord'});
           fontsize = app.DisplayMeasureFontSize.Value;
           fontcolor = app.measure_overlay_color;
           

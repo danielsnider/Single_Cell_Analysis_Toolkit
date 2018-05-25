@@ -1,32 +1,22 @@
 function img = do_preprocess_image(app, plate_num, chan_num, img_path)
   try
-    if ~exist(img_path) % If the file doesn't exist warn user
-      msg = sprintf('Could not find the image file at location: %s',img_path);
-      uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
-      error(msg);
-    end
 
-    [filepath,name,ext] = fileparts(img_path);
-    if isstruct(app.StartupLogTextArea)
-      msg = sprintf('Loading image %s', [name ext]);
-      if app.CheckBox_Parallel.Value && app.processing_running
-          disp(msg)
-%         send(app.ProcessingLogQueue, msg);
-      else
-        app.log_processing_message(app, msg);
-      end
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+      img = img_path; % data is already in memory here
+      
+    else % Read image from disk for all other formats 
+      img = read_image(app,img_path);
     end
-
-    img = imread(img_path);
+      
     
     % Return if no preprocessing is configured
-    if isempty(app.preprocess_tabgp)
+    if sum(ismember(fields(app),'preprocess_tabgp'))==0
       return
     end
 
     % Get name of requested channel based on the current plate
     chan_name = app.plates(plate_num).chan_names(chan_num);
-
+    
     % Loop over each user configured preprocessing step, check if it applies to the requested image, if so do it
     for proc_num = 1:length(app.preprocess)
       % Check if the configured preprocessing step's channel matches the requested image channel
@@ -49,7 +39,7 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
       % Call algorithm
       algo_name = app.preprocess{proc_num}.AlgorithmDropDown.Value;
 
-      if isvalid(app.StartupLogTextArea)
+      if isvalid(app.StartupLogTextArea.tx) == 1
         preprocess_name = app.preprocess{proc_num}.tab.Title;
         msg = sprintf('%s ''%s.m''', preprocess_name, algo_name);
         if app.CheckBox_Parallel.Value && app.processing_running

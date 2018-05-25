@@ -24,34 +24,44 @@ function fun(app, createCallbackFcn)
   end
     
 
-  function Run_Analysis_Callback(app,event)
-    % Display log
-%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-%     app.StartupLogTextArea = txt_update;
-%     pause(0.1); % enough time for the log text area to appear on screen
-
-    do_analyze(app, an_num);
-
-    % Delete log
-%     delete(app.StartupLogTextArea);
-% 	app.StartupLogTextArea.tx.String = {};
-           
+  function Play_Callback(app,event)
+    if app.analyze{an_num}.run_button.Value
+      do_analyze(app, an_num);
+    end
   end
 
   try
-    
+    plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/analyze/**/definition*.m');
+    % save('analyze_plugins.mat','plugin_definitions');
+    if isempty(plugin_definitions)
+        load('analyze_plugins.mat');
+    end
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
-      [params, algorithm] = eval(plugin_name); %Should be somewhere else
+      [params, algorithm] = eval(plugin_name);
+      if ~strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        if isfield(algorithm,'supports_3D') && algorithm.supports_3D
+          continue % unsupported plugin due to it having 3D support
+        end
+      end
       available_plugins.(plugin_name){1,1} = params;
       available_plugins.(plugin_name){1,2} = algorithm;
       plugin_name = strsplit(plugin_name,'definition_');
-      plugin_names{plugin_num} = plugin_name{2};
-      plugin_pretty_names{plugin_num} = algorithm.name;
+      plugin_names{length(plugin_names)+1} = plugin_name{2};
+      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
+    end
+
+    if isempty(plugin_names)
+      msg = 'Sorry, no analze plugins found.';
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+        msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
+      end
+      uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');
+      return
     end
 
     % Setup
@@ -63,9 +73,6 @@ function fun(app, createCallbackFcn)
     app.analyze{an_num} = {};
         app.analyze{an_num}.params = params;
     app.analyze{an_num}.algorithm_info = algorithm;
-    if ~isfield(app.analyze{an_num}.algorithm_info,'maintainer')
-      app.analyze{an_num}.algorithm_info.maintainer = 'Unknown';
-    end
 
     app.Button_RunAllAnalysis.Visible = 'on';
 
@@ -111,7 +118,6 @@ function fun(app, createCallbackFcn)
       'Position', [480,421,218,41]);
 
     % Delete button
-
     delete_button = uibutton(tab, ...
       'Text', [app.Delete_Unicode.Text ''], ...
       'BackgroundColor', [.95 .95 .95], ...
@@ -124,12 +130,9 @@ function fun(app, createCallbackFcn)
       'Icon', 'play-button.png', ...
       'Value',0,...
       'BackgroundColor', [.95 .95 .95], ...
-      'ValueChangedFcn', createCallbackFcn(app, @Run_Analysis_Callback, true), ...
+      'ValueChangedFcn', createCallbackFcn(app, @Play_Callback, true), ...
       'Position', [369,352,26,23]);
 
- %       'Icon', 'play-button.png', ...
-
-    
     %% Set a display color to see in the figure
     app.analyze{an_num}.display_color = [];
 
