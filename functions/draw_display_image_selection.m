@@ -47,6 +47,9 @@ function fun(app)
     app.ExperimentDropDown.Items = app.plates(plate_num).experiments;
     app.ExperimentDropDown.ItemsData = 1:length(app.plates(plate_num).experiments);
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
+    % store which images are loaded in memory
+    % loaded_images_idx = find(cellfun(@(x) ~isempty(x), {app.plates(plate_num).img_files_subset.chans}));
+    % app.plates(plate_num).loaded_images_idx = loaded_images_idx;
 
     % Populate Timepoint Dropdown
     app.TimepointDropDown.Items = arrayfun(@(x) {num2str(x)},unique([app.plates(plate_num).img_files_subset.timepoint]));
@@ -79,7 +82,7 @@ function fun(app)
     pos(2) = 226; % move vertically
     app.ZSliceDropDown.Position = pos;
     pos = app.ZSliceDropDownLabel.Position;
-    pos(2) = 234; % move vertically
+    pos(2) = 222; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
   elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')

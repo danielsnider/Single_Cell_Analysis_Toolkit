@@ -28,9 +28,6 @@ function fun(app, plate_num)
     error(msg);
   end
 
-  % if isvalid(app.progressdlg)
-  %   close(app.progressdlg)
-  % end
   img_num = app.ExperimentDropDown.Value;
   if ~isempty(img_num) % only happens on first startup
     img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
@@ -38,11 +35,12 @@ function fun(app, plate_num)
   else
     msg = sprintf('Scanning image stacks.');
   end
+  app.log_processing_message(app, msg);
   progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
   'Message',msg, 'Indeterminate','on');
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
-  app.log_processing_message(app, 'Loading XYZCT-Bio-Formats images...');
+  % app.log_processing_message(app, 'Loading XYZCT-Bio-Formats images...');
   pause(0.1) % Give gui time to update
 
   full_path = fullfile(img_files(1).folder, img_files(1).name); % use first becasue Currently the "XYZCT-Bio-Formats" file format only supports opening one consolidated file with multiple image sets within it. Improving upon this is hoped for in the near future.
@@ -146,6 +144,10 @@ function fun(app, plate_num)
   app.plates(plate_num).experiments  = unique({multi_channel_imgs.ImageName});
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
+
+  % % store which images are loaded in memory
+  % loaded_images_idx = find(cellfun(@(x) ~isempty(x), {multi_channel_imgs.chans}));
+  % app.plates(plate_num).loaded_images_idx = loaded_images_idx;
 
   if ~ischar(img_num) % only happens on first startup
     close(progressdlg)

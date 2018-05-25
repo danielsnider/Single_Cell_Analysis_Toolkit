@@ -196,7 +196,18 @@ function fun(app, an_num)
     app.progressdlg.Value = 0.7;
 
     % Call algorithm
-    feval(algo_name, plugin_name, an_num, algo_params{:});
+    function_handle = str2func(algo_name);
+    num_output = nargout(function_handle);
+    if num_output == 0
+      feval(algo_name, plugin_name, an_num, algo_params{:});
+    elseif num_output == 1
+      return_data = feval(algo_name, plugin_name, an_num, algo_params{:});
+      % The analzye plugin can return a table which we expect to be a superset of the current result table
+      if istable(return_data)
+        app.ResultTable = return_data;
+        app.ResultTable_for_display = return_data;
+      end
+    end
 
     close(app.progressdlg);
     busy_state_change(app,'not busy');

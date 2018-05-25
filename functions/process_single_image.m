@@ -136,6 +136,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
           desired_height = max(primary_seg_data(:)); % desired height is the number of primary segments
           MeasureTable = append_missing_rows_for_table(MeasureTable, desired_height);
         end
+        if ~isempty(iterTable) && height(iterTable) ~= height(MeasureTable)
+          msg = sprintf('Two of your configured measurements returned different number of results. For example one plugin measured 4 cells and another measured 100 peroxisomes. We are unable to combine this into the same table. This is usually fixed by using primary segment settings which can force measuring 4 cells OR 100 peroxisomes.');
+          throw_application_error(app,msg);
+        end
+
         % Append new measurements
         iterTable=[iterTable MeasureTable];
       end

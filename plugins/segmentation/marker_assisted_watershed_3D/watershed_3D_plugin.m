@@ -1,5 +1,7 @@
-function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_strength, watershed_smooth_size, min_area, max_area, debug_level)
-    
+function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_strength, watershed_smooth_size, min_area, max_area, hmax_height, debug_level)
+  % result = img;
+  % return
+  
   warning off all
   cwp=gcp('nocreate');
   if isempty(cwp)
@@ -40,16 +42,29 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
     imshow3D(img_smooth,[]);
   end
 
-  %% Seed
-  seeds = imregionalmax(img_smooth);
-  seeds(img_thresh==0)=0;
-  if ismember(debug_level,{'All'})
-    [X Y] = find(seeds);
-    f = figure(826); clf; set(f,'name','input seeds','NumberTitle', 'off')
-    imshow3D(img,[]);
-    hold on;
-    plot(Y,X,'or','markersize',2,'markerfacecolor','r')
+  
+  %% Supress small maxima
+  if ~isequal(hmax_height, false)
+    img_hmax = imhmax(img_smooth,hmax_height);
+    if ismember(debug_level,{'All'})
+      f = figure(8260); clf; set(f,'name','h-max','NumberTitle', 'off')
+      imshow3D(img_hmax,[]);
+    end
+    seeds = imregionalmax(img_hmax);
+  else
+    seeds = imregionalmax(img_smooth);
   end
+  
+  %% Seed
+  seeds(img_thresh==0)=0;
+  % 3D seeds don't show correctly
+%   if ismember(debug_level,{'All'})
+%     [X Y] = find(seeds);
+%     f = figure(826); clf; set(f,'name','input seeds','NumberTitle', 'off')
+%     imshow3D(img,[]);
+%     hold on;
+%     plot(Y,X,'or','markersize',2,'markerfacecolor','r')
+%   end
 
   %% Watershed
   img_min = imimposemin(max(img_smooth(:))-img_smooth,seeds); 
@@ -110,13 +125,17 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
     for idx=1:num_objects
       object = perim_labelled_img == idx;
       seg_colored_img(find(object)) = colors(idx,1) * max_intensity;
-      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)) = colors(idx,2) * max_intensity;
+      seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)) = colors(idx,2) * max_intensity ;
       seg_colored_img(find(object)+size(img,1)*size(img,2)*size(img,3)*2) = colors(idx,3) * max_intensity;
     end
 
     % Display
     f = figure(743); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-    imshow3D(uint8(seg_colored_img),[])
+    if max(seg_colored_img(:)) > 255
+        imshow3D(uint16(seg_colored_img),[])
+    else
+        imshow3D(uint8(seg_colored_img),[])
+    end
   end
 
 end

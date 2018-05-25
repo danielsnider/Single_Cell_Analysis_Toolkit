@@ -50,6 +50,15 @@ function [params, algorithm] = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
+  params(n).name = 'H-maxima Transform Height';
+  params(n).default = 2;
+  params(n).help = 'Suppress small local maxima with height of less than the specified value. Can help reduce over-segmentation by watershed segmentation.';
+  params(n).type = 'numeric';
+  params(n).limits = [0 Inf];
+  params(n).optional = true;
+  params(n).optional_default_state = false;
+
+  n = n + 1;
   params(n).name = 'Display Figures';
   params(n).default = 'Result Only';
   params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';

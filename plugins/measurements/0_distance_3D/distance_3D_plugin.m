@@ -23,7 +23,7 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
 
   if ~isfield(seg_to,'faces') | ~isfield(seg_to,'vertices')
     title_ = 'User Input Error';
-    msg = sprintf('User cause an error in ''%s'' plugin. The input segment ''%s'' that the user has chosen is not in the correct 3D format. Please double check the algorithm choice in the settings for the ''%s'' segment. Nothing to do.', plugin_name, seg_to_name, seg_to_name);
+    msg = sprintf('User caused an error in ''%s'' plugin. The input segment ''%s'' that the user has chosen is not in the correct 3D format. Please double check the algorithm choice in the settings for the ''%s'' segment. Nothing to do.', plugin_name, seg_to_name, seg_to_name);
     f = errordlg(msg,title_);
     err = MException('PLUGIN:input_error_3D',msg);
     throw(err);

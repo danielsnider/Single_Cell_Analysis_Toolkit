@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="1561907173" file="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3467958208" file="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
@@ -30,7 +30,7 @@
     <param.web.mcr.name>MyAppInstaller_web</param.web.mcr.name>
     <param.package.mcr.name>MyAppInstaller_mcr</param.package.mcr.name>
     <param.no.mcr.name>MyAppInstaller_app</param.no.mcr.name>
-    <param.windows.command.prompt>true</param.windows.command.prompt>
+    <param.windows.command.prompt>false</param.windows.command.prompt>
     <param.create.log>true</param.create.log>
     <param.log.file>GUI_log.log</param.log.file>
     <param.native.matlab>false</param.native.matlab>
@@ -66,7 +66,6 @@
       <param.web.mcr.name />
       <param.package.mcr.name />
       <param.no.mcr.name />
-      <param.windows.command.prompt />
       <param.native.matlab />
       <param.checkbox />
       <param.example />

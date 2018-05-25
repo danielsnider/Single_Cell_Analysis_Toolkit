@@ -3,40 +3,9 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
 
     if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
       img = img_path; % data is already in memory here
-
-      % data = bfopenSeries(app.images_full_path,img_path);
-      % dat=data{1};
-      % stack_ = [];
-      % % Loop over planes
-      % for plane_id=1:length(dat)
-      %   name = dat{plane_id,2}; % example:     {'Z:\DanielS\Images\LauraD PeterK\Set 2 - Timelapse\Laura DiGiovanni - PO-Mito Live Hyvolution 2018-03-07.lif; HyVolution/Series003; plane 1/80; Z=1/5; C=1/2; T=1/8' }
-      %   pos = regexp(name,' Z=(?<z>\d+).* C=(?<chan>\d+).* T=(?<time>\d+)','names');
-      %   pos.z = str2num(pos.z);
-      %   pos.time = str2num(pos.time);
-      %   pos.chan = str2num(pos.chan);
-      %   stack_(:,:,pos.z, pos.time, pos.chan) = dat{plane_id,1}; 
-      % end
-      % data = stack_;
       
     else % Read image from disk for all other formats 
-      if ~exist(img_path) % If the file doesn't exist warn user
-        msg = sprintf('Could not find the image file at location: %s',img_path);
-        uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
-        error(msg);
-      end
-
-      [filepath,name,ext] = fileparts(img_path);
-      if isvalid(app.StartupLogTextArea.tx) == 1
-        msg = sprintf('Loading image %s', [name ext]);
-        if app.CheckBox_Parallel.Value && app.processing_running
-            disp(msg)
-  %         send(app.ProcessingLogQueue, msg);
-        else
-          app.log_processing_message(app, msg);
-        end
-      end
-
-      img = imread(img_path);
+      img = read_image(app,img_path);
     end
       
     

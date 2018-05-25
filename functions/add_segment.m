@@ -12,6 +12,15 @@ function fun(app, createCallbackFcn)
       uialert(app.UIFigure,'Sorry, there is a bug which prevents you from deleting a Segment which is not the last one.','Sorry', 'Icon','warn');
       return
     end
+    
+    progressdlg_created_here = false;
+    if ~isvalid(app.progressdlg)
+      progressdlg_created_here = true;
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Deleting segment', 'Indeterminate','on');
+      assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+      pause(0.1);
+    end
+
     delete_segments(app, seg_num);
     app.segment(seg_num) = [];
     delete(tab);
@@ -20,13 +29,25 @@ function fun(app, createCallbackFcn)
       app.segment_tabgp = [];
     end
     changed_SegmentName(app)
+
+    if progressdlg_created_here
+      pause(0.1);
+      close(app.progressdlg);
+    end
   end
   
   try
+    if ~isvalid(app.progressdlg)
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Adding segment', 'Indeterminate','on');
+      assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+      pause(0.1);
+    end
+
     plate_num = app.PlateDropDown.Value;
-    plugin_definitions = dir('./plugins/segmoeuentation/**/definition*.m');
+    plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
     if isempty(plugin_definitions)
         load('segment_plugins.mat');
+        app.Button_ViewMeasurements.Enable = false;
     end
     plugin_names = {};
     plugin_pretty_names = {};
@@ -55,8 +76,10 @@ function fun(app, createCallbackFcn)
         msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
       end
       uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');
+      close(progressdlg);
       return
     end
+
 
     % Setup
     if isempty(app.segment_tabgp)
@@ -128,8 +151,14 @@ function fun(app, createCallbackFcn)
     % Switch to new tab
     app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
+    
     % Populate GUI components in new tab
     app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
+
+    if isvalid(app.progressdlg)
+      pause(0.1);
+      close(app.progressdlg);
+    end
 
   % Catch Application Error
   catch ME

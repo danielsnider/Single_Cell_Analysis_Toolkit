@@ -132,7 +132,11 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
 
     % Display
     f = figure(7409); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-    imshow3D(uint16(seg_colored_img),[])
+    if max(seg_colored_img(:)) > 255
+        imshow3D(uint16(seg_colored_img),[])
+    else
+        imshow3D(uint8(seg_colored_img),[])
+    end
   end
 
 end

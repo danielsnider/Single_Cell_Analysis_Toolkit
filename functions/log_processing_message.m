@@ -1,5 +1,6 @@
 function images = fun(app, new_msg)
     new_msg = ['[' char(datetime('now','Format','yyyy-MM-dd HH:mm:ss.SSS')) ']: ' new_msg];
+    disp(new_msg);
     if isstruct(app.StartupLogTextArea)
         %     log_ = app.StartupLogTextArea.Value;
         % Check to see if log window is still open, otherwise create a new
