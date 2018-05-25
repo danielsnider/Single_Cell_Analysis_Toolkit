@@ -15,7 +15,9 @@ Data = readtable([path '\' file]);
 
 % PlateMap = Data.Plate_Map;
 
-[num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin 20180112\DPC\Concatenated Result tables from old GUI\Plate map 20180212_cycE1.xlsx');
+% [num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin 20180112\DPC\Concatenated Result tables from old GUI\Plate map 20180212_cycE1.xlsx');
+
+[num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin_TEST_Eden_Result_Table_Data\Plate map 20180129_LKB1cellcycle.xlsx');
 
 % Get Well Meta-Info based on 96-Well Plate
 Well_Conditons = cell(60,3);idx = 1;

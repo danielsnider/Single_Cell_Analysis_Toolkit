@@ -60,7 +60,7 @@ function [params, algorithm] = fun()
   params(n).options = {'None', 'MicroPlate'};
   params(n).sub_tab = 'Plotting';
   
-    n = n + 1;
+  n = n + 1;
   params(n).name = 'Plot Title';
   params(n).default = '';
   params(n).help = 'Enter a title name for your plot.';

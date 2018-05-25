@@ -1,7 +1,20 @@
 function fun(plugin_name, plugin_num,ResultTable, measurement_name,Imaging_Type,pre_process_options,control_treatment,normalize_by,Plot,Plot_Title,MetaRows,MetaCols)
 
+% for debugging
+% measurement_name = 'TimePoint';
+% Imaging_Type  = 'Fixed';
+% pre_process_options = 'Average Replicates';
+% control_treatment = 'No Dox';  
+% Plot = 'MicroPlate';
+% Plot_Title = '20180326_SE';
+% MetaRows = 'Treatment'; MetaCols = 'Clone';
+% 
+
+
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
+% ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}
+    
 
 if strcmp(ResultTable.Properties.VariableNames{1},'Row')
     ResultTable.Properties.VariableNames{1} = 'row';
@@ -19,20 +32,21 @@ uniTimePoint = flip(unique(ResultTable.(measurement_name),'stable'));
 uniWells = unique(ResultTable(:,{'row','column'}));
 
 count=1;
-% loop over all wells
+% Obtain cell number for each well per timepoint
 for well = 1:size(uniWells,1)
-    % loop over time points
     for time_point = 1:size(uniTimePoint,1)
         row = uniWells.row(well); col=uniWells.column(well);
-        Num = sum(ismember(ResultTable.(measurement_name),uniTimePoint(time_point))&ResultTable.row==row&ResultTable.column==col); % Total number of cells per well
-        uniResults.(['TP_' cell2mat(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; %Append cell number at the particular well to the uniWells variable.
+        % Total number of cells per well
+        Num = sum(ismember(ResultTable.(measurement_name),uniTimePoint(time_point))&ResultTable.row==row&ResultTable.column==col); 
+        %Append cell number at the particular well to the uniWells variable.
+        uniResults.(['TP_' cell2mat(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; 
 %         disp(['TimePoint: ' num2str(uniTimePoint(time_point)) ' Row:' num2str(uniWells.row(well)) ' Col: ' num2str(uniWells.column(well)) ' CellNum: ' num2str(Num)])
 %         pause(0.05)  
     end
     count=count+1;
 end
 
-uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
+[uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells);
 
 % Make exponential separate
 % if Plot == 'Exponential'
@@ -42,7 +56,18 @@ uniResults = Cell_Cycle_Calculation(uniResults,uniWells);
 % end
 
 if strcmp(Plot,'MicroPlate')   
-    MicroPlate_Plotting(uniResults,uniWells,Plot_Title,MetaRows,MetaCols)    
+
+    % Microplate Plot for Cell Cycle Length
+    data_to_plot = 'Cell_Cycle'; Main_Title = 'Cell Cycle Length (Hours)'; color = 'Dark2';rounding_decimal=2;
+    color = 'cool(6)';
+    MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal) 
+    
+    % Microplate Plot for Cell Number
+    for i = start_idx:end_idx
+        data_to_plot = char(uniResults.Properties.VariableNames(i));
+        Main_Title = ['Cell Number (' data_to_plot ')']; color = 'Spectral';
+        MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal)
+    end
 end
 
 if ~contains(pre_process_options,'None')
