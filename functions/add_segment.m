@@ -55,15 +55,13 @@ function fun(app, createCallbackFcn)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       [params, algorithm] = eval(plugin_name);
-      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+      if app.plates(plate_num).supports_3D
         if ~isfield(algorithm,'supports_3D') || ~algorithm.supports_3D
           continue % unsupported plugin due to lack of 3D support
         end
       end
-      if ~strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
-        if isfield(algorithm,'supports_3D') && algorithm.supports_3D
-          continue % unsupported plugin due to it having 3D support
-        end
+      if ~app.plates(plate_num).supports_3D && isfield(algorithm,'supports_3D') && algorithm.supports_3D
+        continue % unsupported plugin due to it having 3D support
       end
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{length(plugin_names)+1} = plugin_name{2};
@@ -72,7 +70,7 @@ function fun(app, createCallbackFcn)
 
     if isempty(plugin_names)
       msg = 'Sorry, no segmentation plugins found.';
-      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+      if app.plates(plate_num).supports_3D
         msg = sprintf('%s There may be no plugins installed for 3D images.',msg)
       end
       uialert(app.UIFigure,msg,'No Plugins', 'Icon','warn');

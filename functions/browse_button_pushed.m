@@ -19,7 +19,8 @@ end
     % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Multi_Plate_Map.xlsx';
     % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
     plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Laura_Plate_Map_Laptop.xlsx';
-    plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_Plate_Map_Laptop.xlsx';
+    plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_Plate_Map_Laptop_3D.xlsx';
+    %plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_Plate_Map_Laptop_2D_multi_chan.xlsx';
     if exist(plate_file)
       app.ChooseplatemapEditField.Value = plate_file;
       FileName = ''; % just helps testing

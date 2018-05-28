@@ -1,4 +1,6 @@
 function img = func(app, img_path)
+  plate_num = app.PlateDropDown.Value;
+
   if ~exist(img_path) % If the file doesn't exist warn user
     msg = sprintf('Could not find the image file at location: %s',img_path);
     uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
@@ -16,5 +18,16 @@ function img = func(app, img_path)
     end
   end
 
-  img = imread(img_path);
+  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Split-Bio-Formats'})
+    data = bfopen(img_path);
+    dat = data{1};
+    % Make image stack
+    count = 1;
+    for idx=app.plates(plate_num).keep_zslices % also do z filtering
+      img(:,:,count) = dat{idx,1};
+      count = count + 1;
+    end
+  else
+    img = imread(img_path);
+  end
 end

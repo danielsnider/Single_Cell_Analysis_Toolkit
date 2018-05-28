@@ -9,8 +9,8 @@ function fun(app)
   plate_num = app.PlateDropDown.Value;
 
   % Don't overlay metrics for Bio Formats (not yet implemented)
-  if value && strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
-      msg = sprintf('Sorry, metric overlay is currently not supported for the "XYZCT-Bio-Formats" image format.');
+  if value && app.plates(plate_num).supports_3D
+      msg = sprintf('Sorry, metric overlay is currently not supported for the 3D image stack formats.');
       uialert(app.UIFigure,msg,'Not Yet Implemented', 'Icon','warn');
       app.DisplayMeasureCheckBox.Value = false;
       return % don't create montage

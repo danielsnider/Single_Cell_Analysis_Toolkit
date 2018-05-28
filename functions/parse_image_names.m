@@ -9,7 +9,7 @@ function fun(app)
     app.log_processing_message(app, msg);
 
     % Only Image Naming Scheme is Supported
-    if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs', 'FlatFiles_SingleChannel', 'XYZCT-Bio-Formats'})
+    if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs', 'FlatFiles_SingleChannel', 'XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
       msg = sprintf('Could not load image file names. Unkown image file format "%s". Please see your plate map spreadsheet.',naming_scheme);
       uialert(app.UIFigure,msg,'Unkown Image File Format', 'Icon','error');
       ME = MException('APP:Unkown_Image_File_Format','Unkown Image File Format');
@@ -38,15 +38,27 @@ function fun(app)
         0 1 1;
         1 0 1; % limitation introduced here on the number of channels
       ];
+      app.plates(plate_num).supports_3D = false;
 
     elseif strcmp(naming_scheme, 'ZeissSplitTiffs')
       parse_input_structure_ZeissSplitTiffs(app, plate_num);
-
-    elseif ismember(naming_scheme, {'XYZCT-Bio-Formats'})
-      parse_input_structure_XYZCT_Bio_Formats(app, plate_num);
+      app.plates(plate_num).supports_3D = false;
 
     elseif strcmp(naming_scheme, 'FlatFiles_SingleChannel')
       parse_input_structure_FlatFile_SingleChannel(app, plate_num);
+      app.plates(plate_num).supports_3D = false;
+
+    elseif ismember(naming_scheme, {'XYZCT-Bio-Formats'})
+      parse_input_structure_XYZCT_Bio_Formats(app, plate_num);
+      app.plates(plate_num).supports_3D = true;
+
+    elseif ismember(naming_scheme, {'XYZ-Split-Bio-Formats'})
+      parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num);
+      app.plates(plate_num).supports_3D = true;
+
+    elseif ismember(naming_scheme, {'MultiChannelFiles'})
+      parse_input_structure_MultiChannelFiles(app, plate_num);
+      app.plates(plate_num).supports_3D = false;
     end
 
     % Enable by default all channels for display in the figure

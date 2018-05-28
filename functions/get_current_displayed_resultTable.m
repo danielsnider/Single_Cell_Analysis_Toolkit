@@ -17,7 +17,7 @@ function subsetTable = fun(app)
       img_num = app.ExperimentDropDown.Value;
       filepart1 = app.plates(plate_num).img_files_subset(img_num).filepart1;
       selector = ismember(app.ResultTable_for_display.filepart1,filepart1);
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'FlatFiles_SingleChannel'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'FlatFiles_SingleChannel','MultiChannelFiles','XYZ-Split-Bio-Formats'})
       img_num = app.ExperimentDropDown.Value;
       ImageName = app.plates(plate_num).img_files_subset(img_num).ImageName;
       selector = ismember(app.ResultTable_for_display.ImageName,ImageName);

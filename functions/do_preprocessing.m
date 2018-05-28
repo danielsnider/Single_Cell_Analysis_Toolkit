@@ -7,8 +7,11 @@ function img = do_preprocess_image(app, plate_num, chan_num, img_path)
     else % Read image from disk for all other formats 
       img = read_image(app,img_path);
     end
-      
-    
+
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'MultiChannelFiles'})
+      img = img(:,:,chan_num);
+    end
+
     % Return if no preprocessing is configured
     if sum(ismember(fields(app),'preprocess_tabgp'))==0
       return
