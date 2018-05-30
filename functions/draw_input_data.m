@@ -119,7 +119,7 @@ function fun(app, createCallbackFcn)
       Filter_Fields_visibility = 'on';
       Filter_Timepoints_visibility = 'on';
       Filter_zslices_visibility = 'off';
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','MultiChannelFiles'})
       Plate_Map_Table_visibility = 'off';
       Filter_Data_visibility = 'off';
       Filter_Row_visibility = 'off';
@@ -131,6 +131,21 @@ function fun(app, createCallbackFcn)
       numimages_label.Position = [pos(1) 276 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
       pos = app.plates(plate_num).NumberOfImagesField.Position;
       app.plates(plate_num).NumberOfImagesField.Position = [pos(1) 249 pos(3) pos(4)]; % Move up because some fields will be missing for Zeiss
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Split-Bio-Formats'})
+      Plate_Map_Table_visibility = 'off';
+      Filter_Data_visibility = 'off';
+      Filter_Row_visibility = 'off';
+      Filter_Columns_visibility = 'off';
+      Filter_Fields_visibility = 'off';
+      Filter_Timepoints_visibility = 'off';
+      Filter_zslices_visibility = 'on';
+      Filter_zslices_label_position = [15,248,67,20];
+      Filter_zslices_position = [87,247,56,22];
+      pos = numimages_label.Position;
+      numimages_label.Position = [pos(1) 210 pos(3) pos(4)]; % Move up because some fields will be missing
+      pos = app.plates(plate_num).NumberOfImagesField.Position;
+      app.plates(plate_num).NumberOfImagesField.Position = [pos(1) 183 pos(3) pos(4)]; % Move up because some fields will be missing
+
     elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
       %first labal 248
       %first edit box 247

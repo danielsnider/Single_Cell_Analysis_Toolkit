@@ -3,9 +3,9 @@ function fun(app)
     % Currently selected plate number
     plate_num = app.PlateDropDown.Value;
 
-    % Don't create montage for Bio Formats (not yet implemented)
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
-      msg = sprintf('Sorry, creating a montage is currently not supported for the "XYZCT-Bio-Formats" image format.');
+    % Don't create montage for 3D image stack formats (not yet implemented)
+    if app.plates(plate_num).supports_3D
+      msg = sprintf('Sorry, creating a montage is currently not supported for the 3D image stack formats.');
       uialert(app.UIFigure,msg,'Not Yet Implemented', 'Icon','warn');
       return % don't create montage
     end

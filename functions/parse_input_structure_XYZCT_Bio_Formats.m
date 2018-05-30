@@ -44,7 +44,6 @@ function fun(app, plate_num)
   pause(0.1) % Give gui time to update
 
   full_path = fullfile(img_files(1).folder, img_files(1).name); % use first becasue Currently the "XYZCT-Bio-Formats" file format only supports opening one consolidated file with multiple image sets within it. Improving upon this is hoped for in the near future.
-  app.images_full_path = full_path;
 
   if isempty(app.bioformat_data)
     if endsWith(full_path, '.mat')

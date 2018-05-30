@@ -3,7 +3,10 @@ function func(app, plate_num)
   try
     busy_state_change(app,'busy');
 
+    trigger_processing = false;
     special_filters = { ...
+    };
+    filter_names = { ...
     };
 
     if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
@@ -15,6 +18,12 @@ function func(app, plate_num)
       special_filters = { ...
         'zslices' ...
       };
+    elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZ-Split-Bio-Formats')
+      special_filters = { ...
+        'zslices' ...
+      };
+      % This plugin only supports filtering z-slices. Therefore reload the available image slices
+      trigger_processing = true;
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
       filter_names = { ...
         'rows', ...
@@ -90,7 +99,7 @@ function func(app, plate_num)
         for img_num=1:length(app.plates(plate_num).img_files_subset)
           for chan_num=app.plates(plate_num).img_files_subset(img_num).channel_nums
             keep_zslices = app.plates(plate_num).(['keep_' filter_name]);
-            if ~isempty(app.plates(plate_num).img_files_subset(img_num).chans)
+            if ~isempty(app.plates(plate_num).img_files_subset(img_num).chans) && isfield(app.plates(plate_num).img_files_subset(img_num).chans(chan_num),'data')
               app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data = app.plates(plate_num).img_files_subset(img_num).chans(chan_num).data(:,:,keep_zslices);
             end
           end
@@ -107,6 +116,11 @@ function func(app, plate_num)
 
     % Update Display UI 
     draw_display_image_selection(app);
+
+    if trigger_processing
+      start_processing_of_one_image(app);
+      update_figure(app);
+    end
 
     busy_state_change(app,'not busy');
 
