@@ -3,6 +3,7 @@ function [params, algorithm] = fun()
   algorithm.name = 'Manual Spotting Watershed Segmentation';
   algorithm.help = 'Manual Spotting Watershed segmentation is used to separate touching objects in an image with a pause in the execution of the algorithm to ask a human how many cells there are and where their each cells brightest point it. The watershed transform finds "catchment basins" and "watershed ridge lines" in an image by treating it as a surface where light pixels are high and dark pixels are low. Segmentation using the watershed transform works better when you can identify, or "mark", objects with seeds. This plugin gives you an option to manually identify seeds if a nuclear stain is unavailable.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
+  algorithm.supports_3D_and_2D = true;
 
   n = 0;
   n = n + 1;

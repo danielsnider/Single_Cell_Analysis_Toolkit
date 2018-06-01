@@ -3,7 +3,8 @@ function [params, algorithm] = fun()
   algorithm.name = 'Store Parent Segment ID';
   algorithm.help = 'For each segment seen, record what parent segment it falls within. The centroid of each segment is used as the location to look for the existance of a parent segment. The parent segment''s unique ID is stored in the UUID format.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
-
+  algorithm.supports_3D_and_2D = true;
+  
   n = 0;
   n = n + 1;
   params(n).name = 'Parent Segment';

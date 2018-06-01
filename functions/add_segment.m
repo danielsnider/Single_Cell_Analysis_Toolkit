@@ -18,7 +18,7 @@ function fun(app, createCallbackFcn)
       progressdlg_created_here = true;
       app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Deleting segment', 'Indeterminate','on');
       assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
-      pause(0.1);
+      % pause(0.1);
     end
 
     delete_segments(app, seg_num);
@@ -31,7 +31,7 @@ function fun(app, createCallbackFcn)
     changed_SegmentName(app)
 
     if progressdlg_created_here
-      pause(0.1);
+      % pause(0.1);
       close(app.progressdlg);
     end
   end
@@ -40,9 +40,10 @@ function fun(app, createCallbackFcn)
     if ~isvalid(app.progressdlg)
       app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message','Adding segment', 'Indeterminate','on');
       assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
-      pause(0.1);
+      % pause(0.1);
     end
 
+    a=1
     plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
     if isempty(plugin_definitions)
@@ -54,19 +55,33 @@ function fun(app, createCallbackFcn)
     for plugin_num = 1:length(plugin_definitions)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
-      [params, algorithm] = eval(plugin_name);
-      if app.plates(plate_num).supports_3D
-        if ~isfield(algorithm,'supports_3D') || ~algorithm.supports_3D
-          continue % unsupported plugin due to lack of 3D support
-        end
+      if length(app.segment_plugin_definitions) < plugin_num
+        [params, algorithm] = eval(plugin_name);
+        app.segment_plugin_definitions(plugin_num).params = params;
+        app.segment_plugin_definitions(plugin_num).algorithm = algorithm;
+      else
+        params = app.segment_plugin_definitions(plugin_num).params;
+        algorithm = app.segment_plugin_definitions(plugin_num).algorithm;
       end
-      if ~app.plates(plate_num).supports_3D && isfield(algorithm,'supports_3D') && algorithm.supports_3D
-        continue % unsupported plugin due to it having 3D support
+      if ~isfield(algorithm,'supports_3D_and_2D')
+        % plugin supports only 2D or 3D
+        if app.plates(plate_num).supports_3D
+          if ~isfield(algorithm,'supports_3D') || ~algorithm.supports_3D
+            % 2D only
+            continue % unsupported plugin due to lack of 3D support
+          end
+        end
+        if ~app.plates(plate_num).supports_3D && isfield(algorithm,'supports_3D') && algorithm.supports_3D
+          % 3D only
+          continue % unsupported plugin due to it having 3D support
+        end
       end
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{length(plugin_names)+1} = plugin_name{2};
       plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
     end
+    a=2
+
 
     if isempty(plugin_names)
       msg = 'Sorry, no segmentation plugins found.';
@@ -105,6 +120,7 @@ function fun(app, createCallbackFcn)
       'Text', 'Segment Name', ...
       'Position', [57,v_offset+5,90,15]);
     v_offset = v_offset - 33;
+    a=3
 
     % Create algorithm selection dropdown box
     Callback = @(app, event) changed_SegmentationAlgorithm(app, seg_num, createCallbackFcn);
@@ -149,15 +165,16 @@ function fun(app, createCallbackFcn)
     % Switch to new tab
     app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
+    a=4
     
     % Populate GUI components in new tab
     app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
+    a=5
 
     if isvalid(app.progressdlg)
-      pause(0.1);
+      % pause(0.1);
       close(app.progressdlg);
     end
-
   % Catch Application Error
   catch ME
     handle_application_error(app,ME);

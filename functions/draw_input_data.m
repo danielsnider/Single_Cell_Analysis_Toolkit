@@ -59,8 +59,8 @@ function fun(app, createCallbackFcn)
     end
 
     %% Default Positions
-    Plate_Map_Table_position = [163,276,73,20];
-    Plate_Map_Table_label_position = [163,15,624,254];
+    Plate_Map_Table_position = [163,15,624,254];
+    Plate_Map_Table_label_position = [163,276,73,20];
     Filter_Data_label_position = [15,276,93,20];
     Filter_Row_label_position = [48,248,34,20];
     Filter_Row_position = [87,247,56,22];

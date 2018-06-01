@@ -19,11 +19,25 @@ function MeasureTable = func(plugin_name, plugin_num, primary_seg, sub_seg)
   primary_seg_name = primary_seg_name{1}; % expecting only one segment as defined by the plugin definition
   primary_seg = primary_seg.(primary_seg_name); % expecting only a matrix of the segmented objects
 
+  is_3D = false;
+  if ndims(primary_seg) == 3
+    is_3D = true;
+  end
+
   % Get centroid locations of subsegments in linear index form
-  sub_seg_stats = regionprops('table',bwlabel(sub_seg),'Centroid');
+  if is_3D
+    sub_seg_stats = regionprops3(bwlabeln(sub_seg),'Centroid');
+  else
+    sub_seg_stats = regionprops('table',bwlabel(sub_seg),'Centroid');
+  end
   sub_seg_centroid_x = round(sub_seg_stats.Centroid(:,2));
   sub_seg_centroid_y = round(sub_seg_stats.Centroid(:,1));
-  sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y);
+  if is_3D
+    sub_seg_centroid_z = floor(sub_seg_stats.Centroid(:,3));
+    sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y, sub_seg_centroid_z);
+  else
+    sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y);
+  end
 
   % Get parent ids using centriods
   parent_ids = primary_seg(sub_seg_centroid_indices);
