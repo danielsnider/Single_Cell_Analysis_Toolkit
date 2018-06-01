@@ -1,6 +1,7 @@
 function changed_ZSliceDropDown(app)
   try
-    changed_RowColumnFieldTimepoint_DropDown(app);
+    % changed_RowColumnFieldTimepoint_DropDown(app);
+    update_figure(app);
 
   % Catch Application Error
   catch ME

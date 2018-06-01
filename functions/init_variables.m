@@ -55,7 +55,10 @@ function fun(app)
   assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
   close(app.progressdlg);
 
-  app.PlateDropDown.Value = 1;
+  app.ExperimentDropDown.Items = {};
+  app.PlateDropDown.Items = {};
+  %app.PlateDropDown.Value;
+
   app.FiltersTextArea.UserData.LastValue = {''};
   app.ProcessingLogTextArea.Value = {''};
 
