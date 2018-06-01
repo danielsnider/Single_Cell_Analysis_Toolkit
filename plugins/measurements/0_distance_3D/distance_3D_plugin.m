@@ -1,4 +1,5 @@
 function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_from_place, z_res_multiplier)
+  MeasureTable = table();
 
   % Nothing to do if no segments are given
   if isempty(seg_from)
@@ -13,6 +14,11 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   seg_from_name = seg_from_name{1}; % expecting only one segment as defined by the plugin definition
   from_matrix = seg_from.(seg_from_name).matrix; % expecting only a matrix of the segmented objects
 
+  % Check if there are any objects, return if not
+  if max(from_matrix(:))==0
+    return
+  end
+
   % Pull out segment data from struct. Example struct could be 'seg.Pero =   struct with fields:
       %   matrix: [1024×1024×5 double]
       %    faces: {[115014×3 double]  [103044×3 double]  [109009×3 double]  [87644×3 double]  [68396×3 double]  [283104×3 double]}
@@ -20,6 +26,7 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   seg_to_name = fields(seg_to);
   seg_to_name = seg_to_name{1}; % expecting only one segment as defined by the plugin definition
   seg_to = seg_to.(seg_to_name);
+
 
   if ~isfield(seg_to,'faces') | ~isfield(seg_to,'vertices')
     title_ = 'User Input Error';
@@ -64,29 +71,33 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
     all_surface_points(:,:,i) = surface_points;
   end
 
-  % Get lowest distances
-  [min_dist,min_dist_type_id]=min(all_distances');
-  Distances = min_dist;
+  if ~isempty(all_surface_points)
+    % Get lowest distances
+    [min_dist,min_dist_type_id]=min(all_distances');
+    Distances = min_dist;
 
-  % Get the correct surface points (there are multiple types 2D z=1,z=2,3D)
-  surface_points = [];
-  for pid=1:size(points,1)
-    surface_points(pid,:) = all_surface_points(pid,:,min_dist_type_id(pid));
-  end
+    % Get the correct surface points (there are multiple types 2D z=1,z=2,3D)
+    surface_points = [];
+    for pid=1:size(points,1)
+      surface_points(pid,:) = all_surface_points(pid,:,min_dist_type_id(pid));
+    end
 
-  if strcmp(lower(measure_from_place),'edge')
-    Distances = Distances - from_stats.EquivDiameter' ./ 2;
-    Distances(Distances<0) = 0;
+    if strcmp(lower(measure_from_place),'edge')
+      Distances = Distances - from_stats.EquivDiameter' ./ 2;
+      Distances(Distances<0) = 0;
+    end
+  else
+    Distances = zeros(1,length(points));
+    Distances(:) = Inf;
+    surface_points = points;
+    surface_points(:) = NaN;
   end
 
   % Store
-  MeasureTable = table();
-  if ~isempty(Distances)
-    MeasureTable{:,['Distance_' matlab.lang.makeValidName(seg_from_name) '_to_' matlab.lang.makeValidName(seg_to_name)]}=Distances'; % Scalar
-    MeasureTable{:,['Nearest_' matlab.lang.makeValidName(seg_to_name) '_Point']}=surface_points; % XYZ
-    MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Centroid']}=points; % XYZ
-    MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Volume']}=from_stats.Volume; % Count of the actual number of 'on' voxels in the region.
-    MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_EquivDiameter']}=from_stats.EquivDiameter; % Diameter of a sphere with the same volume as the region, returned as a scalar. Computed as (6*Volume/pi)^(1/3).
-  end
+  MeasureTable{:,['Distance_' matlab.lang.makeValidName(seg_from_name) '_to_' matlab.lang.makeValidName(seg_to_name)]}=Distances'; % Scalar
+  MeasureTable{:,['Nearest_' matlab.lang.makeValidName(seg_to_name) '_Point']}=surface_points; % XYZ
+  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Centroid']}=points; % XYZ
+  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Volume']}=from_stats.Volume; % Count of the actual number of 'on' voxels in the region.
+  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_EquivDiameter']}=from_stats.EquivDiameter; % Diameter of a sphere with the same volume as the region, returned as a scalar. Computed as (6*Volume/pi)^(1/3).
 
 end
