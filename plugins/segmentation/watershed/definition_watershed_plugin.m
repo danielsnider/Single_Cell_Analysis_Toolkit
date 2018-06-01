@@ -54,6 +54,12 @@ function [params, algorithm] = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
+  params(n).name = 'Remove Objects Touching Boarder';
+  params(n).default = true;
+  params(n).help = 'Remove segments that are touching the boarder of the image.';
+  params(n).type = 'checkbox';
+
+  n = n + 1;
   params(n).name = 'Display Figures';
   params(n).default = 'Result With Seeds';
   params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';

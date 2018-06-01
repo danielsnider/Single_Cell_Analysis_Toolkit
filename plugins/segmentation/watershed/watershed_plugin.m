@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_param, watershed_smooth_param, thresh_param, min_area, max_area, boarder_clear, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -73,10 +73,14 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
   end
 
   % Clear cells touching the boarder
-  bordercleared_img = imclearborder(img_ws);
-  if ismember(debug_level,{'All'})
-    f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
-    imshow(bordercleared_img,[]);
+  if boarder_clear
+    bordercleared_img = imclearborder(img_ws);
+    if ismember(debug_level,{'All'})
+      f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
+      imshow(bordercleared_img,[]);
+    end
+  else
+    bordercleared_img = img_ws;
   end
 
   % Fill holes
