@@ -76,7 +76,13 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   primary_seg_num = app.PrimarySegmentDropDown.Value;
   if ~isempty(primary_seg_num) && primary_seg_num > 0 % if primary segment is None/0, skip
     primary_seg_data = seg_result{primary_seg_num}.matrix;
-    primary_seg_data = bwlabel(primary_seg_data); % Make sure the data is labelled properly
+    % Label differently depending on 2 or 3D
+    if ndims(primary_seg_data) == 3
+      new_bwlabel = @bwlabeln;
+    elseif ndims(primary_seg_data) == 2
+      new_bwlabel = @bwlabel;
+    end
+    primary_seg_data = new_bwlabel(primary_seg_data); % Make sure the data is labelled properly
     seg_result{primary_seg_num}.matrix = primary_seg_data;
     % Loop over non-primary segment results and properly set the pixel values to be what is found in the region of the primary id
     for seg_num=1:length(app.segment)
@@ -86,9 +92,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       sub_seg_data = seg_result{seg_num}.matrix; 
       if app.RemoveSecondarySegments_CheckBox.Value
         % Remove all segments found outside of the primary segment.
-        new_sub_seg_data = zeros(size(sub_seg_data)); % create a blank slate
-        logical_sub_segment = imreconstruct(logical(primary_seg_data), logical(sub_seg_data)); % only keep sub-segments that are contained within the primary segment
-        new_sub_seg_data(find(logical_sub_segment))=primary_seg_data(find(logical_sub_segment)); % set the values in the sub-segments to be equal to their primary segment
+        new_sub_seg_data = primary_seg_data;
+        new_sub_seg_data(~logical(sub_seg_data))=0; % only keep sub-segments that are contained within the primary segment. set the values in the sub-segments to be equal to their primary segment
       else
         % Do not remove all segments found outside of the primary segment.
         new_sub_seg_data = sub_seg_data;
@@ -99,7 +104,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if app.RemovePrimarySegments_CheckBox.Value
       secondary_seg_data = seg_result{app.RemovePrimarySegmentsOutside.Value}.matrix;
       primary_seg_data(secondary_seg_data==0)=0; % do remove of primary segments found outside of a chosen secondary segment
-      primary_seg_data = bwlabel(primary_seg_data);
+      primary_seg_data = new_bwlabel(primary_seg_data);
       seg_result{primary_seg_num}.matrix = primary_seg_data;
     end
   end
@@ -138,7 +143,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         end
         if ~isempty(iterTable) && height(iterTable) ~= height(MeasureTable)
           msg = sprintf('Two of your configured measurements returned different number of results. For example one plugin measured 4 cells and another measured 100 peroxisomes. We are unable to combine this into the same table. This is usually fixed by using primary segment settings which can force measuring 4 cells OR 100 peroxisomes.');
-          throw_application_error(app,msg);
+          title_ = 'Measurement Result Length Mismatch';
+          throw_application_error(app,msg,title_);
         end
 
         % Append new measurements
@@ -149,7 +155,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     if isempty(iterTable)
       return
     end
-  
 
     %% Add X and Y coordinates for each primary label
     if exist('primary_seg_data','var')
@@ -158,10 +163,18 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         if isempty(centroids)
           return % nothing was found so return
         end
+        if size(centroids,1) ~= height(iterTable)
+          msg = sprintf('Your primary segment has a different number of segments than were measured by one of your configured measurements. For example one plugin measured 900 peroxisomes but there were only 3 cell primary segments. We are unable to combine this into the same table. Double check your measurement settings and primary segment settings which can force measuring 3 cells OR 900 peroxisomes.');
+          title_ = 'Primary Segment and Measurement Result Length Mismatch';
+          throw_application_error(app,msg,title_);
+        end
 
         % Add X and Y coordinates for each primary label
-        iterTable.x_coord = floor(centroids(:,1));
-        iterTable.y_coord = floor(centroids(:,2));
+        iterTable.x_coord = round(centroids(:,1));
+        iterTable.y_coord = round(centroids(:,2));
+        if ndims(primary_seg_data) == 3
+          iterTable.z_coord = round(centroids(:,3));
+        end
     end
 
     % Add UUID for each row

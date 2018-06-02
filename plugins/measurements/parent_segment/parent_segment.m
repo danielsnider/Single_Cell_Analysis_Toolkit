@@ -33,7 +33,7 @@ function MeasureTable = func(plugin_name, plugin_num, primary_seg, sub_seg)
   sub_seg_centroid_x = round(sub_seg_stats.Centroid(:,2));
   sub_seg_centroid_y = round(sub_seg_stats.Centroid(:,1));
   if is_3D
-    sub_seg_centroid_z = floor(sub_seg_stats.Centroid(:,3));
+    sub_seg_centroid_z = round(sub_seg_stats.Centroid(:,3));
     sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y, sub_seg_centroid_z);
   else
     sub_seg_centroid_indices = sub2ind(size(sub_seg), sub_seg_centroid_x, sub_seg_centroid_y);
