@@ -68,7 +68,7 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Im
             elseif contains(Imaging_Type,'Fixed')
                 y = Avg_uniResults.Cell_Cycle(contains(Avg_uniResults.WellConditions,current_condition(sub_condition)));
             end
-            plot(count,y, 'o','MarkerEdgeColor',color);
+            plot(count,y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color);
             if contains(Imaging_Type,'DPC')
                 errorbar(count,y, y_err,'LineStyle', '--', 'Color', color)
             end
