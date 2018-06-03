@@ -43,7 +43,6 @@ function fun(app, createCallbackFcn)
       % pause(0.1);
     end
 
-    a=1
     plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
     if isempty(plugin_definitions)
@@ -80,7 +79,6 @@ function fun(app, createCallbackFcn)
       plugin_names{length(plugin_names)+1} = plugin_name{2};
       plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
     end
-    a=2
 
 
     if isempty(plugin_names)
@@ -120,7 +118,6 @@ function fun(app, createCallbackFcn)
       'Text', 'Segment Name', ...
       'Position', [57,v_offset+5,90,15]);
     v_offset = v_offset - 33;
-    a=3
 
     % Create algorithm selection dropdown box
     Callback = @(app, event) changed_SegmentationAlgorithm(app, seg_num, createCallbackFcn);
@@ -165,11 +162,9 @@ function fun(app, createCallbackFcn)
     % Switch to new tab
     app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
-    a=4
     
     % Populate GUI components in new tab
     app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
-    a=5
 
     if isvalid(app.progressdlg)
       % pause(0.1);

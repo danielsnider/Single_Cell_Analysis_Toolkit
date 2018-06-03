@@ -65,9 +65,11 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     h2d.Visible='off';
     faces = h2d.Faces;
     vertices = [h2d.Vertices Z .* z_res_multiplier]; % we created a two 2D but want to put it in 3D and scale it up by how many times larger is one discrete step in the Z dimension than one step in the X dimension.
-    p = patch('Faces',faces,'Vertices',vertices);
-    p.FaceColor = 'red';
-    p.EdgeColor = 'none';
+    if isnumeric(faces) && isnumeric(vertices) && any(size(faces)>1) && any(size(vertices)>1)
+      p = patch('Faces',faces,'Vertices',vertices);
+      p.FaceColor = 'red';
+      p.EdgeColor = 'none';
+    end
 
     all_faces{zid} = faces;
     all_vertices{zid} = vertices;
@@ -132,11 +134,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
 
     % Display
     f = figure(7409); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-    if max(seg_colored_img(:)) > 255
-        imshow3D(uint16(seg_colored_img),[])
-    else
-        imshow3D(uint8(seg_colored_img),[])
-    end
+    imshow3D(normalize0to1(seg_colored_img),[])
   end
 
 end
