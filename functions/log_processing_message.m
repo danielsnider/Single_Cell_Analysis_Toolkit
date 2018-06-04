@@ -1,4 +1,5 @@
 function images = fun(app, new_msg)
+    MAX_LOG_SIZE = 500; % lines
 
     new_msg = ['[' char(datetime('now','Format','yyyy-MM-dd HH:mm:ss.SSS')) ']: ' new_msg];
     disp(new_msg);

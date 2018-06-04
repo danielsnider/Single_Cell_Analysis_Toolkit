@@ -1,4 +1,4 @@
-[file,path,~] = uigetfile('R:\Justin_S\','*.xlsx');
+[file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select Dataset that contains paths to all your ResultTables');
 Data = readtable([path '\' file]);
 % 
 % answer = 'Yes';
@@ -17,7 +17,7 @@ Data = readtable([path '\' file]);
 
 % [num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin 20180112\DPC\Concatenated Result tables from old GUI\Plate map 20180212_cycE1.xlsx');
 
-[file,path,~] = uigetfile('R:\Justin_S\','*.xlsx');
+[file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select the excel file that contains your plate map');
 
 [num,txt,raw] = xlsread([path '\' file]);
 
