@@ -48,7 +48,7 @@ end
 
     % Display log
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-    app.StartupLogTextArea = txt_update;
+%     app.StartupLogTextArea = txt_update;
     app.log_processing_message(app, 'Starting...');
     progressdlg.Message = sprintf('%s\n%s',msg,'Parsing plate map...');
     progressdlg.Value = 0.1;
