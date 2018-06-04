@@ -56,7 +56,7 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Im
     
     %% Plotting Action
     color_list = distinguishable_colors(60,[0 0.5 0 ]);
-    count = 1; figure('Name', 'ScatterPlot of Median Cell Cycle Length'); hold on; x_labels = cell(length(uniConditions),1);
+    count = 1; fig_Hobj = figure('Name', 'ScatterPlot of Median Cell Cycle Length'); hold on; x_labels = cell(length(uniConditions),1);
     for i = 1:length(global_unique_treatment)
         current_condition = Avg_uniResults.WellConditions(contains(uniConditions,global_unique_treatment(i)));
         color = color_list(count,:);
@@ -68,7 +68,14 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Im
             elseif contains(Imaging_Type,'Fixed')
                 y = Avg_uniResults.Cell_Cycle(contains(Avg_uniResults.WellConditions,current_condition(sub_condition)));
             end
-            plot(count,y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color);
+            plot_handle = plot(count,y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color);
+%             hDatatip = makedatatip(plot_handle,[1 1]);
+            txt1 = ['CCL: ' num2str(y)];
+%             text(count,y+0.2,txt1,'VerticalAlignment','bottom','HorizontalAlignment','right')
+            labelpoints(count,y,txt1,'N',0.2,1)
+%             annotation('textarrow',count,y+0.1,'String',txt1)
+%             annotation(fig_Hobj,'textarrow',[0,0.1],[0,0],'String',txt1)
+            
             if contains(Imaging_Type,'DPC')
                 errorbar(count,y, y_err,'LineStyle', '--', 'Color', color)
             end
@@ -84,6 +91,8 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Im
     ax.XTick = 1:length(x_labels);
     ax.XTickLabel = x_labels;
     ax.XTickLabelRotation = 45;
+    
     title(['Cell Cycle Length for: ' Plot_Title],'Interpreter', 'none');ylabel('Cell Cycle (Hours)');xlabel('Well Condition')
+    grid on
     hold off;
 end

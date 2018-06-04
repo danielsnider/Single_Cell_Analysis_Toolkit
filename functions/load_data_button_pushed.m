@@ -12,7 +12,7 @@ function fun(app)
 %     pause(0.1); % enough time for the log text area to appear on screen
 
     % Load data
-    app.log_processing_message(app, ['Loading data from ' FileName]);
+    app.log_processing_message(app, ['Loading data from ' PathName FileName]);
     vars_struct = load([PathName FileName]);  
 
     if ~isfield(vars_struct,'ResultTable')

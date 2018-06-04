@@ -36,11 +36,19 @@ function images = fun(app, new_msg)
     end
     app.ProcessingLogTextArea.Value = log_;
     % Assign log message
-    if isvalid(app.StartupLogTextArea.tx) == 1
-        % Assign log message
-        set(app.StartupLogTextArea.tx,'string',log_)
-    else
+    try
+        if isvalid(app.StartupLogTextArea.tx) == 1
+            % Assign log message
+            set(app.StartupLogTextArea.tx,'string',log_)
+        else
+            app.StartupLogTextArea = txt_update;
+            set(app.StartupLogTextArea.tx,'string',log_)
+        end
+    catch
+        % If log window is not opened from the start, start up a new log window
+        % In the case of user going straight to analysis, log window doesn't get open
         app.StartupLogTextArea = txt_update;
+        log_ = app.StartupLogTextArea.tx.String;
         set(app.StartupLogTextArea.tx,'string',log_)
     end
 end
