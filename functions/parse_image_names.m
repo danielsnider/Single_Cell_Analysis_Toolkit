@@ -71,7 +71,6 @@ function fun(app)
     % Default channels colors for display in the figure
     app.plates(plate_num).channel_colors = default_colors(1:length(app.plates(plate_num).channels),:); % set each channel a default colour;
 
-
     % Build a list of channel names per plate in app.input_data.plate.chan_names. Ex. {'DAPI'} {'SE'}
     app.plates(plate_num).chan_names = {};
     for chan_num=[app.plates(plate_num).channels]

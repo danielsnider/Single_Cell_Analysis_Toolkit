@@ -1,5 +1,10 @@
 function images = fun(app, new_msg)
+<<<<<<< HEAD
     
+=======
+    MAX_LOG_SIZE = 500; % lines
+
+>>>>>>> 8a4e02a78c912d8bc6c10ff56a29e1cfeaffb4a5
     new_msg = ['[' char(datetime('now','Format','yyyy-MM-dd HH:mm:ss.SSS')) ']: ' new_msg];
     disp(new_msg);
     if isstruct(app.StartupLogTextArea)
@@ -19,6 +24,9 @@ function images = fun(app, new_msg)
         log_ = [ { new_msg }, log_' ];
     else
         log_ = {char(new_msg)};
+    end
+    if length(log_) > MAX_LOG_SIZE
+        log_ = log_(1:MAX_LOG_SIZE);
     end
     if isstruct(app.StartupLogTextArea)
         %     app.StartupLogTextArea.Value = log_;

@@ -1,4 +1,4 @@
-function stat_data = fun(stat_data,MeasureTable,stat_name,intensity_stat_flag)
+function stat_data = fun(stat_data,MeasureTable,stat_name,intensity_stat_flag, flag_3d)
   % Handle missing segments
   if length(stat_data) < height(MeasureTable)
       % Create an example dataset to find out the shape of the output
@@ -10,13 +10,19 @@ function stat_data = fun(stat_data,MeasureTable,stat_name,intensity_stat_flag)
       test_intensity_data = nan(3,3); % make a sample dataset
       test_data = zeros(3,3); % make a sample dataset
       test_data(5)=1; % create one labelled region
-      if intensity_stat_flag
+      if intensity_stat_flag & ~flag_3d
         test_stats = regionprops(test_data,test_intensity_data,stat_name); % measure stat
-      else
+      elseif intensity_stat_flag & flag_3d
+        test_stats = regionprops3(test_data,test_intensity_data,stat_name); % measure stat
+      elseif ~intensity_stat_flag & flag_3d
+        test_stats = regionprops3(test_data,stat_name); % measure stat
+      elseif ~intensity_stat_flag & ~flag_3d
         test_stats = regionprops(test_data,stat_name); % measure stat
       end
       test_stat_data = test_stats.(stat_name); % extract stat
-      if strcmp(stat_name,{'Area', 'ConvexArea', 'EquivDiameter', 'Perimeter'})
+      if iscell(test_stat_data)
+        missing_data = cell(1); % fill cells with empty cell
+      elseif strcmp(stat_name,{'Area', 'ConvexArea', 'EquivDiameter', 'Perimeter','Volume', 'ConvexVolume', 'PrincipalAxisLength', 'SurfaceArea'})
         missing_data = zeros(size(test_stat_data)); % create zeros with the right shape for this stat
       else
         missing_data = NaN; % create nan with the right shape for this stat, any shape will do

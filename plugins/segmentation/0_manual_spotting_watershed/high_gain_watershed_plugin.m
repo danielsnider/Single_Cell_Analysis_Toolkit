@@ -186,11 +186,7 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
 
       % Display
       f = figure(7439); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
-      if prctile(seg_colored_img(:),97.8) > 255
-          imshow3D(uint16(seg_colored_img),[])
-      else
-          imshow3D(uint8(seg_colored_img),[])
-      end
+      imshow3D(normalize0to1(seg_colored_img),[])
     end
   else
     if ismember(debug_level,{'All','Result Only','Result With Seeds'})
