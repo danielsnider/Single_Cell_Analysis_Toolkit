@@ -28,13 +28,7 @@ function fun(app, plate_num)
     error(msg);
   end
 
-  img_num = app.ExperimentDropDown.Value;
-  if ~isempty(img_num) % only happens on first startup
-    img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
-    msg = sprintf('Loading image stack %s', img_name);
-  else
-    msg = sprintf('Scanning image stacks.');
-  end
+  msg = sprintf('Scanning image stacks.');
   app.log_processing_message(app, msg);
   progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
   'Message',msg, 'Indeterminate','on');
@@ -70,45 +64,17 @@ function fun(app, plate_num)
     ome_series_id = series_id - 1; % OME starts at 0
     stack_name = matlab.lang.makeValidName(char(omeMeta.getImageName(ome_series_id)));
 
-    % msg = sprintf('Scanning XYZCT-Bio-Formats stack %d of %d...', series_id, img_count);
-    % app.log_processing_message(app, msg);
-
     idx = length(img_stacks)+1;
-    img_stacks(idx).data = [];
-    img_stacks(idx).zslices = omeMeta.getPixelsSizeZ(ome_series_id).getValue(); % number of Z slices;
     name = dat{1,2}; % example:     {'Z:\DanielS\Images\LauraD PeterK\Set 2 - Timelapse\Laura DiGiovanni - PO-Mito Live Hyvolution 2018-03-07.lif; HyVolution/Series003; plane 1/80; Z=1/5; C=1/2; T=1/8' }
     search = regexp(name,'T=\d+/(?<time>\d+)','names');
     img_stacks(idx).timepoints = str2num(search.time);
+    img_stacks(idx).zslices = omeMeta.getPixelsSizeZ(ome_series_id).getValue(); % number of Z slices;
     img_stacks(idx).num_chans =  omeMeta.getChannelCount(ome_series_id);
     img_stacks(idx).chan_nums = 1:omeMeta.getChannelCount(ome_series_id);
     img_stacks(idx).stack_name = stack_name;
     img_stacks(idx).series_id = series_id;
     img_stacks(idx).idx = idx;
     img_stacks(idx).cell_num_txt = sprintf('Cell %d',idx);
-    if ~isempty(app.ExperimentDropDown.Value) && strcmp(stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
-      series_data = bfopenSeries(full_path,series_id);
-      dat=series_data{1};
-      stack_ = [];
-      % Loop over planes
-      for plane_id=1:length(dat)
-        name = dat{plane_id,2}; % example:     {'Z:\DanielS\Images\LauraD PeterK\Set 2 - Timelapse\Laura DiGiovanni - PO-Mito Live Hyvolution 2018-03-07.lif; HyVolution/Series003; plane 1/80; Z=1/5; C=1/2; T=1/8' }
-        pos = regexp(name,' Z=(?<z>\d+).* C=(?<chan>\d+).* T=(?<time>\d+)','names');
-        pos.z = str2num(pos.z);
-        pos.time = str2num(pos.time);
-        pos.chan = str2num(pos.chan);
-        stack_(:,:,pos.z, pos.time, pos.chan) = dat{plane_id,1}; 
-      end
-      img_stacks(idx).data = stack_(:,:,:,:,:);
-    end
-    % idx = length(img_stacks)+1;
-    % img_stacks(idx).zslices = size(stack_,3);
-    % img_stacks(idx).timepoints = size(stack_,4);
-    % img_stacks(idx).num_chans = size(stack_,5);
-    % img_stacks(idx).chan_nums = 1:size(stack_,5);
-    % img_stacks(idx).stack_name = stack_name;
-    % img_stacks(idx).series_id = series_id;
-    % img_stacks(idx).idx = idx;
-    % img_stacks(idx).cell_num_txt = sprintf('Cell %d',idx);
   end
 
   % Loop over 5D img_stacks converting to 4D multi_channel_img format, flattening timepoints to simplify plugin algorithms
@@ -117,6 +83,7 @@ function fun(app, plate_num)
     for timepoint=1:img_stacks(idx).timepoints
       multi_channel_img = {};
       multi_channel_img.channel_nums = img_stacks(idx).chan_nums;
+      multi_channel_img.num_chans = img_stacks(idx).num_chans;
       multi_channel_img.zslices = 1:img_stacks(idx).zslices;
       multi_channel_img.plate_num = plate_num;
       multi_channel_img.timepoint = timepoint;
@@ -127,11 +94,8 @@ function fun(app, plate_num)
       multi_channel_img.experiment = img_name;
       multi_channel_img.experiment_num = length(multi_channel_imgs)+1;
       multi_channel_img.ImageName = img_name;
-      if ~isempty(app.ExperimentDropDown.Value) && strcmp(img_stacks(idx).stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
-        for chan_num=[multi_channel_img.channel_nums]
-          multi_channel_img.chans(chan_num).data = img_stacks(idx).data(:,:,:,timepoint,chan_num);
-          multi_channel_img.chans(chan_num).path = 'in memory';
-        end
+      for chan_num=[multi_channel_img.channel_nums]
+          multi_channel_img.chans(chan_num).path = full_path;
       end
       multi_channel_imgs = [multi_channel_imgs; multi_channel_img];
     end
@@ -144,12 +108,6 @@ function fun(app, plate_num)
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
 
-  % % store which images are loaded in memory
-  % loaded_images_idx = find(cellfun(@(x) ~isempty(x), {multi_channel_imgs.chans}));
-  % app.plates(plate_num).loaded_images_idx = loaded_images_idx;
-
-  if ~ischar(img_num) % only happens on first startup
-    close(progressdlg)
-  end
+  close(progressdlg)
 
 end

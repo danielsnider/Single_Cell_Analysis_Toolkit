@@ -33,15 +33,8 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
   imgs = [];
   for chan_num=[image_file.channel_nums]
-    % Load Image
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
-      img_path = image_file.chans(chan_num).data; % data is already in memory here
-      % img_path = image_file;
-    else
-      img_path = image_file.chans(chan_num).path;
-    end
-
-    imgs(chan_num).data = do_preprocessing(app,plate_num,chan_num,img_path);
+    %% Do Preprocessing
+    imgs(chan_num).data = do_preprocessing(app, plate_num, chan_num, image_file);
     if ~is_parallel_processing
       app.image(chan_num).data = imgs(chan_num).data; % make available to display tab
     end

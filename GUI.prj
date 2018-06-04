@@ -3,7 +3,7 @@
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.3</param.version>
+    <param.version>1.5</param.version>
     <param.authnamewatermark />
     <param.email />
     <param.company />
@@ -125,6 +125,7 @@
       <file>${PROJECT_ROOT}\preprocess_plugins.mat</file>
       <file>${PROJECT_ROOT}\question-mark.png</file>
       <file>${PROJECT_ROOT}\question-sign.png</file>
+      <file>${PROJECT_ROOT}\ResultTable.mat</file>
       <file>${PROJECT_ROOT}\rounded-black-square-shape.png</file>
       <file>${PROJECT_ROOT}\ruler.PNG</file>
       <file>${PROJECT_ROOT}\saved_app_last_closed.mat</file>

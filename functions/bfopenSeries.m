@@ -1,4 +1,4 @@
-function [result] = bfopen(id, series_num, varargin)
+function [result] = bfopen(id, series_num, select_images, varargin)
 % Open microscopy images using Bio-Formats.
 %
 % SYNOPSIS r = bfopen(id)
@@ -95,6 +95,8 @@ stitchFiles = 0;
 
 % -- Main function - no need to edit anything past this point --
 
+loci.common.DebugTools.setRootLevel('ERROR');
+
 % load the Bio-Formats library into the MATLAB environment
 status = bfCheckJavaPath(autoloadBioFormats);
 assert(status, ['Missing Bio-Formats library. Either add bioformats_package.jar '...
@@ -114,9 +116,9 @@ bfInitLogging();
 r = bfGetReader(id, stitchFiles);
 
 % Test plane size
-if nargin >=4
+if nargin >=5
     planeSize = javaMethod('getPlaneSize', 'loci.formats.FormatTools', ...
-                           r, varargin{3}, varargin{4});
+                           r, varargin{4}, varargin{5});
 else
     planeSize = javaMethod('getPlaneSize', 'loci.formats.FormatTools', r);
 end
@@ -134,37 +136,40 @@ globalMetadata = r.getGlobalMetadata();
 
 s = series_num;
 
-fprintf('Reading series #%d', s);
 r.setSeries(s - 1);
 pixelType = r.getPixelType();
 bpp = javaMethod('getBytesPerPixel', 'loci.formats.FormatTools', ...
                  pixelType);
 bppMax = power(2, bpp * 8);
-numImages = r.getImageCount();
+
+if ischar(select_images) && strcmp(select_images,'all')
+    numImages = r.getImageCount();
+    loop_over_image_nums = 1:numImages;
+elseif isnumeric(select_images)
+    numImages = length(select_images);
+    loop_over_image_nums = select_images;
+else
+    error('unknown select_images argument')
+end
 imageList = cell(numImages, 2);
-colorMaps = cell(numImages);
-for i = 1:numImages
-    if mod(i, 72) == 1
-        fprintf('\n    ');
-    end
-    % fprintf('.');
+colorMaps = cell(numImages, 1);
+pos = 1;
+
+for i = loop_over_image_nums
     arr = bfGetPlane(r, i, varargin{:});
 
     % retrieve color map data
     if bpp == 1
-        colorMaps{s, i} = r.get8BitLookupTable()';
+        colorMaps{pos} = r.get8BitLookupTable()';
     else
-        colorMaps{s, i} = r.get16BitLookupTable()';
+        colorMaps{pos} = r.get16BitLookupTable()';
     end
 
-    warning_state = warning ('off');
-    if ~isempty(colorMaps{s, i})
-        newMap = single(colorMaps{s, i});
+    if ~isempty(colorMaps{pos})
+        newMap = single(colorMaps{pos});
         newMap(newMap < 0) = newMap(newMap < 0) + bppMax;
-        colorMaps{s, i} = newMap / (bppMax - 1);
+        colorMaps{pos} = newMap / (bppMax - 1);
     end
-    warning (warning_state);
-
 
     % build an informative title for our figure
     label = id;
@@ -208,8 +213,10 @@ for i = 1:numImages
     end
 
     % save image plane and label into the list
-    imageList{i, 1} = arr;
-    imageList{i, 2} = label;
+    imageList{pos, 1} = arr;
+    imageList{pos, 2} = label;
+
+    pos = pos + 1; % increment counter
 end
 
 % save images and metadata into our master series list
@@ -222,6 +229,5 @@ javaMethod('merge', 'loci.formats.MetadataTools', ...
 result{1, 2} = seriesMetadata;
 result{1, 3} = colorMaps;
 result{1, 4} = r.getMetadataStore();
-fprintf('\n');
 
 r.close();

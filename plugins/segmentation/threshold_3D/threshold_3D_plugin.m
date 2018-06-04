@@ -60,11 +60,12 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     XYZ = [XYZ; X Y Z];
 
     % Draw 2D slice
-    shp2d = alphaShape(X,Y); % the default behaviour of a 2d render with alphaShape is to draw green slices at z=0, the next line disables this
+    shp2d = alphaShape(X,Y,1); % the default behaviour of a 2d render with alphaShape is to draw green slices at z=0, the next line disables this
     h2d = plot(shp2d); % hide the green 2d slices
     h2d.Visible='off';
     faces = h2d.Faces;
-    vertices = [h2d.Vertices Z .* z_res_multiplier]; % we created a two 2D but want to put it in 3D and scale it up by how many times larger is one discrete step in the Z dimension than one step in the X dimension.
+    Z_ = zeros(size(h2d.Vertices,1),1)+zid .* z_res_multiplier; 
+    vertices = [h2d.Vertices Z_]; % we created a two 2D but want to put it in 3D and scale it up by how many times larger is one discrete step in the Z dimension than one step in the X dimension.
     if isnumeric(faces) && isnumeric(vertices) && any(size(faces)>1) && any(size(vertices)>1)
       p = patch('Faces',faces,'Vertices',vertices);
       p.FaceColor = 'red';
@@ -77,7 +78,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
 
   if ~isempty(XYZ)
     % Render 3D mito
-    shp = alphaShape(XYZ,4);
+    shp = alphaShape(XYZ,1);
     h = plot(shp);
     h.FaceColor = 'red';
     h.EdgeColor = 'none';

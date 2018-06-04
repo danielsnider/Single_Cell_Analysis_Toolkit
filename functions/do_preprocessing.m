@@ -1,21 +1,12 @@
-function img = do_preprocess_image(app, plate_num, chan_num, img_path)
+function img = do_preprocess_image(app, plate_num, chan_num, image_file)
   try
-
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
-      img = img_path; % data is already in memory here
-      
-    else % Read image from disk for all other formats 
-      img = read_image(app,img_path);
-    end
-
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'MultiChannelFiles'})
-      img = img(:,:,chan_num);
-    end
-
     % Return if no preprocessing is configured
     if sum(ismember(fields(app),'preprocess_tabgp'))==0
       return
     end
+
+    %% Load Image
+    img = read_image(app, image_file, chan_num);
 
     % Get name of requested channel based on the current plate
     chan_name = app.plates(plate_num).chan_names(chan_num);

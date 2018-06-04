@@ -54,11 +54,15 @@ function fun(app)
     % Automatically try to find the right measurements for the tracking tab
     if isempty(app.TrackMeasuresListBox.Value)
       auto_chosen_measure_names = meas_names(contains(lower(meas_names),'centroid'));
-      app.TrackMeasuresListBox.Value = auto_chosen_measure_names{1};
+      if ~isempty(auto_chosen_measure_names)
+        app.TrackMeasuresListBox.Value = auto_chosen_measure_names{1};
+      end
     end
     if isempty(app.TimeColumnDropDown.Value)
       auto_chosen_time_name = meas_names(contains(lower(meas_names),'time'));
-      app.TimeColumnDropDown.Value = auto_chosen_time_name{1};
+      if ~isempty(auto_chosen_measure_names)
+        app.TimeColumnDropDown.Value = auto_chosen_time_name{1};
+      end
     end
     
   % Catch Application Error

@@ -45,6 +45,7 @@ function fun(app, createCallbackFcn)
 
     plate_num = app.PlateDropDown.Value;
     plugin_definitions = dir('./plugins/segmentation/**/definition*.m');
+    %save('segment_plugins.mat','plugin_definitions')
     if isempty(plugin_definitions)
         load('segment_plugins.mat');
         app.Button_ViewMeasurements.Enable = false;
