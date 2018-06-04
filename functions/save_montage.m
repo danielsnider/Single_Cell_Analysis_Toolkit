@@ -45,7 +45,7 @@ function fun(app)
         end
         filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
 
-      elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
+      elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles'})
         app.ExperimentDropDown.Value = img.experiment_num;
         filename = sprintf('%s/montage_%s_%s.png', save_dir, date_str, img.experiment);
       end

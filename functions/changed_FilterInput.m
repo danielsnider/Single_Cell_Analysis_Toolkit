@@ -9,7 +9,7 @@ function func(app, plate_num)
     filter_names = { ...
     };
 
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel'})
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles'})
       filter_names = {}; % no filter is supported yet for these types
     elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
       filter_names = { ...

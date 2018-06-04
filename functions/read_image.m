@@ -25,9 +25,6 @@ function img = func(app, image_file, chan_num)
 
   % File type specific loading
   if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Split-Bio-Formats'})
-    img_path = image_file.chans(chan_num).path;
-    file_exists_check(img_path)
-
     data = bfopen(img_path);
     dat = data{1};
     % Make image stack

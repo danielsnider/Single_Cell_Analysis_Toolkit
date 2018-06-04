@@ -23,7 +23,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   plate_num = image_file.plate_num;
   plate=app.plates(plate_num);
 
-  % Load all image channels
   if ~is_parallel_processing
     if app.progressdlg.CancelRequested
         return

@@ -40,7 +40,7 @@ function imgs_to_process = fun(app)
         imgs_to_process = [imgs_to_process; multi_channel_img];
       end
       
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
       imgs_to_process = [imgs_to_process; app.plates(plate_num).img_files_subset];
     end
   end

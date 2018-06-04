@@ -15,7 +15,7 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
-  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel', 'MultiChannelFiles'})
+  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles', 'MultiChannelFiles'})
     app.RowDropDown.Visible = 'off';
     app.ColumnDropDown.Visible = 'off';
     app.FieldDropDown.Visible = 'off';

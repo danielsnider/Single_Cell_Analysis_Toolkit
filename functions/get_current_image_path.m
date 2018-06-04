@@ -29,7 +29,7 @@ function img_path = fun(app, chan_num)
     img_data = multi_channel_img.chans(chan_num).data;
     img_path = img_data; % overloading functionality, putting data where the path to the data usually is because the data is already in memory and the path is not neccessary
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Split-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
     img_path = multi_channel_img.chans(chan_num).path;

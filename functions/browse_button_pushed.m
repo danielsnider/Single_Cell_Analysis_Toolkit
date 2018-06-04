@@ -42,14 +42,14 @@ end
 
     busy_state_change(app,'busy');
 
-    msg = sprintf('Loading plate map')
+    msg = sprintf('Loading plate map');
     progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message',msg);
 
     % Display log
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
     app.StartupLogTextArea = txt_update;
-    app.log_processing_message(app, 'Starting...');
+    app.log_processing_message(app, 'Loading plate map %s', app.ChooseplatemapEditField.Value);
     progressdlg.Message = sprintf('%s\n%s',msg,'Parsing plate map...');
     progressdlg.Value = 0.1;
     pause(0.1); % enough time for the log text area to appear on screen
