@@ -43,9 +43,9 @@ function fun(app, createCallbackFcn)
       plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       [params, algorithm] = eval(plugin_name);
-      if ~app.plates(plate_num).supports_3D && isfield(algorithm,'supports_3D') && algorithm.supports_3D
-        continue % unsupported plugin due to it having 3D support
-      end
+%       if ~app.plates(plate_num).supports_3D && isfield(algorithm,'supports_3D') && algorithm.supports_3D
+%         continue % unsupported plugin due to it having 3D support
+%       end
       available_plugins.(plugin_name){1,1} = params;
       available_plugins.(plugin_name){1,2} = algorithm;
       plugin_name = strsplit(plugin_name,'definition_');

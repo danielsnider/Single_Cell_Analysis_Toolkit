@@ -57,7 +57,7 @@ for well = 1:size(uniWells,1)
     catch
         
         disp(['Calculating...   |Well Info: ' char(uniWells(well))])
-        all_y = table2array(uniResults(contains(uniResults.WellConditions,uniWells(well)),start_idx:end_idx));
+        all_y = table2cell(uniResults(contains(uniResults.WellConditions,uniWells(well)),start_idx:end_idx));
         tmp_y = (all_y{1,1});
         for i = 2:length(all_y)
             tmp_y = [tmp_y (all_y{1,i})];

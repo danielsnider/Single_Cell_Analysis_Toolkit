@@ -7,7 +7,7 @@ function MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,P
     try
         rownames(idcs(1:end),1)=uniResults.(regexprep(char(MetaRows.name),'\s','_'))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
     catch
-        rownames(idcs(1:end),1)=uniResults.(MetaRows)(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
+        rownames(idcs(1:end),1)=uniResults.(char(MetaRows.names))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
     end
     Default_Rows = {'A','B','C','D','E','F','G','H'};
     for i = 1:8        
@@ -23,7 +23,7 @@ function MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,P
     try
         colnames(1,idcs(1:end))=uniResults.(regexprep(char(MetaCols.name),'\s','_'))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
     catch
-        colnames(1,idcs(1:end))=uniResults.(MetaCols)(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
+        colnames(1,idcs(1:end))=uniResults.(char(MetaCols.names))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
     end
     Default_Cols = {'1','2','3','4','5','6','7','8','9','10','11','12'};
     for i = 1:12        
