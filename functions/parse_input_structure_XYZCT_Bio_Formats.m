@@ -86,6 +86,15 @@ function fun(app, plate_num)
     img_stacks(idx).idx = idx;
     img_stacks(idx).cell_num_txt = sprintf('Cell %d',idx);
     if ~isempty(app.ExperimentDropDown.Value) && strcmp(stack_name, app.ExperimentDropDown.Items{app.ExperimentDropDown.Value})
+
+      %%% Get number of images in series
+      % % Toggle the stitchFiles flag to control grouping of similarly
+      % % named files into a single dataset based on file numbering.
+      % stitchFiles = 0;
+      % r = bfGetReader(id, stitchFiles);
+      % numImages = r.getImageCount();
+
+
       series_data = bfopenSeries(full_path,series_id);
       dat=series_data{1};
       stack_ = [];
