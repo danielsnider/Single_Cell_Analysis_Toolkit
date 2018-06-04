@@ -92,9 +92,6 @@ function fun(app)
     selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
     select_idx = selected_img_name_idx & selected_timepoint_idx;
     avail_z_slices = app.plates(plate_num).keep_zslices;
-    if ~isempty(app.ExperimentDropDown.UserData(select_idx).chans)
-      avail_z_slices = 1:size(app.ExperimentDropDown.UserData(select_idx).chans(1).data,3);
-    end
     app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},avail_z_slices);
     app.ZSliceDropDown.ItemsData = avail_z_slices;
 
