@@ -1,21 +1,19 @@
-function save_measurements(app)
-    msg = 'In which format would you like to save measurements?';
-    title = 'Choose File Type';
-    user_selection = uiconfirm(app.UIFigure,msg,title,...
-               'Options',{'Spreadsheet (.csv)','Matlab (.mat)','Cancel'},...
-               'DefaultOption',1,'CancelOption',3);
+function save_measurements(app, save_as_file_type, prompt_save_location)
 
-    if strcmp(user_selection,'Cancel')
+    if strcmp(save_as_file_type, 'prompt_file_type')
+      msg = 'In which format would you like to save measurements?';
+      title = 'Choose File Type';
+      save_as_file_type = uiconfirm(app.UIFigure,msg,title,...
+                 'Options',{'Spreadsheet (.csv)','Matlab (.mat)','Cancel'},...
+                 'DefaultOption',1,'CancelOption',3);
+    end
+
+    if strcmp(save_as_file_type,'Cancel')
         return
     end
 
-    if strcmp(user_selection,'Matlab (.mat)')
-        file_ending = '.mat';
-    elseif strcmp(user_selection,'Spreadsheet (.csv)')
-        file_ending = '.csv';
-    end
-
-    savename = 'ResultTable';
+    date_str = datestr(now,'yyyymmddTHHMMSS');
+    savename = sprintf('%s_ResultTable', date_str); % add date string to avoid overwritting and busy permission denied errors
     varToCheck = app.ResultTable;
     optional_path = app.SavetoEditField.Value;
 
@@ -47,27 +45,44 @@ function save_measurements(app)
            optional_path = [];
         end
         if isempty(optional_path)
-            dirname = uigetdir('\','Choose a folder to save to');
-            if isempty(dirname)
-                return
+          if strcmp(prompt_save_location, 'prompt_save_location')
+              dirname = uigetdir('\','Choose a folder to save to');
+              if isempty(dirname)
+                  return
+              end
+            else
+              dirname = '.'; % current directory of the GUI
             end
-            filename = [dirname '\' savename file_ending];
+            filename = [dirname '\' savename];
         else
-            filename = [optional_path '\' savename file_ending];
+            filename = [optional_path '\' savename];
         end
-        disp(['Saving ResultTable of size ' str ' to ... ' filename ]) 
 
-        if strcmp(user_selection,'Matlab (.mat)')
+        if ismember(save_as_file_type,{'Matlab (.mat)','save_both_file_types'})
+            file_ending = '.mat';
+            filename = [filename file_ending];
+            disp(['Saving ResultTable to ... ' filename ]) 
             if str2double(strrep(str,'Gb',''))>=2 & contains(str,'Gb')
                 save(filename,'ResultTable', '-v7.3', '-nocompression')
             else
                 save(filename,'ResultTable', '-v7')
             end
-        elseif strcmp(user_selection,'Spreadsheet (.csv)')
-            writetable(ResultTable,filename);
+            if strcmp(save_as_file_type,'save_both_file_types')
+              filename = filename(1:end-4); % remove extension (.mat) because in this case two different ones were saved and we don't want the filename to be like '20180605T144313_ResultTable.mat.csv'
+            end
+        end
+        if ismember(save_as_file_type,{'Spreadsheet (.csv)','save_both_file_types'})
+          file_ending = '.csv';
+          filename = [filename file_ending];
+          disp(['Saving ResultTable to ... ' filename ]) 
+          writetable(ResultTable,filename);
         end
     end 
 
-    msg = sprintf('Saved measurements table of size %s to file:\n%s', str, filename);
+    if strcmp(save_as_file_type,'save_both_file_types')
+      filename = filename(1:end-4); % remove extension (.csv or .mat) because in this case two different ones were saved, it would be confusing to show the user only one location.
+    end
+
+    msg = sprintf('Saved measurements table to file:\n%s', filename);
     uialert(app.UIFigure, msg, 'Save Complete', 'Icon','success');
 end

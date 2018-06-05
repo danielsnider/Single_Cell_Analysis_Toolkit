@@ -18,8 +18,8 @@ function parse_input_structure_MultiChannelFiles(app, plate_num)
   
   if isempty(img_files)
     msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
-    uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
-    error(msg);
+    title_ = 'Image Files Not Found';
+    throw_application_error(app,msg,title_);
   end
 
   % Determine channel numbers

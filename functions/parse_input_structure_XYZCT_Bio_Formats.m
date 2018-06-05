@@ -19,13 +19,13 @@ function fun(app, plate_num)
   
   if isempty(img_files)
     msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
-    uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
-    error(msg);
+    title_ = 'Image Files Not Found';
+    throw_application_error(app,msg,title_);
   end
   if length(img_files) > 1
     msg = sprintf('Aborting because there more than one file found. Currently the "XYZCT-Bio-Formats" file format only supports opening one consolidated file with multiple image sets within it. Improving upon this is hoped for in the near future.');
-    uialert(app.UIFigure,msg,'Image Files Not Found', 'Icon','error');
-    error(msg);
+    title_ = 'Too Many Files Found';
+    throw_application_error(app,msg,title_);
   end
 
   msg = sprintf('Scanning image stacks.');

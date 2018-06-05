@@ -5,8 +5,8 @@ function img = func(app, image_file, chan_num)
   % Sanity check
   if ~exist(img_path) % If the file doesn't exist warn user
     msg = sprintf('Could not find the image file at location: %s',img_path);
-    uialert(app.UIFigure,msg,'File Not Found', 'Icon','error');
-    error(msg);
+    title_ = 'File Not Found';
+    throw_application_error(app,msg,title_);
   end
 
   % Log that we are loading the file

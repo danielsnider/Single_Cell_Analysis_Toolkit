@@ -84,8 +84,8 @@ function [CellsTable,diffTable] = cell_tracking_v1_simple(CellsTable, composite_
             closest_cell_index=find(centroid_diffs==min(centroid_diffs));
             %% Assign trace id if the following condition is met
             if min(centroid_diffs)<40 %& mindiff<2 might be a good additional condition to add
-                [global_lostCell_index] = find_index(CellsTable,previous_timepoint-1,0,i);
-                [global_currentCell_index] = find_index(CellsTable,current_timepoint,0,closest_cell_index,'None');
+                [global_lostCell_index] = find_index(CellsTable, time_column_name, previous_timepoint-1,0,i);
+                [global_currentCell_index] = find_index(CellsTable, time_column_name, current_timepoint,0,closest_cell_index,'None');
                 if strcmp(CellsTable.Trace(global_currentCell_index),'None')
                     CellsTable.Trace(global_currentCell_index)=CellsTable.Trace(global_lostCell_index);
                     CellsTable.TraceUsed(global_lostCell_index)=1;

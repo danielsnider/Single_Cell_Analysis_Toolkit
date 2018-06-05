@@ -29,8 +29,8 @@ function imgs_to_process = fun(app)
           image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff
           if ~strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
             msg = sprintf('Could not load image file names. Unkown image file naming scheme "%s". Please see your plate map spreadsheet and use "OperettaSplitTiffs". Aborting.',plate.metadata.ImageFileFormat);
-            uialert(app.UIFigure,msg,'Unkown image naming scheme', 'Icon','error');
-            error(msg);
+            title_ = 'Unknown image naming scheme';
+            throw_application_error(app,msg,title_);
           end
           image_filename(16) = num2str(chan_num); % change the channel number
           multi_channel_img.chans(chan_num).folder = image_file.folder;
