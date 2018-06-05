@@ -164,6 +164,20 @@ function fun(app, an_num)
       end
     end
     
+    % Pass static text through Param
+    if isfield(app.analyze{an_num},'static_Text')
+      for drop_num=1:length(app.analyze{an_num}.static_Text)
+        param_idx = app.analyze{an_num}.static_Text{drop_num}.UserData.param_idx;
+        if isfield(app.analyze{an_num}.static_Text{drop_num}.UserData,'ParamOptionalCheck') && ~app.analyze{an_num}.static_Text{drop_num}.UserData.ParamOptionalCheck.Value
+          algo_params(param_idx) = {false};
+          continue
+        end
+        meas = {};
+        meas = app.analyze{an_num}.static_Text{drop_num}.Value;
+        algo_params(param_idx) = {meas};
+      end
+    end
+    
     % ------------------------------ WORK IN PROGRESS ----------------------------
     if isfield(app.analyze{an_num},'InputUITable')
         
