@@ -63,8 +63,8 @@ function fun(app, NewResultCallback)
       app.log_processing_message(app, 'Starting parallel processing pool.');
       app.log_processing_message(app, 'Please see the Matlab terminal window for further progess messages.');
       app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Parallel Processing', 'Message','Processing images in parallel. Please see the Matlab terminal window for further progess messages.','Indeterminate','on');
+      assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
       ProcessingLogQueue = parallel.pool.DataQueue;
-%       disp(ProcessingLogQueue)
       app.ProcessingLogQueue = ProcessingLogQueue;
       afterEach(ProcessingLogQueue, @ProcessingLogQueueCallback);
       UiAlertQueue = parallel.pool.DataQueue;
@@ -72,6 +72,19 @@ function fun(app, NewResultCallback)
       NewResultQueue = parallel.pool.DataQueue;
       afterEach(NewResultQueue, @NewResultQueueCallback);
       is_parallel_processing = true;
+
+      % Make parallel worker pool
+      num_workers = app.ParallelWorkersField.Value;
+      poolobj = gcp('nocreate'); % If no pool, do not create new one.
+      if isempty(poolobj)
+        parpool(num_workers);
+      else
+        if poolobj.NumWorkers ~= num_workers
+          % Number of workers changed so recreate the pool
+          delete(poolobj)
+          parpool(num_workers);
+        end
+      end
 
       %% PARALLEL LOOP
       parfor current_img_number = 1:NumberOfImages
