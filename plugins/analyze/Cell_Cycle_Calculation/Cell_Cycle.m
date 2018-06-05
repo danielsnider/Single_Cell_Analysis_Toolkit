@@ -1,20 +1,24 @@
-function fun(plugin_name, plugin_num,ResultTable, measurement_name,Imaging_Type,pre_process_options,control_treatment,normalize_by,Plot,Plot_Title,MetaRows,MetaCols)
+function fun(plugin_name, plugin_num,ResultTable, measurement_name,Imaging_Type,average_replicates,control_treatment,verbose_Plot,Plot_Title,MetaRows,MetaCols)
 
 % for debugging
-% measurement_name = 'TimePoint';
-% Imaging_Type  = 'Fixed';
-% pre_process_options = 'Average Replicates';
-% control_treatment = 'No Dox';  
-% Plot = 'MicroPlate';
-% Plot_Title = '20180326_SE';
-% MetaRows = 'Treatment'; MetaCols = 'Clone';
-% 
+try
+    exist('plugin_name','var') & exist('plugin_num','var')==true;
+    fprintf('User Arguments:\n- Measurement name: %s\n- Imaging type of data acquisition: %s\n- Control treatment: %s\n', measurement_name, char(Imaging_Type), control_treatment) 
+catch
+    disp('Using debug mode variables')
+    measurement_name = 'TimePoint';
+    Imaging_Type  = 'Fixed';
+    average_replicates = 'Average Replicates';
+    control_treatment = 'No Dox';
+    verbose_Plot = true;
+    Plot_Title = '20180326_SE';
+    MetaRows = 'Treatment'; MetaCols = 'Clone';
+end
 
 
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
-% ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}
-    
+% ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}    
 
 if strcmp(ResultTable.Properties.VariableNames{1},'Row')
     ResultTable.Properties.VariableNames{1} = 'row';
@@ -38,7 +42,7 @@ for well = 1:size(uniWells,1)
         row = uniWells.row(well); col=uniWells.column(well);
         % Total number of cells per well
         Num = sum(ismember(ResultTable.(measurement_name),uniTimePoint(time_point))&ResultTable.row==row&ResultTable.column==col); 
-        %Append cell number at the particular well to the uniWells variable.
+        % Append cell number at the particular well to the uniWells variable.
         uniResults.(['TP_' cell2mat(uniTimePoint(time_point)) '_Hr'])(count,1) = Num; 
 %         disp(['TimePoint: ' num2str(uniTimePoint(time_point)) ' Row:' num2str(uniWells.row(well)) ' Col: ' num2str(uniWells.column(well)) ' CellNum: ' num2str(Num)])
 %         pause(0.05)  
@@ -49,13 +53,13 @@ end
 [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells);
 
 % Make exponential separate
-% if Plot == 'Exponential'
+% if verbose_Plot == 'Exponential'
 %     
 %     disp('HI Exponential Plotting')
 %     
 % end
 
-if strcmp(Plot,'MicroPlate')   
+if strcmp(verbose_Plot,'MicroPlate')   
 
     % Microplate Plot for Cell Cycle Length
     data_to_plot = 'Cell_Cycle'; Main_Title = 'Cell Cycle Length (Hours)'; color = 'Dark2';rounding_decimal=2;
@@ -70,8 +74,8 @@ if strcmp(Plot,'MicroPlate')
     end
 end
 
-if ~contains(pre_process_options,'None')
-    Pre_Processing(uniResults,uniWells,pre_process_options,control_treatment,normalize_by,Imaging_Type,Plot_Title)
+if all(average_replicates=='Average')
+    Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,normalize_by,Imaging_Type,Plot_Title)
 end
 
 

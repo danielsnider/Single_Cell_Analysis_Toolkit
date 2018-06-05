@@ -19,6 +19,8 @@ function result = fun(app, an_num, createCallbackFcn)
             app.analyze{an_num}.ChannelDropDown{param_index}.Enable = val;
         elseif strcmp(param.type,'WellConditionListBox')
             app.analyze{an_num}.WellConditionListBox{param_index}.Enable = val;
+        elseif strcmp(param.type,'static_Text')
+            app.analyze{an_num}.static_Text{param_index}.Enable = val;
         end
         do_analyze_(app,'Update');
     end
@@ -31,7 +33,7 @@ function result = fun(app, an_num, createCallbackFcn)
 
     function checkbox = MakeOptionalCheckbox(app, an_num, param, param_index, current_tab)
         if isfield(params,'sub_tab')
-            check_pos = [param_pos(1)-100 param_pos(2)+4 25 15];
+            check_pos = [param_pos(1)-30 param_pos(2)+4 25 15];
         else
             check_pos = [param_pos(1)-20 param_pos(2)+4 25 15];
         end
@@ -61,7 +63,9 @@ function result = fun(app, an_num, createCallbackFcn)
         elseif strcmp(param.type,'image_channel_dropdown')
             app.analyze{an_num}.ChannelDropDown{param_index}.Enable = default_enable;
         elseif strcmp(param.type,'WellConditionListBox')
-            app.analyze{an_num}.WellConditionListBox{param_index}.Enable = default_enable;    
+            app.analyze{an_num}.WellConditionListBox{param_index}.Enable = default_enable;
+        elseif strcmp(param.type, 'static_Text')
+            app.analyze{an_num}.static_Text{param_index}.Enable = default_enable;
         end
     end
 
@@ -159,7 +163,7 @@ try
             param_pos = [620 v_offset 125 22];
         end
         if isfield(param,'sub_tab')
-            label_pos = [-100 v_offset-52 200 70]; %[5 280 80 70] old: [-20 v_offset-52 200 70]
+            label_pos = [-50 v_offset-25 200 70]; %[5 280 80 70] old: [-20 v_offset-52 200 70]
         else
             label_pos = [400 v_offset-5 200 22];
         end
@@ -350,8 +354,37 @@ try
             % Save ui elements
             app.analyze{an_num}.ResultTableBox{drop_num} = edit_field;
             app.analyze{an_num}.ResultTableBox{drop_num}.UserData.param_idx = idx;
-            app.analyze{an_num}.ResultTableLabel{drop_num} = label;            
-
+            app.analyze{an_num}.ResultTableLabel{drop_num} = label; 
+        
+        % Static Text-Box
+        elseif strcmp(param.type,'static_Text')
+            % Set an index number for this component
+            if ~isfield(app.analyze{an_num},'static_Text')
+                app.analyze{an_num}.static_Text = {};
+            end
+            
+            drop_num = length(app.analyze{an_num}.static_Text) + 1;
+            param_index = drop_num;
+            % Create UI components
+            edit_field = uieditfield(current_tab, ...
+                'Position', param_pos, ...
+                'ValueChangedFcn', createCallbackFcn(app, @do_analyze_, true), ...
+                'Value', param.default, ...
+                'BackgroundColor', [0.9 0.9 0.9], ...
+                'Editable', 'off');
+            label = uilabel(current_tab, ...
+                'Text', param.name, ...
+                'HorizontalAlignment', 'right', ...
+                'Position', label_pos);
+            % Save ui elements
+            app.analyze{an_num}.static_Text{drop_num} = edit_field;
+            app.analyze{an_num}.static_Text{drop_num}.UserData.param_idx = idx;
+            app.analyze{an_num}.static_TextLabel{drop_num} = label;     
+            
+            if isfield(param,'optional') && ~isempty(param.optional)
+                app.analyze{an_num}.static_Text{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
+            end
+            
         elseif strcmp(param.type,'ResultTable_for_current_display')
             
             % Set an index number for this component

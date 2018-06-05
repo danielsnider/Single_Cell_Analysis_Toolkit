@@ -1,4 +1,4 @@
-function Pre_Processing(uniResults,uniWells,pre_process_options,control_treatment,normalize_by,Imaging_Type,Plot_Title)
+function Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,normalize_by,Imaging_Type,Plot_Title)
 
 % Pre-Processing Data
 
@@ -17,7 +17,7 @@ start_idx = count(1); end_idx = count(end); clearvars i count
 meta_info = uniResults.Properties.VariableNames(3:start_idx-1);
 clearvars count
 
-if contains(pre_process_options,'Average Replicates')
+if average_replicates==true
     
     if contains(Imaging_Type,'DPC')
         % Averaging Cell Cycle numbers
@@ -70,33 +70,6 @@ normalize_by_minus_control_treatment = strrep(normalize_by,control_treatment,'')
 
 uniConditions = unique(uniResults.WellConditions,'stable');
 
-% if contains(pre_process_options(2),'Normalize')
-%     
-%     
-%     
-%     for i = 1:length(normalize_by_minus_control_treatment)
-%         
-%         normalize_by_minus_control_treatment(i)
-%         well_to_norm = uniResults.WellConditions(contains(uniResults.WellConditions,normalize_by_minus_control_treatment(i))&~contains(uniResults.WellConditions,control_treatment));
-%         well_to_norm_indx = find(contains(uniResults.WellConditions,well_to_norm));
-%         normalizer_idx = find(contains(uniResults.WellConditions,normalize_by(i)))
-%         for k = 1:length(well_to_norm_idx)
-%             difference = uniResults(well_to_norm_indx(k),start_idx) - uniResults(
-%             
-%             
-%         end
-%         uniResults(1,start_idx:end_idx)
-%         uniResults(41,start_idx:end_idx)
-%         
-%         func = @(x,difference) x-difference;
-%         varfun(func,uniResults(1,start_idx:end_idx))
-%         
-%         
-%         
-%     end
-
-    
-% end
 
 
 

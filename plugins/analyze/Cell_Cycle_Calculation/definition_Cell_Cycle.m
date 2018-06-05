@@ -29,35 +29,27 @@ function [params, algorithm] = fun()
   params(n).sub_tab = 'Main';
   
   n = n + 1;
-  params(n).name = 'Pre-Processing';
-  params(n).default = '';
-  params(n).help = 'Do you want to pre-process the data by averaging replicate datasets or do you want to do any normalization?';
-  params(n).type = 'listbox';
-  params(n).options = {'None','Average Replicates','Normalize'};
-  params(n).sub_tab = 'Pre-Processing';
+  params(n).name = 'Average Replicates';
+  params(n).default = 'Average';
+  params(n).help = 'Do you want to pre-process the data by averaging replicate datasets';
+  params(n).type = 'static_Text';
+  params(n).optional = true;
+  params(n).sub_tab = 'Main';
  
   n = n + 1;
   params(n).name = 'Control Treatment';
   params(n).default = '';
   params(n).help = 'What treatment did you use as a control i.e.: DMSO';
   params(n).type = 'text';
-  params(n).optional = false;
-  params(n).sub_tab = 'Pre-Processing';
-
-  n = n + 1;
-  params(n).name = 'Normalize against';
-  params(n).default = '';
-  params(n).help = 'What do you want to normalize by?';
-  params(n).type = 'WellConditionListBox';
-  params(n).optional = false;
-  params(n).sub_tab = 'Pre-Processing';
+  params(n).optional = true;
+  params(n).sub_tab = 'Main';
   
   n = n + 1;
-  params(n).name = 'Plotting';
-  params(n).default = '';
-  params(n).help = 'Choose what plots you want';
-  params(n).type = 'listbox';
-  params(n).options = {'None', 'MicroPlate'};
+  params(n).name = 'Plot All';
+  params(n).default = 'Verbose Plots';
+  params(n).help = 'Do you want a verbose plotting? Or do you want only relevant plots of CCL';
+  params(n).type = 'static_Text';
+  params(n).optional = true;
   params(n).sub_tab = 'Plotting';
   
   n = n + 1;
@@ -65,7 +57,7 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'Enter a title name for your plot.';
   params(n).type = 'text';
-  params(n).optional = false;
+  params(n).optional = true;
   params(n).sub_tab = 'Plotting';
   
   n = n + 1;
@@ -73,7 +65,7 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'Choose what metadata you want for the Row Labels.';
   params(n).type = 'MeasurementListBox';
-  params(n).optional = false;
+  params(n).optional = true;
   params(n).sub_tab = 'Plotting';
   
   n = n + 1;
@@ -81,7 +73,7 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = 'Choose what metadata you want for the Column Labels.';
   params(n).type = 'MeasurementListBox';
-  params(n).optional = false;
+  params(n).optional = true;
   params(n).sub_tab = 'Plotting';
   
 end

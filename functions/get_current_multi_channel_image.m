@@ -37,7 +37,7 @@ function multi_channel_img = fun(app)
       multi_channel_img.chans(chan_num).name = image_name;
       multi_channel_img.chans(chan_num).path = image_path;
     end
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Split-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})

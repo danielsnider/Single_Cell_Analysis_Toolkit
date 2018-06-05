@@ -42,14 +42,14 @@ end
 
     busy_state_change(app,'busy');
 
-    msg = sprintf('Loading plate map')
+    msg = sprintf('Loading plate map');
     progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
     'Message',msg);
 
     % Display log
 %     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-%     app.StartupLogTextArea = txt_update;
-    app.log_processing_message(app, 'Starting...');
+    app.StartupLogTextArea = txt_update;
+    app.log_processing_message(app, sprintf('Loading plate map %s', app.ChooseplatemapEditField.Value));
     progressdlg.Message = sprintf('%s\n%s',msg,'Parsing plate map...');
     progressdlg.Value = 0.1;
     pause(0.1); % enough time for the log text area to appear on screen
@@ -77,13 +77,13 @@ end
     end
 
     % Draw Plates
-    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing input UI...');;
+    progressdlg.Message = sprintf('%s\n%s',msg,'Drawing input UI...');
     progressdlg.Value = 0.2;
     draw_input_data(app, createCallbackFcn);
 
     % Parse image files (can be slow!)
     % uialert(app.UIFigure,'Opening Images can be slow! Click OK to begin.','Opening Images', 'Icon','info');
-    progressdlg.Message = sprintf('%s\n%s',msg,'Scanning image files (can be slow!)...')
+    progressdlg.Message = sprintf('%s\n%s',msg,'Scanning image files (can be slow!)...');
     progressdlg.Value = 0.5;
     parse_image_names(app);
 

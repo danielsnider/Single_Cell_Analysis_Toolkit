@@ -119,7 +119,7 @@ function fun(app, createCallbackFcn)
       Filter_Fields_visibility = 'on';
       Filter_Timepoints_visibility = 'on';
       Filter_zslices_visibility = 'off';
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','FlatFiles_SingleChannel','MultiChannelFiles'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles'})
       Plate_Map_Table_visibility = 'off';
       Filter_Data_visibility = 'off';
       Filter_Row_visibility = 'off';
