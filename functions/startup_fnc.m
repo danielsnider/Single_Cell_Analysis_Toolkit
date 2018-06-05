@@ -4,11 +4,7 @@ function fun(app,createCallbackFcn)
     warning('off','images:initSize:adjustingMag');
     warning('off','images:imshow:magnificationMustBeFitForDockedFigure');
     
-    %Startup message
-%     log_processing_message(app,'Starting up Single Cell Analysis Toolkit')
-    
     % Initialize variables
-%     log_processing_message(app,'Initializaing variables')
     init_variables(app);
     
     % Select tab to display on opening
