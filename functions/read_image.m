@@ -13,10 +13,9 @@ function img = func(app, image_file, chan_num)
   if ~ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
     [filepath,name,ext] = fileparts(img_path);
     if isvalid(app.StartupLogTextArea.tx) == 1
-      msg = sprintf('Loading channel %d image %s', chan_num, [name ext]);
+      msg = sprintf('Loading channel %d of image %s', chan_num, [name ext]);
       if app.CheckBox_Parallel.Value && app.processing_running
-          disp(msg)
-  %         send(app.ProcessingLogQueue, msg);
+        send(app.ProcessingLogQueue, msg);
       else
         app.log_processing_message(app, msg);
       end
@@ -44,17 +43,19 @@ function img = func(app, image_file, chan_num)
     select_images = chan_num:num_chans:num_chans*max(zslices); % bioformats stores images as a list of all channels, zslices and timepoints per stack, select the right channel and zslices
     select_images = select_images + ((timepoint-1)*max(zslices)*num_chans); % adjust to select the right timepoint
 
+    debug_level = 'ERROR';
     if isvalid(app.StartupLogTextArea.tx) == 1
       msg = sprintf('Loading channel %d, timepoint %d, for image %s', chan_num, timepoint, ImageName);
       if app.CheckBox_Parallel.Value && app.processing_running
-          disp(msg)
-  %         send(app.ProcessingLogQueue, msg);
+        send(app.ProcessingLogQueue, msg);
+        debug_level = 'NO CHANGE';
       else
         app.log_processing_message(app, msg);
+        debug_level = 'ERROR';
       end
     end
 
-    series_data = bfopenSeries(img_path,series_id,select_images);
+    series_data = bfopenSeries(img_path,series_id,select_images, debug_level);
     dat=series_data{1};
     % Make image stack
     img = [];

@@ -95,6 +95,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
+    app.segment{seg_num}.algorithm_info = algorithm;
     if ~isfield(app.segment{seg_num}.algorithm_info,'maintainer')
       app.segment{seg_num}.algorithm_info.maintainer = 'Unknown';
     end

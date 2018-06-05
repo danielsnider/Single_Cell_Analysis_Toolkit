@@ -4,10 +4,9 @@ function fun(app)
     return % perhaps this is not needed, check if NewResultQueueCallback can handle no measurements
   end
 
-  % Display log
-%   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-% app.StartupLogTextArea = txt_update;
-%   pause(0.1); % enough time for the log text area to appear on screen
+  if check_plugins_for_parallel_proc_support(app);
+    return % return if problem
+  end
 
   % Make buttons visible
   app.Button_ViewMeasurements.Visible = 'off';

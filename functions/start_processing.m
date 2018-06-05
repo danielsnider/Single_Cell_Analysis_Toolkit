@@ -30,6 +30,9 @@ function fun(app, NewResultCallback)
     progress = finished_count/NumberOfImages;
     app.ProgressSlider.Value = progress;
 
+    if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
+      app.progressdlg.Message = sprintf('Processing images in parallel. Please see the Matlab terminal window for further progess messages.\n\nFinished image %d of %d.', finished_count, NumberOfImages);
+    end
   end
 
   try
@@ -59,6 +62,7 @@ function fun(app, NewResultCallback)
       timerOn = true; % Track Timer as turned on
       app.log_processing_message(app, 'Starting parallel processing pool.');
       app.log_processing_message(app, 'Please see the Matlab terminal window for further progess messages.');
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Parallel Processing', 'Message','Processing images in parallel. Please see the Matlab terminal window for further progess messages.','Indeterminate','on');
       ProcessingLogQueue = parallel.pool.DataQueue;
 %       disp(ProcessingLogQueue)
       app.ProcessingLogQueue = ProcessingLogQueue;
@@ -146,8 +150,14 @@ function fun(app, NewResultCallback)
 
     app.processing_running = false;
 
+    if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
+      close(app.progressdlg)
+    end
+
   % Catch Application Error
   catch ME
+    error_msg = getReport(ME,'extended','hyperlinks','off');
+    disp(error_msg);
     handle_application_error(app,ME);
   end
 end

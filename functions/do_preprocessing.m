@@ -57,6 +57,8 @@ function img = do_preprocess_image(app, plate_num, chan_num, image_file)
 
   % Catch Application Error
   catch ME
+    error_msg = getReport(ME,'extended','hyperlinks','off');
+    disp(error_msg);
     handle_application_error(app,ME);
   end
 

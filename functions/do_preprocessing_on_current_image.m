@@ -1,4 +1,4 @@
-function fun(app, proc_num, chan_num, img_path)
+function fun(app, proc_num, chan_num, image_file)
   % Display log
 %   app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
   if ~isstruct(app.StartupLogTextArea)
@@ -13,11 +13,11 @@ function fun(app, proc_num, chan_num, img_path)
   % Handle optional parameters
   if nargin==2
     chan_num = get_chan_num_for_proc_num(app, proc_num);
-    img_path = get_current_image_path(app, chan_num);
+    image_file = get_current_multi_channel_image(app);
   end
 
   % Do preprocesing
-  app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, img_path);
+  app.image(chan_num).data = do_preprocessing(app, plate_num, chan_num, image_file);
   update_figure(app);
 
   if ~isempty(prev_fig)

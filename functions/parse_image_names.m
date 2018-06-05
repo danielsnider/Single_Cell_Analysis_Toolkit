@@ -8,14 +8,6 @@ function fun(app)
     msg = sprintf('Loading image names for plate %i...', plate_num);
     app.log_processing_message(app, msg);
 
-    % Only Image Naming Scheme is Supported
-    if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
-      msg = sprintf('Could not load image file names. Unkown image file format "%s". Please see your plate map spreadsheet.',naming_scheme);
-      uialert(app.UIFigure,msg,'Unkown Image File Format', 'Icon','error');
-      ME = MException('APP:Unkown_Image_File_Format','Unkown Image File Format');
-      throw(ME)
-    end
-
     default_colors = [...
       0 1 0;
       1 0 0;

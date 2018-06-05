@@ -10,7 +10,7 @@ function fun(app, createCallbackFcn)
     end
     plate_num = app.PlateDropDown.Value;
     chan_num = get_chan_num_for_proc_num(app, proc_num);
-    img_path = get_current_image_path(app, chan_num);
+    image_file = get_current_multi_channel_image(app);
     delete_preprocess(app, proc_num);
     app.preprocess(proc_num) = [];
     delete(tab);
@@ -19,7 +19,7 @@ function fun(app, createCallbackFcn)
       app.preprocess_tabgp = [];
     end
     % Preprocess this image without the preprocess operation that was just deleted
-    do_preprocessing_on_current_image(app, proc_num, chan_num, img_path);
+    do_preprocessing_on_current_image(app, proc_num, chan_num, image_file);
   end
 
   function changed_PreprocessName_(app, event)

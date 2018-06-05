@@ -65,6 +65,22 @@ function result = fun(app, proc_num, createCallbackFcn)
 
     % Load parameters of the algorithm plugin
     [params, algorithm] = eval(['definition_' algo_name]);
+    app.preprocess{proc_num}.algorithm_info = algorithm;
+    if ~isfield(app.preprocess{proc_num}.algorithm_info,'maintainer')
+      app.preprocess{proc_num}.algorithm_info.maintainer = 'Unknown';
+    end
+    if ~isfield(app.preprocess{proc_num}.algorithm_info,'supports_3D')
+      app.preprocess{proc_num}.algorithm_info.supports_3D = false; % TODO: sanity check that user provided true or false
+    end
+
+    % Run button
+    app.preprocess{proc_num}.run_button{1} = uibutton(app.preprocess{proc_num}.tab, 'state', ...
+      'Text','',...
+      'Icon', 'play-button.png', ...
+      'Value',0,...
+      'BackgroundColor', [.95 .95 .95], ...
+      'ValueChangedFcn', createCallbackFcn(app, @do_preprocessing_, true), ...
+      'Position', [369,352,26,23]);
 
     % Display GUI component for each parameter to the algorithm
     v_offset = 419;

@@ -1,4 +1,4 @@
-function [result] = bfopen(id, series_num, select_images, varargin)
+function [result] = bfopen(id, series_num, select_images, debug_level)
 % Open microscopy images using Bio-Formats.
 %
 % SYNOPSIS r = bfopen(id)
@@ -95,7 +95,9 @@ stitchFiles = 0;
 
 % -- Main function - no need to edit anything past this point --
 
-loci.common.DebugTools.setRootLevel('ERROR');
+if ~strcmp(debug_level, 'NO CHANGE')
+    loci.common.DebugTools.setRootLevel(debug_level);
+end
 
 % load the Bio-Formats library into the MATLAB environment
 status = bfCheckJavaPath(autoloadBioFormats);
@@ -115,13 +117,7 @@ bfInitLogging();
 % Get the channel filler
 r = bfGetReader(id, stitchFiles);
 
-% Test plane size
-if nargin >=5
-    planeSize = javaMethod('getPlaneSize', 'loci.formats.FormatTools', ...
-                           r, varargin{4}, varargin{5});
-else
-    planeSize = javaMethod('getPlaneSize', 'loci.formats.FormatTools', r);
-end
+planeSize = javaMethod('getPlaneSize', 'loci.formats.FormatTools', r);
 
 if planeSize/(1024)^3 >= 2,
     error(['Image plane too large. Only 2GB of data can be extracted '...
@@ -156,7 +152,7 @@ colorMaps = cell(numImages, 1);
 pos = 1;
 
 for i = loop_over_image_nums
-    arr = bfGetPlane(r, i, varargin{:});
+    arr = bfGetPlane(r, i);
 
     % retrieve color map data
     if bpp == 1

@@ -62,6 +62,16 @@ end
       app.plates = parse_platemap(app.ChooseplatemapEditField.Value);
     end
 
+      % Image Naming Scheme Supported Check
+    for plate_num=1:length(app.plates)
+      naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
+      if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+        msg = sprintf('Unkown image file type "%s". Please check your your plate map spreadsheet to correct this error.',naming_scheme);
+        title_ = 'Unkown Image File Format';
+        throw_application_error(app,msg,title_)
+      end
+    end
+
     %% Assert the name number of metadata fields exists on all plates TODO(Dan): to remove this limitation see file 'append_missing_columns_table_pair.m'
     lengths = [];
     for plate_num=1:length(app.plates)
