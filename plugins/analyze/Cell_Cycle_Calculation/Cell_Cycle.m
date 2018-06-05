@@ -15,7 +15,6 @@ catch
     MetaRows = 'Treatment'; MetaCols = 'Clone';
 end
 
-
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
 % ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}    
@@ -59,13 +58,14 @@ end
 %     
 % end
 
-if strcmp(verbose_Plot,'MicroPlate')   
+% Plot Microplate Plot for Cell Cycle Length
+data_to_plot = 'Cell_Cycle'; Main_Title = 'Cell Cycle Length (Hours)'; color = 'Dark2';rounding_decimal=2;
+color = 'cool(6)';
+MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal)
 
-    % Microplate Plot for Cell Cycle Length
-    data_to_plot = 'Cell_Cycle'; Main_Title = 'Cell Cycle Length (Hours)'; color = 'Dark2';rounding_decimal=2;
-    color = 'cool(6)';
-    MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal) 
-    
+
+if all(verbose_Plot=='Verbose Plots')
+
     % Microplate Plot for Cell Number
     for i = start_idx:end_idx
         data_to_plot = char(uniResults.Properties.VariableNames(i));
