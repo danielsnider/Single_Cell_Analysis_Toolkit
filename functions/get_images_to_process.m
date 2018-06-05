@@ -13,7 +13,7 @@ function imgs_to_process = fun(app)
     end
     num_channels = length(plate.channels);
 
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'NOPE   OperettaSplitTiffs NOPE')
       for img_num=1:num_channels:length(app.plates(plate_num).img_files_subset)
         multi_channel_img = {};
         multi_channel_img.channel_nums = plate.channels;
@@ -40,7 +40,7 @@ function imgs_to_process = fun(app)
         imgs_to_process = [imgs_to_process; multi_channel_img];
       end
       
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats','OperettaSplitTiffs'})
       imgs_to_process = [imgs_to_process; app.plates(plate_num).img_files_subset];
     end
   end

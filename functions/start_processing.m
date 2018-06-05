@@ -58,7 +58,7 @@ function fun(app, NewResultCallback)
       tStart = tic; % Start Timer
       timerOn = true; % Track Timer as turned on
       app.log_processing_message(app, 'Starting parallel processing pool.');
-      app.log_processing_message(app, 'Please see the Matlab console for further progess messages.');
+      app.log_processing_message(app, 'Please see the Matlab terminal window for further progess messages.');
       ProcessingLogQueue = parallel.pool.DataQueue;
 %       disp(ProcessingLogQueue)
       app.ProcessingLogQueue = ProcessingLogQueue;
@@ -118,7 +118,7 @@ function fun(app, NewResultCallback)
     % Stop Timer
     if timerOn == true
         tEnd = toc(tStart); % Stop Timer
-        fprintf('Segmentation took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+        fprintf('Processing took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
     end
     
     % User Automated ResultTable Saving
