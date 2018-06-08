@@ -115,7 +115,7 @@ try
             tab_count=tab_count+1;
         end
         tab_names = unique(tab_names(~cellfun('isempty', tab_names)),'stable');
-        sub_tbgroup = uitabgroup('parent', app.analyze{an_num}.tab, 'Position',[405 25 390 390]); %[left bottom width height]
+        sub_tbgroup = uitabgroup('parent', app.analyze{an_num}.tab, 'Position',[405 20 390 400]); %[left bottom width height]
         for num_tab = 1:size(tab_names,1)
             newtab = uitab('parent', sub_tbgroup, 'Title', char(tab_names(num_tab)));
             newtab.BackgroundColor = rand(1,3);
@@ -129,7 +129,7 @@ try
     
     % Display GUI component for each parameter to the algorithm
     if isfield(params,'sub_tab')
-        v_offset = 365; %[100 332 125 22]
+        v_offset = 375; %[100 332 125 22]
     else
         v_offset = 419;
     end
@@ -144,7 +144,7 @@ try
             current_tab = sub_tbgroup.SelectedTab;
             
             if current_tab~=prev_tab
-                v_offset = 365; %[100 332 125 22]
+                v_offset = 375; %[100 332 125 22]
             end
             prev_tab = current_tab;
         else
