@@ -27,6 +27,7 @@ function fun(app)
       app.TimepointDropDown.ItemsData = timepoints;
     end
 
+    draw_display_image_selection(app);
     start_processing_of_one_image(app);
     update_figure(app);
     app.log_processing_message(app, 'Finished.');

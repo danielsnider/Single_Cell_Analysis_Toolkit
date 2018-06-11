@@ -29,7 +29,8 @@ function img = func(app, image_file, chan_num)
     % Make image stack
     img=[];
     count = 1;
-    for zid=app.plates(plate_num).keep_zslices % also do z filtering
+    keep_zslices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
+    for zid=keep_zslices % also do z filtering
       img(:,:,count) = dat{zid,1};
       count = count + 1;
     end
@@ -60,7 +61,8 @@ function img = func(app, image_file, chan_num)
     % Make image stack
     img = [];
     count = 1;
-    for zid=app.plates(plate_num).keep_zslices % also do z filtering
+    keep_zslices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
+    for zid=keep_zslices % also do z filtering
       img(:,:,count) = dat{zid,1};
       count = count + 1;
     end

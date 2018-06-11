@@ -30,7 +30,7 @@ function fun(app, plate_num)
 
   msg = sprintf('Scanning image stacks.');
   app.log_processing_message(app, msg);
-  progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+  app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
   'Message',msg, 'Indeterminate','on');
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
@@ -108,6 +108,6 @@ function fun(app, plate_num)
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
 
-  close(progressdlg)
+  close(app.progressdlg2)
 
 end

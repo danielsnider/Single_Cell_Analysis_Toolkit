@@ -48,7 +48,8 @@ function fun(app)
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
 
     % Populate ZSlice Dropdown
-    avail_z_slices = app.plates(plate_num).keep_zslices;
+    image_file = get_current_multi_channel_image(app);
+    avail_z_slices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
     app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},avail_z_slices);
     app.ZSliceDropDown.ItemsData = 1:length(avail_z_slices);
 
@@ -91,7 +92,8 @@ function fun(app)
     selected_timepoint_idx = [app.ExperimentDropDown.UserData.timepoint] == timepoint;
     selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
     select_idx = selected_img_name_idx & selected_timepoint_idx;
-    avail_z_slices = app.plates(plate_num).keep_zslices;
+    image_file = get_current_multi_channel_image(app);
+    avail_z_slices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
     app.ZSliceDropDown.Items = arrayfun(@(x) {num2str(x)},avail_z_slices);
     app.ZSliceDropDown.ItemsData = avail_z_slices;
 

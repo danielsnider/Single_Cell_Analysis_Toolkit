@@ -17,21 +17,29 @@ function fun(app)
     fps = app.MovieatFPSSpinner.Value;
     date_str = datestr(now,'yyyymmddTHHMMSS');
     gif_filename = sprintf('%s/montage_%s.gif', save_dir, date_str);
+    num_imgs_to_process = length(imgs_to_process);
     count = 1;
 
     % Display log
-%     app.StartupLogTextArea = uitextarea(app.UIFigure,'Position', [127,650,728,105]);
-% app.StartupLogTextArea = txt_update;
-    app.log_processing_message(app, 'Starting Montage.');
-    pause(0.5); % enough time for the log text area to appear on screen
+    msg = 'Starting Montage.';
+    app.log_processing_message(app, msg);
+    app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait', 'Message',msg, 'Cancelable', 'on');
+    assignin('base','progressdlg_montage',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+
 
     for img=imgs_to_process'
+      if app.progressdlg2.CancelRequested
+        break
+      end
       plate_num = img.plate_num;
       if plate_num ~= app.PlateDropDown.Value
         continue % only operate on the currently selected plate
       end
 
-      msg = sprintf('Processing montage for image %s...', img.ImageName);
+
+      msg = sprintf('Processing montage for image %d of %d: %s', count, num_imgs_to_process, img.ImageName);
+      app.progressdlg2.Message = msg;
+      app.progressdlg2.Value = count / num_imgs_to_process;
       app.log_processing_message(app, msg);
 
       if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
@@ -45,7 +53,7 @@ function fun(app)
         end
         filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
 
-      elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles'})
+      elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles', 'MultiChannelFiles'})
         app.ExperimentDropDown.Value = img.experiment_num;
         filename = sprintf('%s/montage_%s_%s.png', save_dir, date_str, img.experiment);
       end
@@ -70,10 +78,9 @@ function fun(app)
     end
 
     % Delete log
-    app.log_processing_message(app, 'Finished');
+    app.log_processing_message(app, 'Finished montage.');
+    close(app.progressdlg2);
     uialert(app.UIFigure,'Montage complete.','Success', 'Icon','success');
-%     delete(app.StartupLogTextArea);
-%     app.StartupLogTextArea.tx.String = {};
 
   % Catch Application Error
   catch ME

@@ -3,6 +3,9 @@ function handle_application_error(app,ME)
   if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
     close(app.progressdlg)
   end
+  if isprop(app, 'progressdlg2') && isvalid(app.progressdlg2)
+    close(app.progressdlg2)
+  end
 
   % If no cause is attached to the error, this is the first place we're handling it create a uialert, add a cause, and rethrow the error
   if isempty(ME.cause)
