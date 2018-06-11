@@ -63,7 +63,7 @@ WellConditions.Properties.VariableNames{2} = 'column';
 WellConditions.WellConditions = cell(size(uniWells,1),1);
 for well = 1:size(uniWells,1)
     row = uniWells.Row(well); col = uniWells.Column(well);
-    tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3))) ', ' char(table2cell(Col_Conditions.Percent_FBS(Col_Conditions.Percent_FBS.col==col,2))) ', ' char(table2cell(Row_Conditions.Drug(Row_Conditions.Drug.row==row,2)))];% FIX THIS AT SOME POINT
+    tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3))) ', ' char(table2cell(Col_Conditions.Enrichment(Col_Conditions.Enrichment.col==col,2))) ', ' char(table2cell(Row_Conditions.Treatment(Row_Conditions.Treatment.row==row,2)))];% FIX THIS AT SOME POINT
     WellConditions.WellConditions(WellConditions.row==row&WellConditions.column==col) = cellstr(tmp);    
 end
 
