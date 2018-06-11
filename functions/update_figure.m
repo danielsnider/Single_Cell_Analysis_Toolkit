@@ -114,7 +114,7 @@ function fun(app)
       colour = app.segment{seg_num}.display_color;
       if any(colour)
         seg_colors = uint8(zeros(size(composite_img)));
-        otherdims=repmat({':'},1,ndims(composite_img)-1);
+        otherdims=repmat({':'},1,2);
         seg_colors(otherdims{:},1) = logical(seg) .* colour(1) .* 255;
         seg_colors(otherdims{:},2) = logical(seg) .* colour(2) .* 255;
         seg_colors(otherdims{:},3) = logical(seg) .* colour(3) .* 255;
@@ -156,4 +156,3 @@ function fun(app)
     handle_application_error(app,ME);
   end
 end
-

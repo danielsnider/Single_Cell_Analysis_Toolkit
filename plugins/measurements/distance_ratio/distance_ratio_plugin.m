@@ -1,4 +1,5 @@
 function MeasureTable=func(plugin_name, plugin_num, start_point_type, start_seg, intersect_seg, end_seg, debug_level)
+
   MeasureTable = table();
 
   % Nothing to do if no segments are given
@@ -30,64 +31,103 @@ function MeasureTable=func(plugin_name, plugin_num, start_point_type, start_seg,
     return
   end
 
-  %% Do distance measurement
-  % Get centers of from objects
-  from_stats = regionprops3(from_matrix, 'Centroid', 'Volume', 'EquivDiameter');
-  from_stats.Centroid(:,3) = from_stats.Centroid(:,3) .* z_res_multiplier;  % z depth scale factor. How many times larger is one discrete step in the Z dimension than one step in the X dimension.
-  points = from_stats.Centroid;
-  % points = points(54:60,:); % limit pero for debugging
-  
-  %% Do distance measurements
-  % NOTE: There are 6 distance types, the closest mito could be found in a 2D slice or the 3D render, because...
-  % NOTE: We had to measure each 2D slice and the 3D render seperately because I couldn't find a way to make them all one 3D object that could be measured by point2trimesh.
-  % Example:
-  % all_distances =
-  %                z=1           z=2          z=3          z=4            z=5        3D     <----- Distance to nearest mito in z=1,2,3,4,5 or 3D
-  % Pero 1        14.137      -13.609          -26      -39.002            0       13.609
-  % Pero 2        22.876       -20.52      -29.065      -40.768            0        20.52
-  % Pero 3        88.551      -86.332      -86.129      -91.243            0        86.03
-  all_distances = []; % distance to each 
-  all_surface_points = [];
-  for i=1:length(to_vertices)
-    FV.faces = to_faces{i};
-    FV.vertices = to_vertices{i};
-    if isempty(FV.faces)
-      all_distances(:,i) = NaN;
-      all_surface_points(:,:,i) = NaN;
-      continue
-    end
-    [distances,surface_points] = point2trimesh(FV, 'QueryPoints', points);
-    all_distances(:,i) = abs(distances);
-    all_surface_points(:,:,i) = surface_points;
+  %% Get points in XY format for distance measuruments
+  % Get points for measuring distances to start
+  if strcmp(start_point_type, 'Edge')
+    [Y X] = find(bwperim(start_seg));
+    start_pointsXY = [X Y];
+  elseif strcmp(start_point_type, 'Center')
+    stats = regionprops(start_seg,'Centroid');
+    start_pointsXY = round(cat(1,stats.Centroid));
+  end
+  start_pointsXY = start_pointsXY';
+  % Get points for measuring distances to intersect
+  stats = regionprops(intersect_seg,'Centroid');
+  intersect_pointsXY = round(cat(1,stats.Centroid));
+  intersect_pointsXY = intersect_pointsXY';
+  % Get points for measuring distances to end
+  [Y X] = find(bwperim(end_seg));
+  end_pointsXY = [X Y];
+  end_pointsXY = end_pointsXY';
+
+
+  %% Calc Distance to Nearest Start
+  NearestStartInd = nearestneighbour(intersect_pointsXY, start_pointsXY);
+  TranslationX = start_pointsXY(1,NearestStartInd) - intersect_pointsXY(1, :);
+  TranslationY = start_pointsXY(2, NearestStartInd) - intersect_pointsXY(2, :);
+  [theta,rho] = cart2pol(TranslationX,TranslationY);
+  start_distances = rho;
+
+  % Debug
+  if ismember(debug_level,{'On'})
+    f = figure(8186); clf; set(f,'name','dist_ratio','NumberTitle', 'off');
+    scatter(start_pointsXY(1,:), start_pointsXY(2,:), 'b')
+    hold on
+    scatter(intersect_pointsXY(1,:), intersect_pointsXY(2,:), 'r')
+    quiver(intersect_pointsXY(1, :), intersect_pointsXY(2, :), start_pointsXY(1,NearestStartInd) - intersect_pointsXY(1, :), start_pointsXY(2, NearestStartInd) - intersect_pointsXY(2, :), 0, 'k');
+    hold off
+    set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
   end
 
-  if ~isempty(all_surface_points)
-    % Get lowest distances
-    [min_dist,min_dist_type_id]=min(all_distances');
-    Distances = min_dist;
+  %% Calc Distance to Nearest End
+  NearestEndInd = nearestneighbour(intersect_pointsXY, end_pointsXY);
+  TranslationX = end_pointsXY(1,NearestEndInd) - intersect_pointsXY(1, :);
+  TranslationY = end_pointsXY(2, NearestEndInd) - intersect_pointsXY(2, :);
+  [theta,rho] = cart2pol(TranslationX,TranslationY);
+  end_distances = rho;
 
-    % Get the correct surface points (there are multiple types 2D z=1,z=2,3D)
-    surface_points = [];
-    for pid=1:size(points,1)
-      surface_points(pid,:) = all_surface_points(pid,:,min_dist_type_id(pid));
-    end
-
-    if strcmp(lower(measure_from_place),'edge')
-      Distances = Distances - from_stats.EquivDiameter' ./ 2;
-      Distances(Distances<0) = 0;
-    end
-  else
-    Distances = zeros(1,length(points));
-    Distances(:) = Inf;
-    surface_points = points;
-    surface_points(:) = NaN;
+  % Debug
+  if ismember(debug_level,{'On'})
+    f = figure(8286); clf; set(f,'name','dist_ratio','NumberTitle', 'off');
+    scatter(end_pointsXY(1,:), end_pointsXY(2,:), 'b')
+    hold on
+    scatter(intersect_pointsXY(1,:), intersect_pointsXY(2,:), 'r')
+    quiver(intersect_pointsXY(1, :), intersect_pointsXY(2, :), end_pointsXY(1,NearestEndInd) - intersect_pointsXY(1, :), end_pointsXY(2, NearestEndInd) - intersect_pointsXY(2, :), 0, 'k');
+    hold off
+    set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
   end
+
+  dist_ratio = start_distances ./ end_distances;
+
+  if ismember(debug_level,{'On'})
+    f = figure(8386); clf; set(f,'name','dist_ratio','NumberTitle', 'off');
+    % Red Start
+    hold on
+    red = cat(3, zeros(size(end_seg)), zeros(size(end_seg)), zeros(size(end_seg))); 
+    red(:,:,1) = bwperim(end_seg);
+    imshow(red,[])
+
+    % Green intersect
+    hold on
+    green = cat(3, zeros(size(intersect_seg)), zeros(size(intersect_seg)), zeros(size(intersect_seg))); 
+    green(:,:,2) = bwperim(intersect_seg);
+    h = imshow(green,[])
+    set(h, 'AlphaData', bwperim(intersect_seg));
+
+    % Blue End
+    hold on
+    blue = cat(3, zeros(size(start_seg)), zeros(size(start_seg)), zeros(size(start_seg))); 
+    blue(:,:,3) = bwperim(start_seg);
+    h = imshow(blue,[])
+    set(h, 'AlphaData', bwperim(start_seg));
+
+    % Arrows to nearest points
+    % quiver(intersect_pointsXY(1, :), intersect_pointsXY(2, :), start_pointsXY(1,NearestStartInd) - intersect_pointsXY(1, :), start_pointsXY(2, NearestStartInd) - intersect_pointsXY(2, :), 0, 'white');
+    % quiver(intersect_pointsXY(1, :), intersect_pointsXY(2, :), end_pointsXY(1,NearestEndInd) - intersect_pointsXY(1, :), end_pointsXY(2, NearestEndInd) - intersect_pointsXY(2, :), 0, 'white');
+    for idx=1:size(intersect_pointsXY,2)
+      h=plot([intersect_pointsXY(1, idx) start_pointsXY(1,NearestStartInd(idx))], [intersect_pointsXY(2, idx) start_pointsXY(2,NearestStartInd(idx))],'w-');
+      h.Color =[1 1 1 .35];
+      h=plot([intersect_pointsXY(1, idx) end_pointsXY(1,NearestEndInd(idx))], [intersect_pointsXY(2, idx) end_pointsXY(2,NearestEndInd(idx))],'w-');
+      h.Color =[1 1 1 .35];
+      h=text(intersect_pointsXY(1, idx), intersect_pointsXY(2, idx), sprintf('%.2f',dist_ratio(idx)),'Color','white');
+    end
+  end
+
+  % set(gca,'XAxisLocation','top','YAxisLocation','left','ydir','reverse');
 
   % Store
-  MeasureTable{:,['Distance_' matlab.lang.makeValidName(seg_from_name) '_to_' matlab.lang.makeValidName(seg_to_name)]}=Distances'; % Scalar
-  MeasureTable{:,['Nearest_' matlab.lang.makeValidName(seg_to_name) '_Point']}=surface_points; % XYZ
-  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Centroid']}=points; % XYZ
-  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_Volume']}=from_stats.Volume; % Count of the actual number of 'on' voxels in the region.
-  MeasureTable{:,[matlab.lang.makeValidName(seg_from_name) '_EquivDiameter']}=from_stats.EquivDiameter; % Diameter of a sphere with the same volume as the region, returned as a scalar. Computed as (6*Volume/pi)^(1/3).
+  MeasureTable{:,'Distance_Ratio'}=dist_ratio';
+  MeasureTable{:,['Distance_' matlab.lang.makeValidName(intersect_seg_name) '_' start_point_type '_to_' matlab.lang.makeValidName(start_seg_name) '_Edge']}=start_distances';
+  MeasureTable{:,['Distance_' matlab.lang.makeValidName(intersect_seg_name) '_' start_point_type '_to_' matlab.lang.makeValidName(end_seg_name) '_Edge']}=end_distances';
 
 end

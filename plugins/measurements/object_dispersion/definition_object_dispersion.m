@@ -17,4 +17,11 @@ function [params, algorithm] = fun()
   params(n).help = 'The sub-segments to count in primary segment.';
   params(n).type = 'segment_listbox';
 
+  n = n + 1;
+  params(n).name = 'Display Figures';
+  params(n).help = 'Control whether figures are displayed to show the steps of the algorithm and help you understand and debug it.';
+  params(n).type = 'dropdown';
+  params(n).default = 'Off';
+  params(n).options = {'On','Off'};
+
 end
