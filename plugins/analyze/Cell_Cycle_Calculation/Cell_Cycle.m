@@ -40,7 +40,7 @@ end
 
 if strcmp(Imaging_Type,'DPC')
     % Get number of cells per measurement for each well
-    uniResults = make_uniResults(ResultTable, measurement_name);
+    [uniResults,uniWells] = make_uniResults(ResultTable, measurement_name);
     
     [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells);
      
@@ -60,7 +60,7 @@ if strcmp(Imaging_Type,'DPC')
     end
     
     if average_replicates==true
-        Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,normalize_by,Imaging_Type,Plot_Title)
+        Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,Imaging_Type,Plot_Title)
     end
     
     assignin('base','uniResults',uniResults);

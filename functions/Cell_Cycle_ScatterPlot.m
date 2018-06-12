@@ -1,4 +1,4 @@
-function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Imaging_Type,Plot_Title)
+function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Plot_Title)
 
 
     %% Splitting Well Condition into their seperate meta-info based on separation by commas
@@ -79,10 +79,10 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Im
             if contains(Imaging_Type,'DPC')
                 errorbar(count,y, y_err,'LineStyle', '--', 'Color', color)
             end
-            % Draw a line for the control median
-            if any(strcmp(string(current_condition(sub_condition)),string(normalize_by)))
-                line(1:count,repmat(y,1,count),'Color',color,'LineStyle','--','LineWidth', 0.5)
-            end
+%             % Draw a line for the control median
+%             if any(strcmp(string(current_condition(sub_condition)),string(normalize_by)))
+%                 line(1:count,repmat(y,1,count),'Color',color,'LineStyle','--','LineWidth', 0.5)
+%             end
             x_labels(count,1) = current_condition(sub_condition);
             count = count +1;
         end

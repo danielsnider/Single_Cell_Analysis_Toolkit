@@ -291,8 +291,11 @@ for i = 1:size(uniCellTreatments,1)
                 y_cellNum(timepoint,r) = (ResultDataStructure.Numcells(idx_Row(r),idx_Col(r),timepoint));
             end
         end
-        
-        x = repmat(str2num((cell2mat(uniTimePoint))),[size(y_Mass,2) 1]);
+        try
+            x = repmat(str2num((cell2mat(uniTimePoint))),[size(y_Mass,2) 1]);
+        catch
+            x = repmat(str2num((char(uniTimePoint))),[size(y_Mass,2) 1]);
+        end
         y_Mass = log2(reshape(y_Mass,[size(y_Mass,1)*size(y_Mass,2) 1]));
         y_cellNum = log2(reshape(y_cellNum,[size(y_cellNum,1)*size(y_cellNum,2) 1]));
         
