@@ -49,7 +49,10 @@ function fun(app)
         app.ExperimentDropDown.Value = img.experiment_num;
         filename = sprintf('%s/montage_%s_%s.png', save_dir, date_str, img.experiment);
       end
-
+    
+      
+      % Need lines 57, 58 and 60
+      
       start_processing_of_one_image(app); % process image and display
       update_figure(app);
       h = figure(111); % set focus to display figure

@@ -209,6 +209,10 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
   end
+  
+  % Add somewhere here
+  % app make new property ui pop-up
+  
   if ~is_parallel_processing
     app.progressdlg.Message = sprintf('%s\n%s',msg,'Finished.');
     app.progressdlg.Value = (1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);

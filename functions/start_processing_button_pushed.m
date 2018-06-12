@@ -17,6 +17,7 @@ function fun(app)
   app.ResultTable = [];
 
   %% EXECUTE MAIN PROCESSING
+  
   start_processing(app);
 
   %% Save Results To Disk
