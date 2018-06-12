@@ -81,10 +81,14 @@ function fun(app)
   % Set number of parallel workers based on amount of available system memory or cpus
   [user,sys] = memory;
   avail_mem_GiB = sys.PhysicalMemory.Available / 1024^3;
+  total_mem_GiB = sys.PhysicalMemory.Total / 1024^3;
   GiB_required_per_worker = 4;
-  worker_count_by_memory = floor(avail_mem_GiB / GiB_required_per_worker);
+  worker_count_by_memory = floor(total_mem_GiB / GiB_required_per_worker);
   num_cores = feature('numcores');
   num_workers = min([num_cores, worker_count_by_memory]);
+  if num_workers == 0 
+    num_workers = 1;
+  end
   app.ParallelWorkersField.Value = num_workers;
 
   busy_state_change(app,'not busy');

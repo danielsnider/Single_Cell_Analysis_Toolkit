@@ -17,7 +17,6 @@ function fun(app)
       1 0 1; % limitation introduced here on the number of channels
     ];
 
-    
     % Handle different supported cases
     if strcmp(naming_scheme, 'OperettaSplitTiffs')
       parse_input_structure_OperettaSplitTiffs(app, plate_num);
@@ -40,12 +39,16 @@ function fun(app)
       parse_input_structure_SingleChannelFiles(app, plate_num);
       app.plates(plate_num).supports_3D = false;
 
-    elseif ismember(naming_scheme, {'XYZCT-Bio-Formats'})
+    elseif ismember(naming_scheme, {'XYZCT-Bio-Format-SingleFile'})
       parse_input_structure_XYZCT_Bio_Formats(app, plate_num);
       app.plates(plate_num).supports_3D = true;
 
-    elseif ismember(naming_scheme, {'XYZ-Split-Bio-Formats'})
-      parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num);
+    elseif ismember(naming_scheme, {'XYZC-Bio-Formats'})
+      parse_input_structure_XYZC_Bio_Formats(app, plate_num);
+      app.plates(plate_num).supports_3D = true;
+
+    elseif ismember(naming_scheme, {'XYZ-Bio-Formats'})
+      parse_input_structure_XYZ_Bio_Formats(app, plate_num);
       app.plates(plate_num).supports_3D = true;
 
     elseif ismember(naming_scheme, {'MultiChannelFiles'})

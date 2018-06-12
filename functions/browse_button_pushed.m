@@ -66,9 +66,14 @@ end
       % Image Naming Scheme Supported Check
     for plate_num=1:length(app.plates)
       naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
-      if ~ismember(naming_scheme, {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Formats','MultiChannelFiles','XYZ-Split-Bio-Formats'})
-        msg = sprintf('Unkown image file type "%s". Please check your your plate map spreadsheet to correct this error.',naming_scheme);
-        title_ = 'Unkown Image File Format';
+      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats'};
+      known_naming_schemes_str=cellfun(@(x) [x ', '],known_naming_schemes,'UniformOutput',false);
+      known_naming_schemes_str=[known_naming_schemes_str{:}];
+      known_naming_schemes_str=known_naming_schemes_str(1:end-2);
+
+      if ~ismember(naming_scheme, known_naming_schemes)
+        msg = sprintf('Unkown image file type "%s". Please check your your plate map spreadsheet to correct this error. The allowed values are: %s',naming_scheme,known_naming_schemes_str);
+        title_ = 'Unknown Image File Format';
         throw_application_error(app,msg,title_)
       end
     end

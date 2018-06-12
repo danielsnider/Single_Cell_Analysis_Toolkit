@@ -31,7 +31,7 @@ function fun(app)
     app.ExperimentDropDown.ItemsData = 1:length(app.plates(plate_num).experiments);
     app.ExperimentDropDown.UserData = app.plates(plate_num).img_files_subset;
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Split-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Bio-Formats','XYZC-Bio-Formats'})
     app.RowDropDown.Visible = 'off';
     app.ColumnDropDown.Visible = 'off';
     app.FieldDropDown.Visible = 'off';
@@ -61,7 +61,7 @@ function fun(app)
     pos(2) = 251; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
-  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Formats')
+  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Format-SingleFile')
     app.RowDropDown.Visible = 'off';
     app.RowDropDownLabel.Visible = 'off';
     app.ColumnDropDown.Visible = 'off';
