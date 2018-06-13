@@ -186,7 +186,16 @@ function plates = func(full_path)
             plate.wells_meta{yy,xx} = struct();
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
-          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val
+          
+          % Temporary fix. Need to delve further into what the issue might
+          % be
+          disp(key)
+          try
+            plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = (val);
+          catch
+            continue
+          end
+          
         end
       end
     end
