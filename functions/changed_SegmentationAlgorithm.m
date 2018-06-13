@@ -56,7 +56,7 @@ function result = fun(app, seg_num, createCallbackFcn)
   function do_segmentation_(app, Update)
     if app.segment{seg_num}.run_button{1}.Value
       msg = sprintf('Refreshing segmentation...');
-      progressdlg = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
+      app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
       'Message',msg,'Indeterminate','on');
 
       busy_state_change(app, 'busy');
@@ -81,7 +81,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       if ~isempty(prev_fig)
         figure(prev_fig); % Set back current figure to focus
       end
-      close(progressdlg);
+      close(app.progressdlg2);
       busy_state_change(app, 'not busy');
     end
   end

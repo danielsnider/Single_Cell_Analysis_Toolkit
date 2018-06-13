@@ -17,6 +17,12 @@ function fun(app)
   app.ResultTable = [];
 
   %% EXECUTE MAIN PROCESSING
+  % Before execution, prompt user if they want to take snapshots of their measurement overlaid images
+  msg = 'Take and save snapshots of resulting segmentents of each image?';
+  title = 'Do you want to take snapshots?';
+  app.measure_snapshot_selection = uiconfirm(app.UIFigure,msg,title,...
+      'Options',{'Yes (All)','Yes (1/10) ','Yes (1/50)','No'},...
+      'DefaultOption',4,'CancelOption',4);
   
   start_processing(app);
 

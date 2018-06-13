@@ -136,17 +136,22 @@ function fun(app)
       PlateName = app.plates(plate_num).metadata.Name;
       if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
         measure_name = app.DisplayMeasureDropDown.Value;
-        if ismember(measure_name,app.ResultTable_for_display.Properties.VariableNames)
-          subsetTable = get_current_displayed_resultTable(app);
-          data = subsetTable(:,{measure_name,'x_coord','y_coord'});
-          fontsize = app.DisplayMeasureFontSize.Value;
-          fontcolor = app.measure_overlay_color;
-          
-          if isnumeric(data.(measure_name))
-            text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%g'),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
-          else
-            text(data.x_coord,data.y_coord,data.(measure_name),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+        if ismember('x_coord',app.ResultTable_for_display.Properties.VariableNames)
+          if ismember(measure_name,app.ResultTable_for_display.Properties.VariableNames)
+            subsetTable = get_current_displayed_resultTable(app);
+            data = subsetTable(:,{measure_name,'x_coord','y_coord'});
+            fontsize = app.DisplayMeasureFontSize.Value;
+            fontcolor = app.measure_overlay_color;
+            
+            if isnumeric(data.(measure_name))
+              text(data.x_coord,data.y_coord,num2cellstr(data.(measure_name),'%g'),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+            else
+              text(data.x_coord,data.y_coord,data.(measure_name),'Color',fontcolor,'FontSize',fontsize, 'HorizontalAlignment','center');
+            end
           end
+        else
+          msg = sprintf('Cannot overlay measurements because a primary segment was not used. Please remeasure with a primary segment');
+          uialert(app.UIFigure,msg,'Sorry', 'Icon','warn');
         end
       end
     end

@@ -13,7 +13,7 @@ function img_path = fun(app, chan_num)
       '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
       img_dir,row,column,field,plate_file_num,chan_num,timepoint);
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
     multi_channel_img = get_current_multi_channel_image(app);
     if isempty(multi_channel_img.chans)
       % The data for the current image is not in memory so load whole series. this is needed because we only load one series at a time into memory
@@ -29,7 +29,7 @@ function img_path = fun(app, chan_num)
     img_data = multi_channel_img.chans(chan_num).data;
     img_path = img_data; % overloading functionality, putting data where the path to the data usually is because the data is already in memory and the path is not neccessary
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Split-Bio-Formats'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
     img_path = multi_channel_img.chans(chan_num).path;

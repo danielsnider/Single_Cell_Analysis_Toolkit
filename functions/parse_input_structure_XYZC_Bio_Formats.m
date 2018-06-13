@@ -34,7 +34,7 @@ function parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num)
     ome_series_id = 0; % OME starts at 0
     stack_name = matlab.lang.makeValidName(char(omeMeta.getImageName(ome_series_id)));
     full_file_name = dat{1,2}; % example:         'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_3D_images\control\HeLa_aPMP70-568 siCtrl_1z4.lsm; plane 1/5; Z?=1/5'
-
+    multi_channel_img = [];
     multi_channel_img.zslices = 1:omeMeta.getPixelsSizeZ(ome_series_id).getValue(); % number of Z slices;
     multi_channel_img.channel_nums = 1:omeMeta.getChannelCount(ome_series_id);
     multi_channel_img.plate_num = plate_num;

@@ -3,6 +3,8 @@ function [params, algorithm] = fun()
   algorithm.name = 'Spot Objects (Intensity Peaks)';
   algorithm.help = 'Spotting objects using gaussian blurring then finding all maximum intensity peaks.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
+  algorithm.supports_3D_and_2D = true;
+
 
   n = 0;
   n = n + 1;

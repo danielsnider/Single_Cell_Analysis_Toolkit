@@ -212,6 +212,15 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   
   % Add somewhere here
   % app make new property ui pop-up
+  if ~strcmp(app.measure_snapshot_selection,'No')
+      disp('Saving Snapshot')
+      save_montage(app)
+%       update_figure(app);
+%       h = figure(111); % set focus to display figure
+%       filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, img.row, img.column, img.field, img.timepoint);
+%       mag =10;
+%       export_fig(filename, ['-m' mag]); % save figure as image
+  end
   
   if ~is_parallel_processing
     app.progressdlg.Message = sprintf('%s\n%s',msg,'Finished.');

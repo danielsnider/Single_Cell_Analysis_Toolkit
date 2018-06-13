@@ -10,7 +10,7 @@ function img = func(app, image_file, chan_num)
   end
 
   % Log that we are loading the file
-  if ~ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+  if ~ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
     [filepath,name,ext] = fileparts(img_path);
     if isvalid(app.StartupLogTextArea.tx) == 1
       msg = sprintf('Loading channel %d of image %s', chan_num, [name ext]);
@@ -23,18 +23,42 @@ function img = func(app, image_file, chan_num)
   end
 
   % File type specific loading
-  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Split-Bio-Formats'})
+  if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZ-Bio-Formats'})
     data = bfopen(img_path);
     dat = data{1};
     % Make image stack
     img=[];
     count = 1;
-    for zid=app.plates(plate_num).keep_zslices % also do z filtering
+    keep_zslices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
+    for zid=keep_zslices % also do z filtering
       img(:,:,count) = dat{zid,1};
       count = count + 1;
     end
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Formats'})
+  % File type specific loading
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZC-Bio-Formats'})
+    data = bfopen(img_path);
+    dat = data{1};
+    % Make image stack
+    full_img=[];
+    count = 1;
+    num_chans = length(app.plates(plate_num).channels);
+    num_planes = size(dat,1);
+    for zid=[1:num_chans:num_planes]+chan_num-1 % get all slices for this channel
+      full_img(:,:,count) = dat{zid,1};
+      count = count + 1;
+    end
+
+    % Filter z-slices
+    count = 1;
+    img=[];
+    keep_zslices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
+    for keep_zid=keep_zslices % z filtering
+      img(:,:,count) = full_img(:,:,keep_zid);
+      count = count + 1;
+    end
+
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
     ImageName = image_file.ImageName;
     series_id = image_file.series_id;
     num_chans = image_file.num_chans;
@@ -60,7 +84,8 @@ function img = func(app, image_file, chan_num)
     % Make image stack
     img = [];
     count = 1;
-    for zid=app.plates(plate_num).keep_zslices % also do z filtering
+    keep_zslices = intersect(image_file.zslices, app.plates(plate_num).keep_zslices);
+    for zid=keep_zslices % also do z filtering
       img(:,:,count) = dat{zid,1};
       count = count + 1;
     end

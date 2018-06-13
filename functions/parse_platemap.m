@@ -6,9 +6,9 @@ function plates = func(full_path)
   
   % Find locations in csv where "BeginPlate" is present
   plate_start_locs = [];
-  for y=1:size(txt,1)
-    for x=1:size(txt,2)
-      if strfind(txt{y,x}, 'BeginPlate')
+  for y=1:size(raw,1)
+    for x=1:size(raw,2)
+      if strfind(raw{y,x}, 'BeginPlate')
           plate_start_locs = [plate_start_locs; x y];
       end
     end
@@ -19,7 +19,7 @@ function plates = func(full_path)
     plate = {};
     starty = plate_start_locs(idx,2);
     startx = plate_start_locs(idx,1);
-    plate_size_text = txt{starty, startx};
+    plate_size_text = raw{starty, startx};
     plate_size_struct = regexp(plate_size_text,'BeginPlate-Rows=(?<rows>\d+),Columns=(?<columns>\d+)','names');
     plate.rows = str2num(plate_size_struct.rows); % rows is like y resolution
     plate.columns = str2num(plate_size_struct.columns); % columns is like x resolution
@@ -114,10 +114,10 @@ function plates = func(full_path)
       count = 0;
       while true
         iter_yoffset = yoffset+count;
-        if iter_yoffset > size(txt,1) % reached end of file
+        if iter_yoffset > size(raw,1) % reached end of file
           break
         end
-        key = txt{iter_yoffset, xoffset};
+        key = raw{iter_yoffset, xoffset};
         if isempty(key) % reached empty cell 
           break
         end
