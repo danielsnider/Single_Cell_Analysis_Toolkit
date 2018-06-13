@@ -11,7 +11,6 @@ function fun(app)
     end
 
     is_movie = app.MontageMovieCheckBox.Value;
-    measure_snapshot_selection = app.measure_snapshot_selection;
     imgs_to_process = get_images_to_process(app);
     save_dir = uigetdir(app.ChooseplatemapEditField.Value,'Select Directory to Save Montage In');
     mag = num2str(app.AtMagnificationSpinner.Value);
@@ -65,7 +64,7 @@ function fun(app)
       start_processing_of_one_image(app); % process image and display
       update_figure(app);
       h = figure(111); % set focus to display figure
-      if ~is_movie & isempty(measure_snapshot_selection)
+      if ~is_movie 
         export_fig(filename, ['-m' mag]); % save figure as image
       end
       if is_movie
@@ -77,10 +76,6 @@ function fun(app)
             imwrite(imind, cm, gif_filename, 'gif', 'DelayTime',1/fps, 'WriteMode', 'append'); 
         end 
         count = count + 1;
-      end
-      if ~isempty(measure_snapshot_selection)
-          
-          
       end
 
     end

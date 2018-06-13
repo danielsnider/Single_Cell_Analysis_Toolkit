@@ -186,7 +186,7 @@ function plates = func(full_path)
             plate.wells_meta{yy,xx} = struct();
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
-          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val;
+          plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val
         end
       end
     end

@@ -4,6 +4,9 @@ function fun(app,createCallbackFcn)
     warning('off','images:initSize:adjustingMag');
     warning('off','images:imshow:magnificationMustBeFitForDockedFigure');
     
+    % Store Main working directory i.e. C:\User\Single_Cell_Analysis_Toolkit
+    app.mainDir = pwd;
+    
     % Initialize variables
     init_variables(app);
     
