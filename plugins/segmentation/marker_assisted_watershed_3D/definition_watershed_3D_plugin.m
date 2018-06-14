@@ -13,6 +13,14 @@ function [params, algorithm] = fun()
   params(n).type = 'image_channel_dropdown';
 
   n = n + 1;
+  params(n).name = 'Input Seeds';
+  params(n).default = '';
+  params(n).help = 'The seeds to use when watersheding. They will allow the algorithm to seperate touching objects.';
+  params(n).type = 'segment_dropdown';
+  params(n).optional = true;
+  params(n).optional_default_state = false;
+
+  n = n + 1;
   params(n).name = 'Gaussian Blur for Threshold';
   params(n).default = 1;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Used to define the boundary shape of objects.';
@@ -52,11 +60,20 @@ function [params, algorithm] = fun()
   n = n + 1;
   params(n).name = 'H-maxima Transform Height';
   params(n).default = 2;
-  params(n).help = 'Suppress small local maxima with height of less than the specified value. Can help reduce over-segmentation by watershed segmentation.';
+  params(n).help = 'Suppress small local maxima with height of less than the specified value. Can help reduce over-segmentation by watershed segmentation. Only takes effect if ''Input Seeds'' is unchecked.';
   params(n).type = 'numeric';
   params(n).limits = [0 Inf];
   params(n).optional = true;
   params(n).optional_default_state = false;
+
+  n = n + 1;
+  params(n).name = 'Remove Objects Touching Boarder';
+  params(n).default = 0;
+  params(n).help = 'Remove segments that are touching the boarder of the image. If you specify a value of 25 (or any value between 0 and 100), then objects will be removed if 25% or more of their perimeter is touching the boarder. If you specify 0, any boarder touch will reject the object.';
+  params(n).type = 'numeric';
+  params(n).limits = [0 100];
+  params(n).optional = true;
+  params(n).optional_default_state = true;
 
   n = n + 1;
   params(n).name = 'Display Figures';

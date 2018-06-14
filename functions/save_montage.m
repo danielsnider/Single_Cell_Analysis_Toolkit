@@ -24,7 +24,7 @@ function fun(app)
     msg = 'Starting Montage.';
     app.log_processing_message(app, msg);
     app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait', 'Message',msg, 'Cancelable', 'on');
-    assignin('base','progressdlg_montage',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+    assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
 
     for img=imgs_to_process'

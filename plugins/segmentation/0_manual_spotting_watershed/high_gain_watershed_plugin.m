@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_param, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_param, min_area, max_area, boarder_clear, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -138,23 +138,28 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
   labelled_img = new_bwlabel(labelled_img);
 
 
-  % Clear objects touching boarder too much (too much=1/4 of perimeter)  
-  % bordercleared_img = img_ws;
-  for idx=1:max(img_ws(:))
-    single_object = labelled_img == idx;
-    [x y] = find(single_object);
-    count_edge_touches = ismember([x; y], [1 size(single_object,1), size(single_object,2)]);
-    count_perim = bwperim(single_object);
-    % If the object touches the edge for more than 1/5 the length of the perimeter, delete it
-    if sum(count_edge_touches) > sum(sum(count_perim)) /4
-      labelled_img(labelled_img==idx)=0; % delete this object
-      idx
+  % Clear objects touching boarder too much (too much=1/4 of perimeter)
+  if isnumeric(boarder_clear)
+    if isequal(boarder_clear,0)
+      labelled_img = imclearborder(labelled_img);
+    else
+      for idx=1:max(img_ws(:))
+        single_object = labelled_img == idx;
+        ind = find(single_object);
+        [x y z] = ind2sub(size(single_object), ind);
+        count_edge_touches = ismember([x; y], [1 size(single_object,1), size(single_object,2)]);
+        count_perim = bwperim(single_object);
+        % If the object touches the edge for more than 1/5 the length of the perimeter, delete it
+        if sum(count_edge_touches) > sum(count_perim(:)) / (100 / boarder_clear)
+          labelled_img(labelled_img==idx)=0; % delete this object
+          idx
+        end
+      end
     end
-  end
-  % bordercleared_img = imclearborder(labelled_img);
-  if ismember(debug_level,{'All'})
-    f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
-    new_imshow(labelled_img,bwlabel_limits);
+    if ismember(debug_level,{'All'})
+      f = figure(5112); clf; set(f,'name','imclearborder','NumberTitle', 'off')
+      new_imshow(labelled_img,bwlabel_limits);
+    end
   end
   labelled_img = new_bwlabel(labelled_img);
 

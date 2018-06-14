@@ -18,10 +18,17 @@ if isempty(sub_seg)
 end
 
 for prim_field = fields(primary_seg)'
-    
     p = primary_seg.(char(prim_field));
     tmp=unique(p);
     single_cell_ID=tmp(unique(p)~=0);
+
+    % Setup for handling 3D images differently
+    new_bwlabel = @bwlabel;
+    is_3D = false;
+    if ndims(p) == 3
+      is_3D = true;
+      new_bwlabel = @bwlabeln;
+    end
     
     for sub_field = fields(sub_seg)'
         disp(['Current Count Object:' char(prim_field) '_Sub' char(sub_field) '_ObjectCount' ])
@@ -31,7 +38,7 @@ for prim_field = fields(primary_seg)'
         for i = single_cell_ID'
             single_subsegment=s;
             single_subsegment(p~=i)=0;
-            single_subsegment=bwlabel(single_subsegment);
+            single_subsegment=new_bwlabel(single_subsegment);
             MeasureTable{list_idx,[char(prim_field) '_Sub' char(sub_field) '_ObjectCount' ]}=max(single_subsegment(:));
             list_idx=list_idx+1;
         end

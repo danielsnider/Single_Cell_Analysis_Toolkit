@@ -1,13 +1,11 @@
 function seeds = spot(plugin_name, plugin_num, img, thresh_param, smooth_param, debug_level)
+  % Setup for handling 3D images differently
   new_imshow = @imshow;
   is_3D = false;
   if ndims(img) == 3
-    middle_zslice = floor(size(img,3)/2);
     is_3D = true;
-    preview_img = img(:,:,middle_zslice);
     new_imshow = @imshow3D;
   end
-
 
   % Smooth
   if is_3D

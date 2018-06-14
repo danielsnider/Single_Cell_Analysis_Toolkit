@@ -58,6 +58,7 @@ function result = fun(app, seg_num, createCallbackFcn)
       msg = sprintf('Refreshing segmentation...');
       app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
       'Message',msg,'Indeterminate','on');
+      assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
       busy_state_change(app, 'busy');
       prev_fig = get(groot,'CurrentFigure'); % Save current figure

@@ -30,8 +30,8 @@ function fun(app, plate_num)
 
   msg = sprintf('Scanning image stacks.');
   app.log_processing_message(app, msg);
-  app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait',...
-  'Message',msg, 'Indeterminate','on');
+  app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message',msg, 'Indeterminate','on');
+  assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   % app.log_processing_message(app, 'Loading XYZCT-Bio-Format-SingleFile images...');

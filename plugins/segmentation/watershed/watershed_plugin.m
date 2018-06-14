@@ -73,8 +73,23 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
   end
 
   % Clear cells touching the boarder
-  if boarder_clear
-    bordercleared_img = imclearborder(img_ws);
+  if isnumeric(boarder_clear)
+    if isequal(boarder_clear,0)
+      bordercleared_img = imclearborder(img_ws);
+    else
+      % Clear objects touching boarder too much (ex. too much could be 1/4 of perimeter)
+      bordercleared_img = img_ws;
+      for idx=1:max(img_ws(:))
+        single_object = img_ws == idx;
+        [x y] = find(single_object);
+        count_edge_touches = ismember([x; y], [1 size(single_object,1), size(single_object,2)]);
+        count_perim = bwperim(single_object);
+        % If the object touches the edge for more than 1/5 the length of the perimeter, delete it
+        if sum(count_edge_touches) > sum(count_perim(:)) / (100 / boarder_clear)
+          bordercleared_img(bordercleared_img==idx)=0; % delete this object
+        end
+      end
+    end
     if ismember(debug_level,{'All'})
       f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
       imshow(bordercleared_img,[]);

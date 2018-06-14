@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thresh_param, watershed_smooth_strength, watershed_smooth_size, min_area, max_area, hmax_height, debug_level)
+function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_param, thresh_param, watershed_smooth_strength, watershed_smooth_size, min_area, max_area, hmax_height, boarder_clear, debug_level)
   % result = img;
   % return
   
@@ -8,6 +8,11 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
       warning off all
   else
       pctRunOnAll warning off all %Turn off Warnings
+  end
+
+  user_supplied_seeds = true;
+  if isequal(seeds,false)
+    user_supplied_seeds = false;
   end
 
   % Smooth for threshold
@@ -42,32 +47,30 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
     imshow3D(img_smooth,[]);
   end
 
-  
   %% Supress small maxima
-  if ~isequal(hmax_height, false)
-    img_hmax = imhmax(img_smooth,hmax_height);
-    if ismember(debug_level,{'All'})
-      f = figure(8260); clf; set(f,'name','h-max','NumberTitle', 'off')
-      imshow3D(img_hmax,[]);
+  if ~user_supplied_seeds
+    % Auto calculate seeds because user didn't supply any
+    if ~isequal(hmax_height, false)
+      img_hmax = imhmax(img_smooth,hmax_height);
+      if ismember(debug_level,{'All'})
+        f = figure(8260); clf; set(f,'name','h-max','NumberTitle', 'off')
+        imshow3D(img_hmax,[]);
+      end
+      seeds = imregionalmax(img_hmax);
+    else
+      seeds = imregionalmax(img_smooth);
     end
-    seeds = imregionalmax(img_hmax);
   else
-    seeds = imregionalmax(img_smooth);
+    % seeds have been supplied by user
+    if isstruct(seeds)
+      seeds = seeds.matrix;
+    end
   end
-  
-  %% Seed
+  % remove seeds outside of our img mask
   seeds(img_thresh==0)=0;
-  % 3D seeds don't show correctly
-%   if ismember(debug_level,{'All'})
-%     [X Y] = find(seeds);
-%     f = figure(826); clf; set(f,'name','input seeds','NumberTitle', 'off')
-%     imshow3D(img,[]);
-%     hold on;
-%     plot(Y,X,'or','markersize',2,'markerfacecolor','r')
-%   end
 
   %% Watershed
-  img_min = imimposemin(max(img_smooth(:))-img_smooth,seeds); 
+  img_min = imimposemin(max(img_smooth(:))-img_smooth,seeds);
   if ismember(debug_level,{'All'})
     f = figure(564); clf; set(f,'name','imimposemin','NumberTitle', 'off')
     imshow3D(img_min,[]);
@@ -80,21 +83,58 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, thre
   end
 
   img_ws(img_thresh==0)=0; % remove areas that aren't in our img mask
-  filled_img = imfill(img_ws,'holes');
   if ismember(debug_level,{'All'})
     f = figure(561); clf; set(f,'name','watershed & threshold','NumberTitle', 'off')
     imshow3D(img_ws,[]);
   end
 
-  % % Clear cells touching the boarder
-  % bordercleared_img = imclearborder(img_ws);
-  % if ismember(debug_level,{'All'})
-  %   f = figure(511); clf; set(f,'name','imclearborder','NumberTitle', 'off')
-  %   imshow3D(bordercleared_img,[]);
-  % end
+  % Clear cells touching the boarder
+  if isnumeric(boarder_clear)
+    if isequal(boarder_clear,0)
+      bordercleared_img = imclearborder(img_ws);
+    else
+      % Clear objects touching boarder too much (ex. too much could be 1/4 of perimeter)
+      bordercleared_img = img_ws;
+      for idx=1:max(img_ws(:))
+        single_object = img_ws == idx;
+        ind = find(single_object);
+        [x y z] = ind2sub(size(single_object), ind);
+        count_edge_touches = ismember([x; y], [1 size(single_object,1), size(single_object,2)]);
+        count_perim = bwperim(single_object);
+        % If the object touches the edge for more than 1/5 the length of the perimeter, delete it
+        if sum(count_edge_touches) > sum(count_perim(:)) / (100 / boarder_clear)
+          bordercleared_img(bordercleared_img==idx)=0; % delete this object
+        end
+      end
+    end
+    if ismember(debug_level,{'All'})
+      f = figure(5221); clf; set(f,'name','imclearborder','NumberTitle', 'off')
+      imshow(bordercleared_img,[]);
+    end
+  else
+    bordercleared_img = img_ws;
+  end
+
+  % Fill holes
+  filled_img = imfill(bordercleared_img,'holes');
+  if ismember(debug_level,{'All'})
+    f = figure(561); clf; set(f,'name','fill holes','NumberTitle', 'off')
+    imshow3D(filled_img,[]);
+  end
+
+  % Remove segments that don't have a seed (only if user supplied seeds)
+  if user_supplied_seeds
+    reconstruct_img = imreconstruct(logical(seeds),logical(filled_img));
+    labelled_img = bwlabeln(reconstruct_img);
+    if ismember(debug_level,{'All'})
+      f = figure(5114); clf; set(f,'name','imreconstruct','NumberTitle', 'off')
+      imshow3D(reconstruct_img,[]);
+    end
+  else
+    labelled_img = bwlabeln(filled_img);
+  end
 
   %% Remove objects that are too small or too large
-  labelled_img = bwlabeln(filled_img);
   stats = regionprops(labelled_img,'area');
   area = cat(1,stats.Area);
   labelled_img(ismember(labelled_img,find(area > max_area | area < min_area)))=0;

@@ -3,6 +3,7 @@ function [params, algorithm] = fun()
   algorithm.name = 'Count Sub-Segments';
   algorithm.help = 'Count the number of objects found within a segment.';
   algorithm.maintainer = 'Justin Sing <justincsing@gmail.com>';
+  algorithm.supports_3D_and_2D = true;
 
   n = 0;
   n = n + 1;
