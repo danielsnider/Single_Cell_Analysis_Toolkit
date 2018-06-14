@@ -21,7 +21,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
-  plate=app.plates(plate_num);
+  plate = app.plates(plate_num);
 
   if ~is_parallel_processing
     if app.progressdlg.CancelRequested
@@ -206,9 +206,85 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
           iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))) = repmat(cellstr(cell_struct{1,1}.(char(field_names(field)))),[size(iterTable(iterTable.row==image_file.row&iterTable.column==image_file.column,char(field_names(field))),1) 1]);
         end 
       end
-    end
-    
+    end    
   end
+  
+  % Save Snapshots to disk. Will refactor at some point
+  if ~strcmp(app.measure_snapshot_selection,'No')
+      disp('Saving Snapshot')
+      update_figure(app);
+      h = figure(111); % set focus to display figure
+      %       save_dir = uigetdir(app.ChooseplatemapEditField.Value,'Select Directory to Save Montage In');
+      if all(app.SavetoEditField.Value == 'choose a path')
+          main_snap_path = [app.mainDir '\SnapShotMeasurements'];
+          if ~exist(main_snap_path,'dir')
+              
+              msg = sprintf('Creating Main Snapshot Directory: %s to store snapshot images',main_snap_path);
+              app.log_processing_message(app, msg);
+              disp(msg)
+              mkdir(main_snap_path)
+              save_dir = [main_snap_path '\' date '_Plate_' num2str(plate_num) '_SnapShots'];
+              if ~exist(save_dir,'dir')
+                  msg = sprintf('Creating Directory: %s to store snapshot images for this session',save_dir);
+                  app.log_processing_message(app, msg);
+                  disp(msg)
+                  mkdir(save_dir)
+              end
+          else
+              save_dir = [main_snap_path '\' date '_Plate_' num2str(plate_num) '_SnapShots'];
+          end
+      elseif ~all(app.SavetoEditField.Value == 'choose a path')
+          main_snap_path = [app.SavetoEditField.Value '\SnapShotMeasurements'];
+          if ~exist(main_snap_path,'dir')
+              
+              mkdir(main_snap_path)
+              save_dir = [main_snap_path '\' date '_Plate_' num2str(plate_num) '_SnapShots'];
+              if ~exist(save_dir,'dir')
+                  msg = sprintf('Creating Directory: %s to store snapshot images for this session',save_dir);
+                  app.log_processing_message(app, msg);
+                  disp(msg)
+                  mkdir(save_dir)
+              end
+          else
+              sprintf('%s directory does not exist, saving to default %s directory', app.SavetoEditField.Value, app.mainDir)
+              if ~exist([app.mainDir '\SnapShotMeasurements'],'dir')
+                  main_snap_path = [app.mainDir '\SnapShotMeasurements'];
+                  msg = sprintf('Creating Main Snapshot Directory: %s to store snapshot images',main_snap_path);
+                  app.log_processing_message(app, msg);
+                  disp(msg)
+                  mkdir(main_snap_path)
+                  save_dir = [main_snap_path '\' date '_Plate_' num2str(plate_num) '_SnapShots'];
+                  if ~exist(save_dir,'dir')
+                      msg = sprintf('Creating Directory: %s to store snapshot images for this session',save_dir);
+                      app.log_processing_message(app, msg);
+                      disp(msg)
+                      mkdir(save_dir)
+                  end
+              end
+          end
+      end
+      if strcmp(app.measure_snapshot_selection,'Yes (All)')
+          date_str = datestr(now,'yyyymmddTHHMMSS');
+          filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str,plate_num, imgs_to_process(current_img_number).row, imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
+          mag = 5;
+          export_fig(filename, ['-m' num2str(mag)]); % save figure as image
+      elseif strcmp(app.measure_snapshot_selection,'Yes (1/10)')
+          if mod(current_img_number,10)==0
+              date_str = datestr(now,'yyyymmddTHHMMSS');
+              filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str,plate_num, imgs_to_process(current_img_number).row, imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
+              mag = 5;
+              export_fig(filename, ['-m' num2str(mag)]); % save figure as image
+          end
+      elseif strcmp(app.measure_snapshot_selection,'Yes (1/50)')
+          if mod(current_img_number,50)==0
+              date_str = datestr(now,'yyyymmddTHHMMSS');
+              filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str,plate_num, imgs_to_process(current_img_number).row, imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
+              mag = 5;
+              export_fig(filename, ['-m' num2str(mag)]); % save figure as image
+          end
+      end
+  end
+  
   if ~is_parallel_processing
     app.progressdlg.Message = sprintf('%s\n%s',msg,'Finished.');
     app.progressdlg.Value = (1 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);

@@ -182,8 +182,11 @@ function fun(app, an_num)
     if isfield(app.analyze{an_num},'InputUITable')
         
         for drop_num=1:length(app.analyze{an_num}.InputUITable)
-            app.analyze{an_num}.InputUITable{drop_num}.UserData
-        
+            param_idx = app.analyze{an_num}.InputUITable{drop_num}.UserData
+            
+            meas = {};
+            meas = app.analyze{an_num}.InputUITable{drop_num}.Data;
+            algo_params(param_idx) = {meas};
         
         end
     end

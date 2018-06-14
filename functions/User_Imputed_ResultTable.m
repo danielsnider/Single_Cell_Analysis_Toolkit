@@ -21,6 +21,9 @@ Data = readtable([path '\' file]);
 
 [num,txt,raw] = xlsread([path '\' file]);
 
+col_Conditions = raw(cell2mat(cellfun(@ischar,(raw(:,1)),'UniformOutput',false)),1);
+row_Conditions = raw(1,cell2mat(cellfun(@ischar,(raw(1,:)),'UniformOutput',false)));
+
 % Get Well Meta-Info based on 96-Well Plate
 Well_Conditons = cell(60,3);idx = 1;
 for row = 2:9
@@ -63,7 +66,7 @@ WellConditions.Properties.VariableNames{2} = 'column';
 WellConditions.WellConditions = cell(size(uniWells,1),1);
 for well = 1:size(uniWells,1)
     row = uniWells.Row(well); col = uniWells.Column(well);
-    tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3))) ', ' char(table2cell(Col_Conditions.Enrichment(Col_Conditions.Enrichment.col==col,2))) ', ' char(table2cell(Row_Conditions.Treatment(Row_Conditions.Treatment.row==row,2)))];% FIX THIS AT SOME POINT
+    tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3))) ', ' char(table2cell(Col_Conditions.(char(col_Conditions))(Col_Conditions.(char(col_Conditions)).col==col,2))) ', ' char(table2cell(Row_Conditions.(char(row_Conditions))(Row_Conditions.(char(row_Conditions)).row==row,2)))];% FIX THIS AT SOME POINT
     WellConditions.WellConditions(WellConditions.row==row&WellConditions.column==col) = cellstr(tmp);    
 end
 
