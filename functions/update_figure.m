@@ -20,8 +20,8 @@ function fun(app, imgs, segments, subsetTable, plate)
     first_chan_num = plate.channels(1); % may not always be 1 in position 1, it's a crazy world out there
 
     % Initialize composite image
-    if ~exist('imgs')
-      first_chan_2D_data = imgs(chan_num).data(:,:,1); % force 2D because update_figure only supports 2D slices
+    if exist('imgs')
+      first_chan_2D_data = imgs(1).data(:,:,1); % force 2D because update_figure only supports 2D slices
     else
       first_chan_2D_data = app.image(first_chan_num).data(:,:,1); % force 2D because update_figure only supports 2D slices
     end
@@ -112,6 +112,9 @@ function fun(app, imgs, segments, subsetTable, plate)
     hold on
 
     % Display segments as colorized layers
+    if ~exist('segments')
+        segments = app.segment;
+    end
     for seg_num=1:length(segments)
       if seg_num > length(app.display.segment) || ~app.display.segment{seg_num}.checkbox.Value
         % skip if segment is unchecked or doesn't exist

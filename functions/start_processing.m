@@ -56,10 +56,9 @@ function fun(app, NewResultCallback)
     NumberOfImages = length(imgs_to_process);
     
     %% Loop over images and process each one
-    timerOn = false; % Default leave timer off
+    timerOn = true; % Default leave timer on
+    tStart = tic; % Start Timer
     if app.CheckBox_Parallel.Value
-      tStart = tic; % Start Timer
-      timerOn = true; % Track Timer as turned on
       app.log_processing_message(app, 'Starting parallel processing pool.');
       app.log_processing_message(app, 'Please see the Matlab terminal window for further progress messages.');
       app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Parallel Processing', 'Message','Processing images in parallel. Please see the Matlab terminal window for further progress messages.','Indeterminate','on');
@@ -124,7 +123,8 @@ function fun(app, NewResultCallback)
     % Stop Timer
     if timerOn == true
         tEnd = toc(tStart); % Stop Timer
-        fprintf('Processing took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+        msg = sprintf('Processing took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+        app.log_processing_message(app, msg);
     end
 
     % Update list of measurements in the display tab
