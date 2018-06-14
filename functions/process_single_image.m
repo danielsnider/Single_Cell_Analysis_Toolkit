@@ -50,15 +50,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   seg_result = {};
   for seg_num=1:length(app.segment)
     algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
-    % msg = sprintf('Running segmentation algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
-    % if is_parallel_processing
-    %   send(ProcessingLogQueue,msg);
-    % else
-    %   app.log_processing_message(app, msg);
-    %   if isvalid(app.StartupLogTextArea)
-    %     app.log_processing_message(app, msg);
-    %   end
-    % end
     seg_result{seg_num} = do_segmentation(app, seg_num, algo_name, imgs);
   end
 
@@ -113,15 +104,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     % Loop over each configured measurement and execute the measurement code
     for meas_num=1:length(app.measure)
       algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
-      % msg = sprintf('Running measurement algorithm ''%s.'' on image %d...\n', algo_name, current_img_number);
-      % if is_parallel_processing
-      %   send(ProcessingLogQueue,msg);
-      % else
-      %   app.log_processing_message(app, msg);
-      %   if isvalid(app.StartupLogTextArea)
-      %     app.log_processing_message(app, msg);
-      %   end
-      % end
       MeasureTable = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs);
       % Remove duplicate columns, keep the column that got there first
       new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));
@@ -211,12 +193,6 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   % Save Snapshots to disk. Will refactor at some point
   if ~strcmp(app.measure_snapshot_selection,'No')
     if strcmp(app.measure_snapshot_selection,'Yes (All)') | (strcmp(app.measure_snapshot_selection,'Yes (1/50)') & mod(current_img_number,50)==0) | (strcmp(app.measure_snapshot_selection,'Yes (1/10)') & mod(current_img_number,10)==0)
-      msg = sprintf('Saving Snapshot for image %d',current_img_number);
-      if is_parallel_processing
-        send(ProcessingLogQueue,msg);
-      else
-        app.log_processing_message(app, msg);
-      end
       date_str = datestr(now,'yyyymmddTHHMMSS');
       if ~is_parallel_processing
         if app.progressdlg.CancelRequested
@@ -225,7 +201,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         app.progressdlg.Message = sprintf('%s\n%s',msg,'Saving snapshot...');
         app.progressdlg.Value = (0.85 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
       end
-      update_figure(app);
+      update_figure(app, imgs, seg_result, iterTable, plate);
       if is_parallel_processing
         h = figure(110+labindex); % create new figure based on parallel worker (ie. labindex)
       else
@@ -233,13 +209,19 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       end
       save_dir = [app.mainDir '\Saved_Snapshots'];
       if ~strcmp(app.SavetoEditField.Value, 'choose a path')
-          save_dir = [app.SavetoEditField.Value '\Saved_Snapshots'];
-        end
+        save_dir = [app.SavetoEditField.Value '\Saved_Snapshots'];
+      end
       mkdir(save_dir) % do every time because it's idempotent and won't fail
       if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
         filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row, imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
       else
         filename = sprintf('%s/montage_%s_plate%d_%s.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).experiment);
+      end
+      msg = sprintf('Saving Snapshot for image %d to file %s',current_img_number, filename);
+      if is_parallel_processing
+        send(ProcessingLogQueue,msg);
+      else
+        app.log_processing_message(app, msg);
       end
       mag = num2str(app.AtMagnificationSpinner.Value);
       export_fig(filename, ['-m' mag]); % save figure as image

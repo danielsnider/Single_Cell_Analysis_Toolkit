@@ -31,14 +31,14 @@ function fun(app, NewResultCallback)
     app.ProgressSlider.Value = progress;
 
     if isprop(app, 'progressdlg') && isvalid(app.progressdlg)
-      app.progressdlg.Message = sprintf('Processing images in parallel. Please see the Matlab terminal window for further progess messages.\n\nFinished image %d of %d.', finished_count, NumberOfImages);
+      app.progressdlg.Message = sprintf('Processing images in parallel. Please see the Matlab terminal window for further progress messages.\n\nFinished image %d of %d.', finished_count, NumberOfImages);
     end
   end
 
   try
     %% Setup
     app.ProgressSlider.Value = 0; % reset progress bar to 0
-    finished_count  = 0; % for progess bar
+    finished_count  = 0; % for progress bar
     app.ProcessingLogTextArea.Value = '';
     app.processing_running = true;
     app.log_processing_message(app, 'Start processing...');
@@ -61,8 +61,8 @@ function fun(app, NewResultCallback)
       tStart = tic; % Start Timer
       timerOn = true; % Track Timer as turned on
       app.log_processing_message(app, 'Starting parallel processing pool.');
-      app.log_processing_message(app, 'Please see the Matlab terminal window for further progess messages.');
-      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Parallel Processing', 'Message','Processing images in parallel. Please see the Matlab terminal window for further progess messages.','Indeterminate','on');
+      app.log_processing_message(app, 'Please see the Matlab terminal window for further progress messages.');
+      app.progressdlg = uiprogressdlg(app.UIFigure,'Title','Parallel Processing', 'Message','Processing images in parallel. Please see the Matlab terminal window for further progress messages.','Indeterminate','on');
       assignin('base','app_progressdlg',app.progressdlg); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
       ProcessingLogQueue = parallel.pool.DataQueue;
       app.ProcessingLogQueue = ProcessingLogQueue;
