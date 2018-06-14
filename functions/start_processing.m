@@ -86,6 +86,14 @@ function fun(app, NewResultCallback)
         end
       end
 
+      % Pre-open the figures needed for saving snapshots, otherwise they may not open properly
+      if ~strcmp(app.measure_snapshot_selection,'No')
+        for wid=1:num_workers
+          f = figure(110+wid); clf; set(f, 'name',['Display ' num2str(wid)],'NumberTitle', 'off');
+        end
+        pause(1);
+      end
+
       %% PARALLEL LOOP
       parfor current_img_number = 1:NumberOfImages
         process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
