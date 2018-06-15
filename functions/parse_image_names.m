@@ -20,15 +20,23 @@ function fun(app)
     % Handle different supported cases
     if strcmp(naming_scheme, 'OperettaSplitTiffs')
       parse_input_structure_OperettaSplitTiffs(app, plate_num);
-
-      default_colors = [...
-        1 0 0;
-        0 1 0;
-        0 0 1;
-        1 1 0;
-        0 1 1;
-        1 0 1; % limitation introduced here on the number of channels
+      
+      % Temporary Setting for DPC - Justin
+      if any(contains(app.input_data.unique_channels,'DPC'))&&any(contains(app.input_data.unique_channels,'Brightfield'))
+          default_colors = [...
+        1 1 1; % To more easily visualize DPC images
+        0 0 0; % To block out brightfield channel
       ];
+      else
+          default_colors = [...
+            1 0 0;
+            0 1 0;
+            0 0 1;
+            1 1 0;
+            0 1 1;
+            1 0 1; % limitation introduced here on the number of channels
+          ];
+      end
       app.plates(plate_num).supports_3D = false;
 
     elseif strcmp(naming_scheme, 'ZeissSplitTiffs')
