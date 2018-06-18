@@ -191,7 +191,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
   
   % Save Snapshots to disk. Will refactor at some point
-  if ~strcmp(app.measure_snapshot_selection,'No')
+  if ~strcmp(app.measure_snapshot_selection,'No') & app.processing_running
     if strcmp(app.measure_snapshot_selection,'Yes (All)') | (strcmp(app.measure_snapshot_selection,'Yes (1/50)') & mod(current_img_number,50)==0) | (strcmp(app.measure_snapshot_selection,'Yes (1/10)') & mod(current_img_number,10)==0)
       date_str = datestr(now,'yyyymmddTHHMMSS');
       if ~is_parallel_processing
