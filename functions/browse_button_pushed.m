@@ -11,20 +11,11 @@ end
     end
 
     % Load Daniel and Justin's testing plate maps
-%     plate_file = 'Z:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
-%     plate_file = 'R:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
-    % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Nucleolus_Plate_Map_20180129';
-    % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Ceryl_Tissue_Plate_Map.xlsx';
-    % plate_file = 'Z:\Ceryl\MATLAB codes\Single_Cell_Analysis_Toolkit\Ceryl_Tissue_Plate_Map.xlsx';
-    % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Multi_Plate_Map.xlsx';
-    % plate_file = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\Camilla_Plate_Map.xlsx';
-    % plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Laura_Plate_Map_Laptop.xlsx';
-    % plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_Plate_Map_Laptop_3D.xlsx';
     % plate_file = 'C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\daniel\Derrick_Plate_Map_Laptop_2D_multi_chan.xlsx';
-%     if exist(plate_file)
-%       app.ChooseplatemapEditField.Value = plate_file;
-%       FileName = ''; % just helps testing
-%     end
+    %     if exist(plate_file)
+    %       app.ChooseplatemapEditField.Value = plate_file;
+    %       FileName = ''; % just helps testing
+    %     end
     %   plate_file = 'R:\Justin_S\Justin_Growth_Rate_Plate_Map_20180129.xlsx';
     % if exist(plate_file)
     %   app.ChooseplatemapEditField.Value = plate_file;
@@ -60,7 +51,8 @@ end
       load(app.ChooseplatemapEditField.Value);
       app.plates = saved_app.plates;
     else
-      app.plates = parse_platemap(app.ChooseplatemapEditField.Value);
+      [plates app_parameters] = parse_platemap(app.ChooseplatemapEditField.Value);
+      app.plates = plates;
     end
 
       % Image Naming Scheme Supported Check
@@ -86,21 +78,17 @@ end
     if length(unique(lengths))>1
       msg = sprintf('Sorry, there is a limitation that all plates in your platemap must have the same number of metadata fields. Please correct this in your file ''%s'' and try again.', app.ChooseplatemapEditField.Value);
       uialert(app.UIFigure,msg,'Sorry', 'Icon','error');
-      % Delete log
-%       delete(app.StartupLogTextArea);
-%       	app.StartupLogTextArea.tx.String = {};
       return
     end
 
     % Draw Plates
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Drawing input UI...');
-    app.progressdlg2.Value = 0.2;
+    app.progressdlg2.Value = 0.15;
     draw_input_data(app, createCallbackFcn);
 
     % Parse image files (can be slow!)
-    % uialert(app.UIFigure,'Opening Images can be slow! Click OK to begin.','Opening Images', 'Icon','info');
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Scanning image files (can be slow!)...');
-    app.progressdlg2.Value = 0.5;
+    app.progressdlg2.Value = 0.3;
     parse_image_names(app);
 
     % Load saved state
@@ -110,23 +98,27 @@ end
 
     % Initialize Display Tab
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Drawing display UI...');
-    app.progressdlg2.Value = 0.6;
+    app.progressdlg2.Value = 0.5;
     draw_display(app);
 
     % Process one image
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Processing first image...');
-    app.progressdlg2.Value = 0.75;
+    app.progressdlg2.Value = 0.65;
     start_processing_of_one_image(app);
     
     % Load the first image into the app!
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Displaying first image...');
-    app.progressdlg2.Value = 0.9;
+    app.progressdlg2.Value = 0.8;
     update_figure(app);
 
-    % Delete log
-%     delete(app.StartupLogTextArea);
-%     app.StartupLogTextArea.tx.String = {};
-    % app.ProcessingLogTextArea.Value = '';
+    % Load parameters from XSLS into app
+    if exist('app_parameters') && ~isempty(app_parameters)
+      app.progressdlg2.Message = sprintf('%s\n%s',msg,'Loading saved parameters...');
+      app.progressdlg2.Value = 0.9;
+      load_app_parameters(app, app_parameters, createCallbackFcn);
+    end
+
+    % Finished
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
     app.progressdlg2.Value = 1;
     close(app.progressdlg2);

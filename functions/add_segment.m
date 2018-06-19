@@ -1,4 +1,6 @@
-function fun(app, createCallbackFcn)
+function fun(app, createCallbackFcn, plugin_identifier)
+      % Set the current algorithm if directed toplugin_identifier)
+
   if no_images_loaded(app)
       return
   end
@@ -53,7 +55,7 @@ function fun(app, createCallbackFcn)
     plugin_names = {};
     plugin_pretty_names = {};
     for plugin_num = 1:length(plugin_definitions)
-      plugin = plugin_definitions(plugin_num)
+      plugin = plugin_definitions(plugin_num);
       plugin_name = plugin.name(1:end-2);
       if length(app.segment_plugin_definitions) < plugin_num
         [params, algorithm] = eval(plugin_name);
@@ -78,7 +80,7 @@ function fun(app, createCallbackFcn)
       end
       plugin_name = strsplit(plugin_name,'definition_');
       plugin_names{length(plugin_names)+1} = plugin_name{2};
-      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name
+      plugin_pretty_names{length(plugin_pretty_names)+1} = algorithm.name;
     end
 
 
@@ -163,7 +165,11 @@ function fun(app, createCallbackFcn)
     % Switch to new tab
     app.segment_tabgp.SelectedTab = app.segment{seg_num}.tab;
 
-    
+    % Set the current algorithm if directed to
+    if exist('plugin_identifier')
+      app.segment{seg_num}.AlgorithmDropDown.Value = app.segment{seg_num}.AlgorithmDropDown.ItemsData{find(strcmp(app.segment{seg_num}.AlgorithmDropDown.Items,plugin_identifier))};
+    end
+
     % Populate GUI components in new tab
     app.segment{seg_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');
 

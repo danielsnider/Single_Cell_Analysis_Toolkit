@@ -1,4 +1,4 @@
-function fun(app, createCallbackFcn)
+function fun(app, createCallbackFcn, plugin_identifier)
   if no_images_loaded(app)
       return
   end
@@ -131,6 +131,11 @@ function fun(app, createCallbackFcn)
 
     % Switch to new tab
     app.measure_tabgp.SelectedTab = app.measure{meas_num}.tab;
+
+    % Set the current algorithm if directed to
+    if exist('plugin_identifier')
+      app.segment{seg_num}.AlgorithmDropDown.Value = app.segment{seg_num}.AlgorithmDropDown.ItemsData{find(strcmp(app.segment{seg_num}.AlgorithmDropDown.Items,plugin_identifier))};
+    end
 
     % Populate GUI components in new tab
     app.measure{meas_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');

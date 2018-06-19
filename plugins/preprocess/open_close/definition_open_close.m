@@ -1,6 +1,6 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'Open Close Illumination Correction';
+  algorithm.name = 'Open Close Tophat Illumination Correction';
   algorithm.help = 'Correct uneven illumination using morphological open and close operations.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
