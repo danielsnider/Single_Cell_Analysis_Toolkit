@@ -10,12 +10,19 @@ function func(app, app_parameters, createCallbackFcn)
       % Create new segment Tab and select the correct plugin by it's indentifier
       add_segment(app, createCallbackFcn, plugin.identifier);
       seg_num = length(app.segment);
-      app.segment{seg_num}.Name.Value = plugin.name;
+      tab_name = app.segment{seg_num}.tab.Title;
+      plugin_pretty_name = app.segment{seg_num}.AlgorithmDropDown.Items{find(strcmp(app.segment{seg_num}.AlgorithmDropDown.ItemsData,app.segment{seg_num}.AlgorithmDropDown.Value))};
+
+      if isnan(plugin.name)
+        plugin.name = '';
+      end
+      app.segment{seg_num}.Name.Value = plugin.name; % Name this plugin according to user input
 
       % Load Segmentation Parameters
       for key=plugin.parameters.keys
         finishNow = false;
-        key = key{:};
+        value_set = false;
+        key=key{:};
         value = plugin.parameters(key);
         ui_labels = { ... % order matters, must corrospond with ui_values
           'ChannelDropDownLabel', ...
@@ -30,29 +37,65 @@ function func(app, app_parameters, createCallbackFcn)
         if isstr(value) && strcmp(value,'Inf')
           value = Inf;
         end
-        for uid=length(ui_labels)
+        if isstr(value)
+          value=strtrim(strsplit(value,',')) % convert 'Nuc, Cell, Pero' to {'Nuc'},{'Cell'},{'Pero'}
+        end
+        if iscell(value) && length(value) == 1
+          value=value{:};
+        end
+        for uid=1:length(ui_labels)
           ui_label = ui_labels{uid};
-          for idx=1:length(app.segment{seg_num}.(ui_label))
-            if strcmp(app.segment{seg_num}.(ui_label){idx}.Text, key)
-              this_ui_component = app.segment{seg_num}.(ui_values{uid}){idx};
-              if isstr(value) && strcmp(value,'disabled')
-                this_ui_component.Enable = false;
-              else
-                this_ui_component.Value = value;
+          if isfield(app.segment{seg_num}, ui_label)
+            for idx=1:length(app.segment{seg_num}.(ui_label))
+              if strcmp(app.segment{seg_num}.(ui_label){idx}.Text, key)
+                this_ui_component = app.segment{seg_num}.(ui_values{uid}){idx};
+                this_ui_component.Enable = true;
+                if isfield(this_ui_component.UserData,'ParamOptionalCheck')
+                  this_ui_component.UserData.ParamOptionalCheck.Value = true;
+                  if isstr(value) && strcmp(value,'disabled')
+                    this_ui_component.Enable = false;
+                    this_ui_component.UserData.ParamOptionalCheck.Value = false;
+                    finishNow = true;
+                    value_set = true;
+                    break
+                  end
+                end
+                if isprop(this_ui_component,'ItemsData') && ~isempty(this_ui_component.ItemsData) % special case when ItemsData exist-
+                  value_data = this_ui_component.ItemsData(find(ismember(this_ui_component.Items,value)));
+                  if ~isempty(value_data)
+                    value = value_data;
+                  end
+                  if iscell(value) % special case when ItemsData is a cell rather than numeric
+                    value = value{:};
+                  end
+                end
+                key
+                value
+                try
+                  this_ui_component.Value = value;
+                catch ME
+                  msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Segment'' and testing what can be entered.',value, key, plugin_pretty_name, tab_name);
+                  title_ = 'User Error - Bad Parameter Value';
+                  throw_application_error(app,msg,title_)
+                end
+                value_set = true;
+                finishNow = true;
+                app.segment{seg_num}.(ui_values{uid}){idx} = this_ui_component;
+                break % continue to next parameter key/value pair
               end
-              if isfield(this_ui_component.UserData,'ParamOptionalCheck')
-                enable_state_bool = strcmp(this_ui_component.Enable, 'on');
-                this_ui_component.UserData.ParamOptionalCheck.Value = enable_state_bool;
-              end
-              app.segment{seg_num}.(ui_values{uid}){idx} = this_ui_component;
-              finishNow = true;
-              break % continue to next parameter key/value pair
             end
           end
           if finishNow
             break % continue to next parameter key/value pair
           end
         end % end looping over parameters
+
+        if ~value_set
+          msg = sprintf('Could not set the parameter with name "%s" because it doesn''t exist as an option in the available parameter names for the "%s" segmentation plugin. Please correct the name "%s" in the "%s" section of your plate map spreadsheet. You can check the available paramater names by clicking ''Add Segment'' and choosing the "%s" segmentation plugin.', key, plugin_pretty_name, key, plugin.name, plugin_pretty_name);
+          title_ = 'User Error - Bad Parameter Name';
+          throw_application_error(app,msg,title_)
+        end
+
       end % end looping over keys
       changed_SegmentName(app);
     end % end if this plugin type=='segmentation'
@@ -62,13 +105,20 @@ function func(app, app_parameters, createCallbackFcn)
 
       % Create new measure Tab and select the correct plugin by it's indentifier
       add_measure(app, createCallbackFcn, plugin.identifier);
-      seg_num = length(app.measure);
-      app.measure{seg_num}.Name.Value = plugin.name;
+      meas_num = length(app.measure);
+      tab_name = app.measure{meas_num}.tab.Title;
+      plugin_pretty_name = app.measure{meas_num}.AlgorithmDropDown.Items{find(strcmp(app.measure{meas_num}.AlgorithmDropDown.ItemsData,app.measure{meas_num}.AlgorithmDropDown.Value))};
+
+      if isnan(plugin.name)
+        plugin.name = '';
+      end
+      app.measure{meas_num}.Name.Value = plugin.name;
 
       % Load Segmentation Parameters
       for key=plugin.parameters.keys
         finishNow = false;
-        key = key{:};
+        value_set = false;
+        key=key{:};
         value = plugin.parameters(key);
         ui_labels = { ... % order matters, must corrospond with ui_values
           'labels', ...
@@ -88,29 +138,65 @@ function func(app, app_parameters, createCallbackFcn)
         if isstr(value) && strcmp(value,'Inf')
           value = Inf;
         end
-        for uid=length(ui_labels)
+        if isstr(value)
+          value=strtrim(strsplit(value,',')) % convert 'Nuc, Cell, Pero' to {'Nuc'},{'Cell'},{'Pero'}.
+        end
+        if iscell(value) && length(value) == 1
+          value=value{:};
+        end
+        for uid=1:length(ui_labels)
           ui_label = ui_labels{uid};
-          for idx=1:length(app.measure{seg_num}.(ui_label))
-            if strcmp(app.measure{seg_num}.(ui_label){idx}.Text, key)
-              this_ui_component = app.measure{seg_num}.(ui_values{uid}){idx};
-              if isstr(value) && strcmp(value,'disabled')
-                this_ui_component.Enable = false;
-              else
-                this_ui_component.Value = value;
+          if isfield(app.measure{meas_num}, ui_label)
+            for idx=1:length(app.measure{meas_num}.(ui_label))
+              if strcmp(app.measure{meas_num}.(ui_label){idx}.Text, key)
+                this_ui_component = app.measure{meas_num}.(ui_values{uid}){idx};
+                this_ui_component.Enable = true;
+                if isfield(this_ui_component.UserData,'ParamOptionalCheck')
+                  this_ui_component.UserData.ParamOptionalCheck.Value = true;
+                  if isstr(value) && strcmp(value,'disabled')
+                    this_ui_component.Enable = false;
+                    this_ui_component.UserData.ParamOptionalCheck.Value = false;
+                    finishNow = true;
+                    value_set = true;
+                    break
+                  end
+                end
+                if isprop(this_ui_component,'ItemsData') && ~isempty(this_ui_component.ItemsData) % special case when ItemsData exist-
+                  value_data = this_ui_component.ItemsData(find(ismember(this_ui_component.Items,value)));
+                  if ~isempty(value_data)
+                    value = value_data;
+                  end
+                  if iscell(value) % special case when ItemsData is a cell rather than numeric
+                    value = value{:};
+                  end
+                end
+                key
+                value
+                try
+                  this_ui_component.Value = value;
+                catch ME
+                  msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Measure'' and testing what can be entered.',value, key, plugin_pretty_name, tab_name);
+                  title_ = 'User Error - Bad Parameter Value';
+                  throw_application_error(app,msg,title_)
+                end
+                value_set = true;
+                finishNow = true;
+                app.measure{meas_num}.(ui_values{uid}){idx} = this_ui_component;
+                break % continue to next parameter key/value pair
               end
-              if isfield(this_ui_component.UserData,'ParamOptionalCheck')
-                enable_state_bool = strcmp(this_ui_component.Enable, 'on');
-                this_ui_component.UserData.ParamOptionalCheck.Value = enable_state_bool;
-              end
-              app.measure{seg_num}.(ui_values{uid}){idx} = this_ui_component;
-              finishNow = true;
-              break % continue to next parameter key/value pair
             end
           end
           if finishNow
             break % continue to next parameter key/value pair
           end
         end % end looping over parameters
+
+        if ~value_set
+          msg = sprintf('Could not set the parameter with name "%s" because it doesn''t exist as an option in the available parameter names for the "%s" measure plugin. Please correct the name "%s" in the "%s" section of your plate map spreadsheet. You can check the available paramater names by clicking ''Add Measure'' and choosing the "%s" measure plugin.', key, plugin_pretty_name, key, plugin.name, plugin_pretty_name);
+          title_ = 'User Error - Bad Parameter Name';
+          throw_application_error(app,msg,title_)
+        end
+
       end % end looping over keys
       changed_MeasurementNames(app);
     end % end if this plugin type=='measurement'

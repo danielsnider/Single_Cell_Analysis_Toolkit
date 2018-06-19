@@ -254,7 +254,7 @@ function result = fun(app, seg_num, createCallbackFcn)
 
       else
         msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);
-        title_ = 'Unknown Parameter Type';
+        title_ = 'Plugin Error - Unknown Parameter Type';
         throw_application_error(app,msg,title_);
       end
 

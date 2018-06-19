@@ -211,6 +211,7 @@ function [plates, app_parameters] = func(full_path)
 
   %% Loop over each plugin, parsing it 
   plugins = [];
+  raw_size_1 = size(raw,1);
   for idx=1:size(plugin_start_locs,1)
     plugin = {};
     starty = plugin_start_locs(idx,2);
@@ -229,18 +230,18 @@ function [plates, app_parameters] = func(full_path)
     offset=0;
     while true
       iter_yoffset = offset+starty+1;
-      if iter_yoffset > size(raw,1) % reached end of file
+      offset = offset+1;
+      if iter_yoffset > raw_size_1 % reached end of file
         break
       end
       key=raw{iter_yoffset, startx+1};
       value=raw{iter_yoffset, startx+2};
-      if isempty(key) || any(isnan(key))
+      if any(isnan(key)) || isempty(key)
         break % found whitespace at end of plugin parameters, stop looping
       end
-      if isempty(value) || any(isnan(value))
+      if any(isnan(value)) || isempty(value)
         continue % ignore empty values
       end
-      offset = offset+1;
       plugin.parameters(key) = value;
     end
     plugins = [plugins; plugin];

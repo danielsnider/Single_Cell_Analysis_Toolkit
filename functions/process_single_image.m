@@ -116,7 +116,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         end
         if ~isempty(iterTable) && height(iterTable) ~= height(MeasureTable)
           msg = sprintf('Two of your configured measurements returned different number of results. For example one plugin measured 4 cells and another measured 100 peroxisomes. We are unable to combine this into the same table. This is usually fixed by using primary segment settings which can force measuring 4 cells OR 100 peroxisomes.');
-          title_ = 'Measurement Result Length Mismatch';
+          title_ = 'User Error - Measurement Result Length Mismatch';
           throw_application_error(app,msg,title_);
         end
 
@@ -138,7 +138,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         end
         if size(centroids,1) ~= height(iterTable)
           msg = sprintf('Your primary segment has a different number of segments than were measured by one of your configured measurements. For example one plugin measured 900 peroxisomes but there were only 3 cell primary segments. We are unable to combine this into the same table. Double check your measurement settings and primary segment settings which can force measuring 3 cells OR 900 peroxisomes.');
-          title_ = 'Primary Segment and Measurement Result Length Mismatch';
+          title_ = 'User Error - Primary Segment and Measurement Result Length Mismatch';
           throw_application_error(app,msg,title_);
         end
 

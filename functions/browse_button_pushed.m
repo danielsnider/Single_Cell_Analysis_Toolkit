@@ -65,7 +65,7 @@ end
 
       if ~ismember(naming_scheme, known_naming_schemes)
         msg = sprintf('Unkown image file type "%s". Please check your your plate map spreadsheet to correct this error. The allowed values are: %s',naming_scheme,known_naming_schemes_str);
-        title_ = 'Unknown Image File Format';
+        title_ = 'User Error - Unknown Image File Format';
         throw_application_error(app,msg,title_)
       end
     end
