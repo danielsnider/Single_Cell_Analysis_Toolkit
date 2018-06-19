@@ -134,7 +134,16 @@ function fun(app, createCallbackFcn, plugin_identifier)
 
     % Set the current algorithm if directed to
     if exist('plugin_identifier')
-      app.measure{meas_num}.AlgorithmDropDown.Value = app.measure{meas_num}.AlgorithmDropDown.ItemsData{find(strcmp(app.measure{meas_num}.AlgorithmDropDown.Items,plugin_identifier))};
+      % Sanity Check that plugin name exists
+      index = find(strcmp(app.measure{meas_num}.AlgorithmDropDown.Items,plugin_identifier));
+      if isempty(index)
+        msg = sprintf('An incorrect measurement algorithm name "%s" has been specified. Please double check the spelling and what plugin names are available.',plugin_identifier);
+        title_ = 'User Error - Incorrect Plugin Name';
+        throw_application_error(app,msg,title_)
+      end
+      % Set plugin name
+      algo_name = app.measure{meas_num}.AlgorithmDropDown.ItemsData{index};
+      app.measure{meas_num}.AlgorithmDropDown.Value = algo_name;
     end
 
     % Populate GUI components in new tab

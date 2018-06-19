@@ -102,7 +102,6 @@ function func(app, app_parameters, createCallbackFcn)
 
     % Load measurement plugins and parameters
     if strcmp(plugin.type,'measurement')
-
       % Create new measure Tab and select the correct plugin by it's indentifier
       add_measure(app, createCallbackFcn, plugin.identifier);
       meas_num = length(app.measure);
