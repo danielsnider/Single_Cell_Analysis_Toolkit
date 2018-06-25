@@ -1,20 +1,23 @@
-function plates = func(full_path)
+function [plates, app_parameters] = func(full_path)
   % full_path = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\MY_PLATEMAP.xlsx';
   [num,txt,raw] = xlsread(full_path);
 
   plates = [];
   
-  % Find locations in csv where "BeginPlate" is present
+  % Find locations in csv where "BeginPlate" or "Plugin=" is present
   plate_start_locs = [];
+  plugin_start_locs = [];
   for y=1:size(raw,1)
     for x=1:size(raw,2)
       if strfind(raw{y,x}, 'BeginPlate')
-          plate_start_locs = [plate_start_locs; x y];
+        plate_start_locs = [plate_start_locs; x y];
+      elseif strfind(raw{y,x}, 'Plugin=')
+        plugin_start_locs = [plugin_start_locs; x y];
       end
     end
   end
 
-  %% Loop over each plate, parsing it
+  %% Loop over each plate, parsing it 
   for idx=1:size(plate_start_locs,1)
     plate = {};
     starty = plate_start_locs(idx,2);
@@ -205,5 +208,44 @@ function plates = func(full_path)
     %% Store plate information
     plates = [plates; plate];
   end
+
+  %% Loop over each plugin, parsing it 
+  plugins = [];
+  raw_size_1 = size(raw,1);
+  for idx=1:size(plugin_start_locs,1)
+    plugin = {};
+    starty = plugin_start_locs(idx,2);
+    startx = plugin_start_locs(idx,1);
+
+    % Plugin Info
+    plugin_text = raw{starty, startx};
+    plugin_text = regexp(plugin_text,'Plugin=(?<type>\w+)','names');
+    typ = lower(plugin_text.type); % eg. 'segmentation','measurement'
+    plugin.type = typ;
+    plugin.identifier = raw{starty+2, startx};
+    plugin.name = raw{starty+4, startx};
+
+    % Plugin Parameters
+    plugin.parameters = containers.Map;
+    offset=0;
+    while true
+      iter_yoffset = offset+starty+1;
+      offset = offset+1;
+      if iter_yoffset > raw_size_1 % reached end of file
+        break
+      end
+      key=raw{iter_yoffset, startx+1};
+      value=raw{iter_yoffset, startx+2};
+      if any(isnan(key)) || isempty(key)
+        break % found whitespace at end of plugin parameters, stop looping
+      end
+      if any(isnan(value)) || isempty(value)
+        continue % ignore empty values
+      end
+      plugin.parameters(key) = value;
+    end
+    plugins = [plugins; plugin];
+  end
+  app_parameters.plugins = plugins;
 
 end

@@ -68,7 +68,7 @@ function result = fun(plugin_name, plugin_num, img, threshold_smooth_param, wate
   labelled_img(ismember(labelled_img,find(area > max_area | area < min_area)))=0;
 
   % Return result
-  result = labelled_img;
+  result = bwlabel(labelled_img);
 
   if ismember(debug_level,{'All','Result Only','Result With Seeds'})
     f = figure(643); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
