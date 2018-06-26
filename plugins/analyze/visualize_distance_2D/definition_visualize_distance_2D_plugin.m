@@ -55,11 +55,11 @@ function [params, algorithm] = fun()
   % params(n).type = 'measurement_dropdown';
 
   n = n + 1;
-  params(n).name = 'Z Slice';
-  params(n).default = 1;
-  params(n).help = 'Choose a slice in the Z dimension to plot.';
+  params(n).name = 'Max Dynamic Range (%)';
+  params(n).default = 95;
+  params(n).help = 'Choose to brighten the image for viewing only so that pixels above the value set here become full brightness.';
   params(n).type = 'numeric';
-  params(n).limits = [1 Inf];
+  params(n).limits = [0.001 100];
 
   n = n + 1;
   params(n).name = 'Font Size';

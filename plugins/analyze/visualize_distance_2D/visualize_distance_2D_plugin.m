@@ -1,22 +1,22 @@
-function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_points, end_points, zslice_num, font_size, ObjectsInFrame)
+function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_points, end_points, max_dyn_range, font_size, ObjectsInFrame)
   Distances = Distances.data;
   start_points = start_points.data;
   end_points = end_points.data;
   num_chans = 2;
   min_dyn_range_percent = 0;
-  max_dyn_range_percent = .95;
+  max_dyn_range_percent = max_dyn_range/100;
   img1_ch_color = [0 1 0];
   img2_ch_color = [1 0 0];
   img2_perim_color = [1 .5 .5];
   x_res = size(img1,1);
   y_res = size(img1,2);
-  timepoint = unique(ObjectsInFrame.timepoint);
+  % timepoint = unique(ObjectsInFrame.timepoint);
 
   % This plugin visualizes only 2D so take only one slice from our 3D stacks
-  img1 = img1(:,:,zslice_num);
-  seg1 = bwlabel(seg1(:,:,zslice_num));
-  img2 = img2(:,:,zslice_num);
-  seg2 = seg2(:,:,zslice_num);
+  % img1 = img1(:,:,zslice_num);
+  % seg1 = bwlabel(seg1(:,:,zslice_num));
+  % img2 = img2(:,:,zslice_num);
+  % seg2 = seg2(:,:,zslice_num);  
   
   % Keep only the arrow start point that are for objects that can be seen
   % in this slice 
@@ -66,7 +66,7 @@ function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_p
   seg2_perim = imdilate(bwperim(seg2),strel('disk',1));
   seg2_rgb = label2rgb(uint32(seg2_perim), img2_perim_color, [1 1 1], 'shuffle');
   himage = imshow(im2uint8(seg2_rgb),[]);
-  himage.AlphaData = seg2_perim*.6;
+  himage.AlphaData = seg2_perim*1;
 
   % Display color overlay (img1)
   if any_objects
@@ -84,7 +84,7 @@ function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_p
       seg1_rgb = label2rgb(uint32(seg1_perim), [1 1 1], [1 1 1], 'shuffle'); % Coloured white
     end
     himage = imshow(im2uint8(seg1_rgb),[]);
-    himage.AlphaData = logical(seg1)*1;
+    himage.AlphaData = logical(bwperim(seg1))*1;
 
     % Display distance lines
     quiver(start_points(:,1), start_points(:,2), end_points(:,1) - start_points(:,1), end_points(:,2) - start_points(:,2), 0, 'c');
@@ -93,20 +93,22 @@ function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_p
     h = text(start_points(:,1)'+3,start_points(:,2)'-1,cellstr(num2str(round(Distances)))','Color','cyan','FontSize',font_size,'Clipping','on','Interpreter','none');
 
     %% Display trace ID
-    for i=1:height(ObjectsInFrame)
-      h = text(start_points(i,1)'-10,start_points(i,2)'-1,all_trace_ids_short{i},'Color',ObjectsInFrame.TraceColor(i,:),'FontSize',font_size,'Clipping','on','Interpreter','none','HorizontalAlignment','right');
+    if ismember('Trace', ObjectsInFrame.Properties.VariableNames)
+      for i=1:height(ObjectsInFrame)
+        h = text(start_points(i,1)'-10,start_points(i,2)'-1,all_trace_ids_short{i},'Color',ObjectsInFrame.TraceColor(i,:),'FontSize',font_size,'Clipping','on','Interpreter','none','HorizontalAlignment','right');
+      end
     end
   end
 
   % Information Box
   %txt = sprintf('Slice: %s\nPeroxisomes Count: %d\nConvex Area: %.0f px\n%s',USE_SLICE,length(start_points), ConvexAreaPX,stack_name); % '%.1f um^2',ConvexAreaSqrUM
-  slice_txt = sprintf('Slice: %d',zslice_num);
+  % slice_txt = sprintf('Slice: %d',zslice_num);
   %h = text(15,y_res-45,txt,'Color','white','FontSize',font_size,'Clipping','on','HorizontalAlignment','left','Interpreter','none');
   % Frame Info
-  frame_txt = sprintf('Timepoint: %d', timepoint);
-  t_val = 5.203*(timepoint-1);
-  t_unit = 's';
-  txt = sprintf('+%.3f %s\n%s\n%s', t_val, t_unit, frame_txt, slice_txt);
-  h = text(20,20,txt,'Color','white','FontSize',font_size+4,'Clipping','on','HorizontalAlignment','left','VerticalAlignment','top','Interpreter','none');
+  % frame_txt = sprintf('Timepoint: %d', timepoint);
+  % t_val = 5.203*(timepoint-1);
+  % t_unit = 's';
+  % txt = sprintf('+%.3f %s\n%s\n%s', t_val, t_unit, frame_txt, slice_txt);
+  % h = text(20,20,txt,'Color','white','FontSize',font_size+4,'Clipping','on','HorizontalAlignment','left','VerticalAlignment','top','Interpreter','none');
 
 end
