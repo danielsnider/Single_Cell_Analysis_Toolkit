@@ -118,6 +118,12 @@ end
       load_app_parameters(app, app_parameters, createCallbackFcn);
     end
 
+    if app.CheckBox_AnalyzeImmediately.Value
+      prompt_user = false;
+      start_processing_button_pushed(app,prompt_user);
+      run_all_analysis(app);
+    end
+
     % Finished
     app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
     app.progressdlg2.Value = 1;

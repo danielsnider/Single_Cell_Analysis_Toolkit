@@ -48,12 +48,6 @@ function [params, algorithm] = fun()
   params(n).help = '';
   params(n).type = 'measurement_dropdown';
 
-  % n = n + 1;
-  % params(n).name = 'Caption Text';
-  % params(n).default = '';
-  % params(n).help = '';
-  % params(n).type = 'measurement_dropdown';
-
   n = n + 1;
   params(n).name = 'Max Dynamic Range (%)';
   params(n).default = 95;
