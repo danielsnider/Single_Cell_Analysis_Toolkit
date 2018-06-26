@@ -1,4 +1,4 @@
-function fun(plugin_name, plugin_num, group_by, summary_stats, measures, save_path, ResultTable)
+function fun(plugin_name, plugin_num, group_by, summary_stats, measures, save_path, remove_inf, ResultTable)
 
   % Sanity check that selected measurements are allowed (logical or double)
   for name = measures.names
@@ -37,6 +37,11 @@ function fun(plugin_name, plugin_num, group_by, summary_stats, measures, save_pa
   summary_stats_short = {};
   for stat_name = summary_stats
     summary_stats_short{length(summary_stats_short)+1} = name_map(stat_name{:});
+  end
+
+  if remove_inf
+    inf_row_idx = find(ResultTable{:,measures.names}==Inf);
+    ResultTable(inf_row_idx,:)=[];
   end
 
   % Calculate group stats

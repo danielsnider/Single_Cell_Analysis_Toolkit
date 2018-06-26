@@ -108,7 +108,7 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-        algo_params(param_idx) = {app.ResultTable};
+        algo_params(param_idx) = {ResultTable};
       end
     end
     
@@ -227,6 +227,7 @@ function fun(app, an_num)
     end
 
     close(app.progressdlg);
+    uialert(app.UIFigure,'Analysis complete.','Success', 'Icon','success');
     busy_state_change(app,'not busy');
 
   % Catch Plugin Error

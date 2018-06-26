@@ -18,8 +18,8 @@ function fun(app)
 
   %% EXECUTE MAIN PROCESSING
   % Before execution, prompt user if they want to take snapshots of their measurement overlaid images
-  msg = 'Take and save snapshots of resulting segmentents of each image?';
-  title = 'Do you want to take snapshots?';
+  msg = 'Do you want to save a snapshot of each image to the "Saved_Snapshots" folder? Snapshots are saved with the display tab settings and can display segmentation results.';
+  title = 'Save Snapshots';
   app.measure_snapshot_selection = uiconfirm(app.UIFigure,msg,title,...
       'Options',{'Yes (All)','Yes (1/10)','Yes (1/50)','No'},...
       'DefaultOption',4,'CancelOption',4);
