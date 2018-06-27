@@ -14,15 +14,16 @@ function [params, algorithm] = fun()
   params(n).type = 'segment_dropdown';
 
   n = n + 1;
-  params(n).name = 'Segment B';
-  params(n).default = '';
-  params(n).help = '';
-  params(n).type = 'segment_dropdown';
-
-  n = n + 1;
   params(n).name = 'Set Operation (A, B) ';
   params(n).default = '';
   params(n).help = '';
   params(n).type = 'dropdown';
   params(n).options = {'Union','Intersect','Symmetric Difference', 'Subtraction'};
+
+  n = n + 1;
+  params(n).name = 'Segment B';
+  params(n).default = '';
+  params(n).help = '';
+  params(n).type = 'segment_dropdown';
+
 end

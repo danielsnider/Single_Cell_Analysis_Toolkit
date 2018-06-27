@@ -3,9 +3,9 @@
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.7</param.version>
-    <param.authnamewatermark />
-    <param.email />
+    <param.version>2.0</param.version>
+    <param.authnamewatermark>Daniel Snider</param.authnamewatermark>
+    <param.email>danielsnider12@gmail.com</param.email>
     <param.company />
     <param.summary />
     <param.description />
@@ -40,9 +40,6 @@
     <unset>
       <param.icon />
       <param.icons />
-      <param.authnamewatermark />
-      <param.email />
-      <param.company />
       <param.summary />
       <param.description />
       <param.screenshot />

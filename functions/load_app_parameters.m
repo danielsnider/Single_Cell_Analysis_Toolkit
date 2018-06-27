@@ -53,9 +53,13 @@ function func(app, app_parameters, createCallbackFcn)
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
                   this_ui_component.UserData.ParamOptionalCheck.Value = true;
-                  if isstr(value) && strcmp(value,'disabled')
+                  if isequal(value, false)
                     this_ui_component.Enable = false;
                     this_ui_component.UserData.ParamOptionalCheck.Value = false;
+                    finishNow = true;
+                    value_set = true;
+                    break
+                  elseif isequal(value, true)
                     finishNow = true;
                     value_set = true;
                     break
@@ -153,9 +157,13 @@ function func(app, app_parameters, createCallbackFcn)
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
                   this_ui_component.UserData.ParamOptionalCheck.Value = true;
-                  if isstr(value) && strcmp(value,'disabled')
+                  if isequal(value, false)
                     this_ui_component.Enable = false;
                     this_ui_component.UserData.ParamOptionalCheck.Value = false;
+                    finishNow = true;
+                    value_set = true;
+                    break
+                  elseif isequal(value, true)
                     finishNow = true;
                     value_set = true;
                     break
@@ -200,7 +208,11 @@ function func(app, app_parameters, createCallbackFcn)
       end % end looping over keys
       changed_MeasurementNames(app);
     end % end if this plugin type=='measurement'
+  end % end looping over segment and measure plugins
 
+  start_processing_of_one_image(app); % without this, the app.ResultTable will not exist or have the measurement names available that analyze plugins need
+
+  for plugin=plugins'
     % Load analyze plugins and parameters
     if strcmp(plugin.type,'analysis')
       % Create new measure Tab and select the correct plugin by it's indentifier
@@ -261,9 +273,13 @@ function func(app, app_parameters, createCallbackFcn)
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
                   this_ui_component.UserData.ParamOptionalCheck.Value = true;
-                  if isstr(value) && strcmp(value,'disabled')
+                  if isequal(value, false)
                     this_ui_component.Enable = false;
                     this_ui_component.UserData.ParamOptionalCheck.Value = false;
+                    finishNow = true;
+                    value_set = true;
+                    break
+                  elseif isequal(value, true)
                     finishNow = true;
                     value_set = true;
                     break
@@ -308,7 +324,7 @@ function func(app, app_parameters, createCallbackFcn)
       end % end looping over keys
     end % end if this plugin type=='analyze'
 
-  end % end looping over plugins
+  end % end looping over analyze plugins
 
   % Handle Special App Settings
   for key = settings.keys

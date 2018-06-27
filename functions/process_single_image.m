@@ -81,6 +81,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         new_sub_seg_data = sub_seg_data;
       end
       seg_result{seg_num}.matrix = new_sub_seg_data;
+      if isfield(app.segment{seg_num}, 'result') && isfield(app.segment{seg_num}.result, 'matrix')
+        app.segment{seg_num}.result.matrix = new_sub_seg_data;
+      else
+        app.segment{seg_num}.result = new_sub_seg_data;
+      end
     end
     % Remove primary segments found outside of a chosen secondary segment.
     if app.RemovePrimarySegments_CheckBox.Value
@@ -88,6 +93,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       primary_seg_data(secondary_seg_data==0)=0; % do remove of primary segments found outside of a chosen secondary segment
       primary_seg_data = new_bwlabel(primary_seg_data);
       seg_result{primary_seg_num}.matrix = primary_seg_data;
+    end
+    if isfield(app.segment{primary_seg_num}, 'result') && isfield(app.segment{primary_seg_num}.result, 'matrix')
+      app.segment{primary_seg_num}.result.matrix = primary_seg_data;
+    else
+      app.segment{primary_seg_num}.result = primary_seg_data;
     end
   end
 
