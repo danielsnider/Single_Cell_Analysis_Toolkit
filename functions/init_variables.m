@@ -70,6 +70,9 @@ function fun(app)
 
   app.ChooseplatemapEditField.Value = '';
 
+  app.ResultTable_for_display = [];
+  app.ResultTable = [];
+  changed_MeasurementNames(app);
 
   %% Measure Tab
   app.DisplayMeasureCheckBox.Value = false;

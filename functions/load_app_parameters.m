@@ -211,6 +211,7 @@ function func(app, app_parameters, createCallbackFcn)
   end % end looping over segment and measure plugins
 
   start_processing_of_one_image(app); % without this, the app.ResultTable will not exist or have the measurement names available that analyze plugins need
+  update_figure(app);
 
   for plugin=plugins'
     % Load analyze plugins and parameters

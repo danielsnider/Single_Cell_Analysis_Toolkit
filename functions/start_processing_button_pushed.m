@@ -55,6 +55,8 @@ function fun(app, prompt_user)
     app.ResultTable_filtered = table();
   end
 
+  update_figure(app);
+
   busy_state_change(app,'not busy');
   uialert(app.UIFigure,'Processing complete.','Success', 'Icon','success');
   
