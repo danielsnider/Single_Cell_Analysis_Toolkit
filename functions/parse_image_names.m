@@ -62,6 +62,11 @@ function fun(app)
     elseif ismember(naming_scheme, {'MultiChannelFiles'})
       parse_input_structure_MultiChannelFiles(app, plate_num);
       app.plates(plate_num).supports_3D = false;
+      
+    elseif ismember(naming_scheme, {'IncuCyte'})
+        disp('Hello IncuCyte')
+        parse_input_structure_IncuCyteTiffs(app, plate_num);
+        app.plates(plate_num).supports_3D = false;
     end
 
     % Enable by default all channels for display in the figure
@@ -85,7 +90,7 @@ function fun(app)
     changed_FilterInput(app, plate_num);
   end
 
-  % Build list of channel names across all plotes in app.input_data.channel_names. Ex. {'DAPI'} {'SE'}
+  % Build list of channel names across all plates in app.input_data.channel_names. Ex. {'DAPI'} {'SE'}
   app.input_data.channel_names = get_unique_channel_names(app);
 
 end

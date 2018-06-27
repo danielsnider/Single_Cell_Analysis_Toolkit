@@ -37,6 +37,7 @@ function multi_channel_img = fun(app)
       multi_channel_img.chans(chan_num).name = image_name;
       multi_channel_img.chans(chan_num).path = image_path;
     end
+  
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
@@ -48,4 +49,22 @@ function multi_channel_img = fun(app)
     selected_img_name_idx = strcmp({app.ExperimentDropDown.UserData.ImageName}, img_name);
     select_idx = selected_img_name_idx & selected_timepoint_idx;
     multi_channel_img = app.ExperimentDropDown.UserData(select_idx);
+    
+  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'IncuCyte')
+      
+    % Build path to current image from dropdown selections
+    image_dir = app.plates(plate_num).metadata.ImageDir;
+    row = app.RowDropDown.Value;
+    column = app.ColumnDropDown.Value;
+    field = app.FieldDropDown.Value;
+    timepoint = app.TimepointDropDown.Value;
+    
+    multi_channel_img = app.plates(plate_num).img_files_subset(contains(cellfun(@(x) (num2str(x)),{(app.plates(plate_num).img_files_subset.row)},'UniformOutput',false),num2str(row))&...
+    contains(cellfun(@(x) (num2str(x)),{(app.plates(plate_num).img_files_subset.column)},'UniformOutput',false),num2str(column))&...
+    contains(cellfun(@(x) (num2str(x)),{(app.plates(plate_num).img_files_subset.field)},'UniformOutput',false),num2str(field))&...
+    ismember(cellfun(@(x) (num2str(x)),[(app.plates(plate_num).img_files_subset.timepoint)],'UniformOutput',false),num2str(timepoint)));
+    
+  end
+      
+      
 end
