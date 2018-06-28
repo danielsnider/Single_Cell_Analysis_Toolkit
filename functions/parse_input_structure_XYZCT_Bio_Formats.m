@@ -30,8 +30,8 @@ function fun(app, plate_num)
 
   msg = sprintf('Scanning image stacks.');
   app.log_processing_message(app, msg);
-  app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message',msg, 'Indeterminate','on');
-  assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+  % app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message',msg, 'Indeterminate','on');
+  % assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   % app.log_processing_message(app, 'Loading XYZCT-Bio-Format-SingleFile images...');
@@ -108,6 +108,6 @@ function fun(app, plate_num)
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
 
-  close(app.progressdlg2)
+  % close(app.progressdlg2)
 
 end

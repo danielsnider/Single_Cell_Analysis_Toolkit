@@ -10,13 +10,15 @@ function result = do_segmentation(app, seg_num, algo_name, imgs)
     try
       % Create list of algorithm parameter values to be passed to the plugin
       algo_params = {};
-      for idx=1:length(app.segment{seg_num}.fields)
-        param_idx = app.segment{seg_num}.fields{idx}.UserData.param_idx;
-        if isfield(app.segment{seg_num}.fields{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.fields{idx}.UserData.ParamOptionalCheck.Value
-          algo_params(param_idx) = {false};
-          continue
+      if isfield(app.segment{seg_num}, 'fields')
+        for idx=1:length(app.segment{seg_num}.fields)
+          param_idx = app.segment{seg_num}.fields{idx}.UserData.param_idx;
+          if isfield(app.segment{seg_num}.fields{idx}.UserData,'ParamOptionalCheck') && ~app.segment{seg_num}.fields{idx}.UserData.ParamOptionalCheck.Value
+            algo_params(param_idx) = {false};
+            continue
+          end
+          algo_params(param_idx) = {app.segment{seg_num}.fields{idx}.Value};
         end
-        algo_params(param_idx) = {app.segment{seg_num}.fields{idx}.Value};
       end
 
       % Create list of segmentation results to be passed to the plugin
