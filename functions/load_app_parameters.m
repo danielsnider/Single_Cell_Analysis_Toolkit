@@ -241,7 +241,7 @@ function func(app, app_parameters, createCallbackFcn)
       if isnan(plugin.name)
         plugin.name = '';
       end
-      
+      app.measure{meas_num}.Name.Value = plugin.name;
 
       % Load measurement Parameters
       for key=plugin.parameters.keys
@@ -273,10 +273,6 @@ function func(app, app_parameters, createCallbackFcn)
         if iscell(value) && length(value) == 1
           value=value{:};
         end
-        
-        key
-        value
-        
         for uid=1:length(ui_labels)
           ui_label = ui_labels{uid};
           if isfield(app.measure{meas_num}, ui_label)
