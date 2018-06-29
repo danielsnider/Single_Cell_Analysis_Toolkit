@@ -1,4 +1,4 @@
-function fun(app, createCallbackFcn)
+function fun(app, createCallbackFcn,plugin_identifier)
   if no_images_loaded(app)
       return
   end
@@ -138,6 +138,20 @@ function fun(app, createCallbackFcn)
 
     % Switch to new tab
     app.preprocess_tabgp.SelectedTab = app.preprocess{proc_num}.tab;
+    
+    % Set the current algorithm if directed to
+    if exist('plugin_identifier')
+      % Sanity Check that plugin name exists
+      index = find(strcmp(app.preprocess{proc_num}.AlgorithmDropDown.Items,plugin_identifier));
+      if isempty(index)
+        msg = sprintf('An incorrect preprocess algorithm name "%s" has been specified. Please double check the spelling and what plugin names are available.',plugin_identifier);
+        title_ = 'User Error - Incorrect Plugin Name';
+        throw_application_error(app,msg,title_)
+      end
+      % Set plugin name
+      algo_name = app.preprocess{proc_num}.AlgorithmDropDown.ItemsData{index};
+      app.preprocess{proc_num}.AlgorithmDropDown.Value = algo_name;
+    end
 
     % Populate GUI components in new tab
     app.preprocess{proc_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');

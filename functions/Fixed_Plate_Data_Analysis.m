@@ -114,7 +114,7 @@ for timepoint = 1:length(uniTimePoint)
         FCells = find( ...
             ResultTable.row==row & ...
             ResultTable.column==col & ...
-            contains(ResultTable.(measurement_name),(current_timepoint)));
+            strcmp(ResultTable.(measurement_name),(current_timepoint)));
         try
             DNA = ResultTable.(Nucleus_Channel)(FCells);
         catch
@@ -176,9 +176,17 @@ if all(verbose_Plot==true)
     
     for i = 1:size(uniCellTreatments,1)
         for k = 1:size(uniDrugTreatments)
+            
+
+            if contains(char(uniCellTreatments(i)),'+')
+                uniCellTreatExpression = strrep(char(uniCellTreatments(i)),'+','(+)');
+            else 
+                uniCellTreatExpression = char(uniCellTreatments(i));
+            end
+            
             [idx_Row,idx_Col] = find(...
                 ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
-                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniCellTreatments(i)))));
+                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)));
             if isempty(idx_Row)&&isempty(idx_Col)
                 continue
             end
@@ -194,7 +202,7 @@ if all(verbose_Plot==true)
                 if isempty(idx_Row)&&isempty(idx_Col)
                     [idx_Row,idx_Col] = find(...
                         ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
-                        ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniCellTreatments(i)))));
+                        ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)))
                 end
                 
                 if isempty(idx_Row)&&isempty(idx_Col)
@@ -213,7 +221,7 @@ if all(verbose_Plot==true)
                 if isempty(idx_Row)&&isempty(idx_Col)
                     [idx_Row,idx_Col] = find(...
                         ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
-                        ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniCellTreatments(i)))));
+                        ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)))
                 end
                 
                 if isempty(idx_Row)&&isempty(idx_Col)
@@ -250,11 +258,18 @@ for i = 1:size(uniCellTreatments,1)
     if verbose_Plot==true
         fig1 = figure('Name','Growth Rate'); fig2 = figure('Name','Cell Num');position = 0;
     end
+    
+    if contains(char(uniCellTreatments(i)),'+')
+        uniCellTreatExpression = strrep(char(uniCellTreatments(i)),'+','(+)');
+    else
+        uniCellTreatExpression = char(uniCellTreatments(i));
+    end
+    
     disp(['Working on ' char(uniCellTreatments(i))])
     for k = 1:size(uniDrugTreatments)
         [idx_Row,idx_Col] = find(...
-            ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
-            ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniCellTreatments(i)))));
+                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
+                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)));
         if isempty(idx_Row)&&isempty(idx_Col)
             continue
         end
@@ -277,9 +292,9 @@ for i = 1:size(uniCellTreatments,1)
             [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,[char(uniCellTreatments(i)) ', ' char(uniDrugTreatments(k))]));
             
             if isempty(idx_Row)&&isempty(idx_Col)
-                [idx_Row,idx_Col] = find(...
-                    ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniDrugTreatments(k))))&...
-                    ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,char(uniCellTreatments(i)))));
+               [idx_Row,idx_Col] = find(...
+                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
+                ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)));
             end
             
             if isempty(idx_Row)&&isempty(idx_Col)
