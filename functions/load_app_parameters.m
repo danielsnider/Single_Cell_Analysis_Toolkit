@@ -40,7 +40,7 @@ function func(app, app_parameters, createCallbackFcn)
         if isstr(value)
           value=strtrim(strsplit(value,',')); % convert 'Nuc, Cell, Pero' to {'Nuc'},{'Cell'},{'Pero'}
         end
-        if iscell(value) && length(value) == 1 %% WHY??????????? Undoing ^
+        if iscell(value) && length(value) == 1
           value=value{:};
         end
         
@@ -241,7 +241,7 @@ function func(app, app_parameters, createCallbackFcn)
       if isnan(plugin.name)
         plugin.name = '';
       end
-      
+      app.measure{meas_num}.Name.Value = plugin.name;
 
       % Load measurement Parameters
       for key=plugin.parameters.keys
@@ -273,7 +273,6 @@ function func(app, app_parameters, createCallbackFcn)
         if iscell(value) && length(value) == 1
           value=value{:};
         end
- 
         for uid=1:length(ui_labels)
           ui_label = ui_labels{uid};
           if isfield(app.measure{meas_num}, ui_label)
