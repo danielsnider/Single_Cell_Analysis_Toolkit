@@ -361,6 +361,10 @@ function func(app, app_parameters, createCallbackFcn)
       end
     elseif strcmp(key,'Save Snapshots')
       app.measure_snapshot_selection = value;
+    elseif strcmpi(key,'SavetoEditField')
+      app.SavetoEditField.Value = value;  
+    elseif strcmpi(key,'CheckBox_AnalyzeImmediately')
+      app.CheckBox_AnalyzeImmediately.Value = str2bool(value);
     end
   end
   changed_primary_segment(app);

@@ -8,7 +8,7 @@ function fun(app)
     prev_fig = get(groot,'CurrentFigure'); % Save current figure
     
     plate_num = app.PlateDropDown.Value;
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')||strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'IncuCyte')
       % Dencode row and col positions of this experiment from a complex number because we stored it this way because matlab won't allow two seperate values per DataItem
       row_num = abs(real(app.ExperimentDropDown.Value));
       col_num = abs(imag(app.ExperimentDropDown.Value));

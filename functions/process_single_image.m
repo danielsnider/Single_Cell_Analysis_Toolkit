@@ -189,7 +189,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
     % Add Well Condition Metadata
-    if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs') || strcmp(plate.metadata.ImageFileFormat, 'IncuCyte')
       iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
       cell_struct = plate.wells_meta(image_file.row,image_file.column);
       if ~isempty(cell_struct) && ~isempty(cell_struct{:})
@@ -204,7 +204,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
   
   % Save Snapshots to disk. Will refactor at some point
-  if ~strcmp(app.measure_snapshot_selection,'No') & app.processing_running
+  if ~strcmp(app.measure_snapshot_selection,'No') & ~isempty(app.measure_snapshot_selection) & app.processing_running 
     if strcmp(app.measure_snapshot_selection,'Yes (All)') | (strcmp(app.measure_snapshot_selection,'Yes (1/50)') & mod(current_img_number,50)==0) | (strcmp(app.measure_snapshot_selection,'Yes (1/10)') & mod(current_img_number,10)==0)
       date_str = datestr(now,'yyyymmddTHHMMSS');
       if ~is_parallel_processing
