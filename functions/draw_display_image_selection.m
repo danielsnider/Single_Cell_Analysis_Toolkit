@@ -113,7 +113,7 @@ function fun(app)
     pos(2) = 222; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
-  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs') | strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'IncuCyte')
     app.RowDropDown.Visible = 'on';
     app.ColumnDropDown.Visible = 'on';
     app.FieldDropDown.Visible = 'on';
