@@ -136,6 +136,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
 
     if isempty(iterTable)
+      if ~is_parallel_processing
+        NewResultCallback(iterTable);
+      end
       return
     end
 

@@ -43,7 +43,17 @@ function fun(app, plate_num)
     if endsWith(full_path, '.mat')
       load(full_path); % short circuit what we need
     else
-      data = bfopen(full_path,1, 1, 1, 1);
+      try
+        data = bfopen(full_path,1, 1, 1, 1);
+      catch ME
+        error_msg = getReport(ME,'extended','hyperlinks','off');
+        msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',full_path,error_msg);
+        title_ = 'Unable to read image file';
+        if strfind(ME.message,'Unknown file format')
+          msg = sprintf('Unable to read image file: "%s". \n\nThe file type is not a supported image type. Perhaps you have more than just images in the folder. Or perhaps you have the wrong ''ImageFileFormat'' in your plate map spreadsheet.\n\nThe error was:\n\n%s',full_path,error_msg);
+        end
+        throw_application_error(app,msg,title_)
+      end
     end
     app.log_processing_message(app, 'Finished loading images.');
     app.bioformat_data = data;

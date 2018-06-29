@@ -26,7 +26,18 @@ function parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num)
   multi_channel_imgs = [];
   for img_num=1:length(img_files)
     full_path = fullfile(img_files(img_num).folder, img_files(img_num).name);
-    data = bfopen(full_path,1, 1, 1, 1);
+    try
+      data = bfopen(full_path,1, 1, 1, 1);
+    catch ME
+      error_msg = getReport(ME,'extended','hyperlinks','off');
+      msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',full_path,error_msg);
+      title_ = 'Unable to read image file';
+      if strfind(ME.message,'Unknown file format')
+        msg = sprintf('Unable to read image file: "%s". \n\nThe file type is not a supported image type. Perhaps you have more than just images in the folder. Or perhaps you have the wrong ''ImageFileFormat'' in your plate map spreadsheet.\n\nThe error was:\n\n%s',full_path,error_msg);
+      end
+      throw_application_error(app,msg,title_)
+    end
+
 
     first_series = 1;
     dat = data{first_series};

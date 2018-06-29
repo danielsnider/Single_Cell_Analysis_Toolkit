@@ -13,9 +13,15 @@ function start_processing_of_one_image(app)
     app.CheckBox_TestRun.Value = temp;
     app.CheckBox_Parallel.Value = temp2;
 
+    changed_MeasurementNames(app);
+    draw_display_measure_selection(app);
+
     % Make button visible if there are results
-    if istable(app.ResultTable_for_display) && height(app.ResultTable_for_display)
+    if istable(app.ResultTable_for_display) && height(app.ResultTable_for_display) && app.DisplayMeasureCheckBox.Value
       app.Button_ViewOverlaidMeasurements.Visible = 'on';
+    else
+      app.Button_ViewOverlaidMeasurements.Visible = 'off';
+      app.DisplayMeasureCheckBox.Value = false;
     end
 
     % Update Filter Tab

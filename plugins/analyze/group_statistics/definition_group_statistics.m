@@ -41,8 +41,6 @@ function [params, algorithm] = fun()
   params(n).default = '';
   params(n).help = '';
   params(n).type = 'text';
-  params(n).optional = true;
-
 
   n = n + 1;
   params(n).name = 'Ignore Infinite Values';

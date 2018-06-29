@@ -195,7 +195,7 @@ function [plates, app_parameters] = func(full_path)
           
           % Temporary fix. Need to delve further into what the issue might
           % be
-          disp(key)
+          % disp(key)
           try
             plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = (val);
           catch
