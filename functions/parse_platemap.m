@@ -7,12 +7,15 @@ function [plates, app_parameters] = func(full_path)
   % Find locations in csv where "BeginPlate" or "Plugin=" is present
   plate_start_locs = [];
   plugin_start_locs = [];
+  setting_locs = [];
   for y=1:size(raw,1)
     for x=1:size(raw,2)
       if strfind(raw{y,x}, 'BeginPlate')
         plate_start_locs = [plate_start_locs; x y];
       elseif strfind(raw{y,x}, 'Plugin=')
         plugin_start_locs = [plugin_start_locs; x y];
+      elseif strfind(raw{y,x}, 'Special=Settings')
+        setting_locs = [setting_locs; x y];
       end
     end
   end
@@ -192,7 +195,7 @@ function [plates, app_parameters] = func(full_path)
           
           % Temporary fix. Need to delve further into what the issue might
           % be
-          disp(key)
+          % disp(key)
           try
             plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = (val);
           catch
@@ -247,5 +250,32 @@ function [plates, app_parameters] = func(full_path)
     plugins = [plugins; plugin];
   end
   app_parameters.plugins = plugins;
+
+  %% Loop over special settings, parsing it 
+  app_parameters.settings = containers.Map;
+  for idx=1:size(setting_locs,1)
+    setting = {};
+    starty = setting_locs(idx,2);
+    startx = setting_locs(idx,1);
+
+    % Settings
+    offset=0;
+    while true
+      iter_yoffset = offset+starty+1;
+      offset = offset+1;
+      if iter_yoffset > raw_size_1 % reached end of file
+        break
+      end
+      key=raw{iter_yoffset, startx+1};
+      value=raw{iter_yoffset, startx+2};
+      if any(isnan(key)) || isempty(key)
+        break % found whitespace at end of settings, stop looping
+      end
+      if any(isnan(value)) || isempty(value)
+        continue % ignore empty values
+      end
+      app_parameters.settings(key) = value;
+    end
+  end
 
 end

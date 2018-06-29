@@ -91,7 +91,17 @@ function img = func(app, image_file, chan_num)
     end
 
   else
-    img = imread(img_path);
+    try
+      img = imread(img_path);
+    catch ME
+      error_msg = getReport(ME,'extended','hyperlinks','off');
+      msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',img_path,error_msg);
+      title_ = 'Unable to read image file';
+      if strcmp(ME.message,'Unable to determine the file format.')
+        msg = sprintf('Unable to read image file: "%s". \n\nThe file type is not a supported image type. Perhaps you have more than just images in the folder. Or perhaps you have the wrong ''ImageFileFormat'' in your plate map spreadsheet.\n\nThe error was:\n\n%s',img_path,error_msg);
+      end
+      throw_application_error(app,msg,title_)
+    end
   end
 
   % Extra work for file types

@@ -53,8 +53,10 @@ function save_measurements(app, save_as_file_type, prompt_save_location)
             else
               dirname = pwd; % current directory of the GUI
             end
-            filename = [dirname '\' savename];
+            mkdir(dirname);
+            filename = [dirname '\Results\' savename];
         else
+            mkdir(optional_path);
             filename = [optional_path '\' savename];
         end
 

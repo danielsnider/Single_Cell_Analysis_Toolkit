@@ -21,13 +21,15 @@ function img = do_preprocess_image(app, plate_num, chan_num, image_file)
 
       % Create list of algorithm parameter values to be passed to the plugin
       algo_params = {};
-      for field_num=1:length(app.preprocess{proc_num}.fields)
-        param_idx = app.preprocess{proc_num}.fields{field_num}.UserData.param_idx;
-        if isfield(app.preprocess{proc_num}.fields{field_num}.UserData,'ParamOptionalCheck') && ~app.preprocess{proc_num}.fields{field_num}.UserData.ParamOptionalCheck.Value
-          algo_params(param_idx) = {false};
-          continue
+      if isfield(app.preprocess{proc_num}, 'fields')
+        for field_num=1:length(app.preprocess{proc_num}.fields)
+          param_idx = app.preprocess{proc_num}.fields{field_num}.UserData.param_idx;
+          if isfield(app.preprocess{proc_num}.fields{field_num}.UserData,'ParamOptionalCheck') && ~app.preprocess{proc_num}.fields{field_num}.UserData.ParamOptionalCheck.Value
+            algo_params(param_idx) = {false};
+            continue
+          end
+          algo_params(param_idx) = {app.preprocess{proc_num}.fields{field_num}.Value};
         end
-        algo_params(param_idx) = {app.preprocess{proc_num}.fields{field_num}.Value};
       end
 
       % Call algorithm

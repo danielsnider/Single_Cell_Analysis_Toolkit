@@ -166,7 +166,7 @@ function fun(app, imgs, segments, subsetTable, plate)
     %% Display measure overlay
     if app.DisplayMeasureCheckBox.Value
       PlateName = plate.metadata.Name;
-      if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
+      if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display) && height(app.ResultTable_for_display)
         measure_name = app.DisplayMeasureDropDown.Value;
         if ismember('x_coord',app.ResultTable_for_display.Properties.VariableNames)
           if ismember(measure_name,app.ResultTable_for_display.Properties.VariableNames)

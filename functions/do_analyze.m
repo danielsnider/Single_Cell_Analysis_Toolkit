@@ -58,7 +58,14 @@ function fun(app, an_num)
         app.progressdlg.Message = sprintf('%s\n%s',progressdlg_msg,sprintf('Segmenting %s...', dep_seg_name));
         app.progressdlg.Value = (0.5 / num_segments) + ((drop_num-1) / num_segments);
 
-        segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, app.image); % operate on the last loaded image in app.img
+        if isfield(app.segment{dep_seg_num},'result') && ~isempty(app.segment{dep_seg_num}.result)
+          segment_result = app.segment{dep_seg_num}.result;
+        else
+          % segment_result = do_segmentation(app, dep_seg_num, dep_algo_name, app.image); % operate on the last loaded image in app.img
+          % IMPORTANT TODO: Handle primary segment somehow: (A) avoid this code path always (B) add primary segment handling (C-ENACTED HERE) run  process of one image
+          start_processing_of_one_image(app);
+          segment_result = app.segment{dep_seg_num}.result;
+        end
         if ~algo_supports_3D
           segment_result = segment_result.matrix; % 2D only needs/supports a matrix data structure instead of that and 3D surfaces
         end
@@ -108,7 +115,7 @@ function fun(app, an_num)
           algo_params(param_idx) = {false};
           continue
         end
-        algo_params(param_idx) = {app.ResultTable};
+        algo_params(param_idx) = {ResultTable};
       end
     end
     
@@ -227,6 +234,7 @@ function fun(app, an_num)
     end
 
     close(app.progressdlg);
+    uialert(app.UIFigure,'Analysis complete.','Success', 'Icon','success');
     busy_state_change(app,'not busy');
 
   % Catch Plugin Error

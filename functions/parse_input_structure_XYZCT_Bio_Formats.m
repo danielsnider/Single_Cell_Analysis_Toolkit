@@ -30,8 +30,8 @@ function fun(app, plate_num)
 
   msg = sprintf('Scanning image stacks.');
   app.log_processing_message(app, msg);
-  app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message',msg, 'Indeterminate','on');
-  assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
+  % app.progressdlg2 = uiprogressdlg(app.UIFigure,'Title','Please Wait','Message',msg, 'Indeterminate','on');
+  % assignin('base','app_progressdlg2',app.progressdlg2); % needed to delete manually if neccessary, helps keep developer's life sane, otherwise it gets in the way
 
   % Open Bio-Formats data: all images and metadata are read into memory. TODO: Check size of file and warn user that this may take a while
   % app.log_processing_message(app, 'Loading XYZCT-Bio-Format-SingleFile images...');
@@ -43,7 +43,17 @@ function fun(app, plate_num)
     if endsWith(full_path, '.mat')
       load(full_path); % short circuit what we need
     else
-      data = bfopen(full_path,1, 1, 1, 1);
+      try
+        data = bfopen(full_path,1, 1, 1, 1);
+      catch ME
+        error_msg = getReport(ME,'extended','hyperlinks','off');
+        msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',full_path,error_msg);
+        title_ = 'Unable to read image file';
+        if strfind(ME.message,'Unknown file format')
+          msg = sprintf('Unable to read image file: "%s". \n\nThe file type is not a supported image type. Perhaps you have more than just images in the folder. Or perhaps you have the wrong ''ImageFileFormat'' in your plate map spreadsheet.\n\nThe error was:\n\n%s',full_path,error_msg);
+        end
+        throw_application_error(app,msg,title_)
+      end
     end
     app.log_processing_message(app, 'Finished loading images.');
     app.bioformat_data = data;
@@ -108,6 +118,6 @@ function fun(app, plate_num)
   app.plates(plate_num).timepoints = unique([multi_channel_imgs.timepoint]);
   app.plates(plate_num).zslices = 1:max([multi_channel_imgs.zslices]);
 
-  close(app.progressdlg2)
+  % close(app.progressdlg2)
 
 end

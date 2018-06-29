@@ -1,4 +1,4 @@
-function fun(app, createCallbackFcn)
+function fun(app, createCallbackFcn, plugin_identifier)
 
   function Delete_Callback(app, event)
     if an_num < length(app.analyze)
@@ -139,6 +139,20 @@ function fun(app, createCallbackFcn)
     
     % Switch to new tab
     app.analyze_tabgp.SelectedTab = app.analyze{an_num}.tab;
+
+    % Set the current algorithm if directed to
+    if exist('plugin_identifier')
+      % Sanity Check that plugin name exists
+      index = find(strcmp(app.analyze{an_num}.AlgorithmDropDown.Items,plugin_identifier));
+      if isempty(index)
+        msg = sprintf('An incorrect analysis algorithm name "%s" has been specified. Please double check the spelling and check what plugin names are available.',plugin_identifier);
+        title_ = 'User Error - Incorrect Plugin Name';
+        throw_application_error(app,msg,title_)
+      end
+      % Set plugin name
+      algo_name = app.analyze{an_num}.AlgorithmDropDown.ItemsData{index};
+      app.analyze{an_num}.AlgorithmDropDown.Value = algo_name;
+    end
 
     % Populate GUI components in new tab
     app.analyze{an_num}.AlgorithmDropDown.ValueChangedFcn(app, 'Update');

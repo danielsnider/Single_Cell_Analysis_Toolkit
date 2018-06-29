@@ -1,7 +1,11 @@
-function fun(app)
+function fun(app, prompt_user)
   if length(app.measure)==0
     uialert(app.UIFigure,'You must have at least one measurement configured.','No Measurements', 'Icon','warn');
     return % perhaps this is not needed, check if NewResultQueueCallback can handle no measurements
+  end
+
+  if ~exist('prompt_user')
+    prompt_user = true; % default is to ask user questions. We don't want to ask when analyzing immediately
   end
 
   if check_plugins_for_parallel_proc_support(app);
@@ -18,11 +22,13 @@ function fun(app)
 
   %% EXECUTE MAIN PROCESSING
   % Before execution, prompt user if they want to take snapshots of their measurement overlaid images
-  msg = 'Take and save snapshots of resulting segmentents of each image?';
-  title = 'Do you want to take snapshots?';
-  app.measure_snapshot_selection = uiconfirm(app.UIFigure,msg,title,...
-      'Options',{'Yes (All)','Yes (1/10)','Yes (1/50)','No'},...
-      'DefaultOption',4,'CancelOption',4);
+  if prompt_user
+    msg = 'Do you want to save a snapshot of each image to the "Saved_Snapshots" folder? Snapshots are saved with the display tab settings and can display segmentation results.';
+    title = 'Save Snapshots';
+    app.measure_snapshot_selection = uiconfirm(app.UIFigure,msg,title,...
+        'Options',{'Yes (All)','Yes (1/10)','Yes (1/50)','No'},...
+        'DefaultOption',4,'CancelOption',4);
+  end
   
   start_processing(app);
 
@@ -48,6 +54,8 @@ function fun(app)
     app.NumberAfterFiltering.Value = height(app.ResultTable);
     app.ResultTable_filtered = table();
   end
+
+  update_figure(app);
 
   busy_state_change(app,'not busy');
   uialert(app.UIFigure,'Processing complete.','Success', 'Icon','success');

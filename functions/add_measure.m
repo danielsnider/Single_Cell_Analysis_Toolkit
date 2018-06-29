@@ -137,7 +137,7 @@ function fun(app, createCallbackFcn, plugin_identifier)
       % Sanity Check that plugin name exists
       index = find(strcmp(app.measure{meas_num}.AlgorithmDropDown.Items,plugin_identifier));
       if isempty(index)
-        msg = sprintf('An incorrect measurement algorithm name "%s" has been specified. Please double check the spelling and what plugin names are available.',plugin_identifier);
+        msg = sprintf('An incorrect measurement algorithm name "%s" has been specified. Please double check the spelling and check what plugin names are available.',plugin_identifier);
         title_ = 'User Error - Incorrect Plugin Name';
         throw_application_error(app,msg,title_)
       end
