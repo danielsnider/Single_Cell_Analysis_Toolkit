@@ -40,7 +40,7 @@ function func(app, app_parameters, createCallbackFcn)
         if isstr(value)
           value=strtrim(strsplit(value,',')); % convert 'Nuc, Cell, Pero' to {'Nuc'},{'Cell'},{'Pero'}
         end
-        if iscell(value) && length(value) == 1 %% WHY??????????? Undoing ^
+        if iscell(value) && length(value) == 1
           value=value{:};
         end
         
