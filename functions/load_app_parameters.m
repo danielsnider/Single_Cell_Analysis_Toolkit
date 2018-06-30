@@ -12,7 +12,7 @@ function func(app, app_parameters, createCallbackFcn)
       add_preprocess(app, createCallbackFcn,plugin.identifier);
       proc_num = length(app.preprocess);
       tab_name = app.preprocess{proc_num}.tab.Title;
-      plugin_pretty_name = app.preprocess{proc_num}.AlgorithmDropDown.Items{find(strcmp(app.preprocess{proc_num}.AlgorithmDropDown.ItemsData,app.preprocess{proc_num}.AlgorithmDropDown.Value))};
+      plugin_pretty_name = app.preprocess{proc_num}.AlgorithmDropDown.Items{find(strcmpi(app.preprocess{proc_num}.AlgorithmDropDown.ItemsData,app.preprocess{proc_num}.AlgorithmDropDown.Value))};
 
       if isnan(plugin.name)
         plugin.name = '';
@@ -34,7 +34,7 @@ function func(app, app_parameters, createCallbackFcn)
           'ChannelDropDown', ...
           'fields', ...
         };
-        if isstr(value) && strcmp(value,'Inf')
+        if isstr(value) && strcmpi(value,'Inf')
           value = Inf;
         end
         if isstr(value)
@@ -49,9 +49,9 @@ function func(app, app_parameters, createCallbackFcn)
           if isfield(app.preprocess{proc_num}, ui_label)
             for idx=1:length(app.preprocess{proc_num}.(ui_label))
               try
-                  uid_eval = strcmp(app.preprocess{proc_num}.(ui_label).Text, key); % Needed for ChannelLabel
+                  uid_eval = strcmpi(app.preprocess{proc_num}.(ui_label).Text, key); % Needed for ChannelLabel
               catch
-                  uid_eval = strcmp(app.preprocess{proc_num}.(ui_label){idx}.Text, key); % Needed for labels
+                  uid_eval = strcmpi(app.preprocess{proc_num}.(ui_label){idx}.Text, key); % Needed for labels
               end
               if uid_eval==true
                 if iscell(app.preprocess{proc_num}.(ui_label))
@@ -127,13 +127,13 @@ function func(app, app_parameters, createCallbackFcn)
     end % end if this plugin type=='Preprocessing'
 
     % Load segmentation plugins and parameters
-    if strcmp(plugin.type,'segmentation')
+    if strcmpi(plugin.type,'segmentation')
 
       % Create new segment Tab and select the correct plugin by it's indentifier
       add_segment(app, createCallbackFcn, plugin.identifier);
       seg_num = length(app.segment);
       tab_name = app.segment{seg_num}.tab.Title;
-      plugin_pretty_name = app.segment{seg_num}.AlgorithmDropDown.Items{find(strcmp(app.segment{seg_num}.AlgorithmDropDown.ItemsData,app.segment{seg_num}.AlgorithmDropDown.Value))};
+      plugin_pretty_name = app.segment{seg_num}.AlgorithmDropDown.Items{find(strcmpi(app.segment{seg_num}.AlgorithmDropDown.ItemsData,app.segment{seg_num}.AlgorithmDropDown.Value))};
 
       if isnan(plugin.name)
         plugin.name = '';
@@ -156,7 +156,7 @@ function func(app, app_parameters, createCallbackFcn)
           'SegmentDropDown', ...
           'fields', ...
         };
-        if isstr(value) && strcmp(value,'Inf')
+        if isstr(value) && strcmpi(value,'Inf')
           value = Inf;
         end
         if isstr(value)
@@ -169,7 +169,7 @@ function func(app, app_parameters, createCallbackFcn)
           ui_label = ui_labels{uid};
           if isfield(app.segment{seg_num}, ui_label)
             for idx=1:length(app.segment{seg_num}.(ui_label))
-              if strcmp(app.segment{seg_num}.(ui_label){idx}.Text, key)
+              if strcmpi(app.segment{seg_num}.(ui_label){idx}.Text, key)
                 this_ui_component = app.segment{seg_num}.(ui_values{uid}){idx};
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
@@ -231,12 +231,12 @@ function func(app, app_parameters, createCallbackFcn)
     end % end if this plugin type=='segmentation'
 
     % Load measurement plugins and parameters
-    if strcmp(plugin.type,'measurement')
+    if strcmpi(plugin.type,'measurement')
       % Create new measure Tab and select the correct plugin by it's indentifier
       add_measure(app, createCallbackFcn, plugin.identifier);
       meas_num = length(app.measure);
       tab_name = app.measure{meas_num}.tab.Title;
-      plugin_pretty_name = app.measure{meas_num}.AlgorithmDropDown.Items{find(strcmp(app.measure{meas_num}.AlgorithmDropDown.ItemsData,app.measure{meas_num}.AlgorithmDropDown.Value))};
+      plugin_pretty_name = app.measure{meas_num}.AlgorithmDropDown.Items{find(strcmpi(app.measure{meas_num}.AlgorithmDropDown.ItemsData,app.measure{meas_num}.AlgorithmDropDown.Value))};
 
       if isnan(plugin.name)
         plugin.name = '';
@@ -264,7 +264,7 @@ function func(app, app_parameters, createCallbackFcn)
           'SegmentListbox', ...
           'SegmentDropDown', ...
         };
-        if isstr(value) && strcmp(value,'Inf')
+        if isstr(value) && strcmpi(value,'Inf')
           value = Inf;
         end
         if isstr(value)
@@ -277,7 +277,7 @@ function func(app, app_parameters, createCallbackFcn)
           ui_label = ui_labels{uid};
           if isfield(app.measure{meas_num}, ui_label)
             for idx=1:length(app.measure{meas_num}.(ui_label))
-              if strcmp(app.measure{meas_num}.(ui_label){idx}.Text, key)
+              if strcmpi(app.measure{meas_num}.(ui_label){idx}.Text, key)
                 this_ui_component = app.measure{meas_num}.(ui_values{uid}){idx};
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
@@ -341,26 +341,26 @@ function func(app, app_parameters, createCallbackFcn)
   for key = settings.keys
     key = key{:};
     value = settings(key);
-    if strcmp(key,'Primary Segment')
-      app.PrimarySegmentDropDown.Value = app.PrimarySegmentDropDown.ItemsData(find(strcmp(app.PrimarySegmentDropDown.Items,value)));
-    elseif strcmp(key,'Remove primary outside')
-      app.RemovePrimarySegmentsOutside.Value = app.RemovePrimarySegmentsOutside.ItemsData(find(strcmp(app.RemovePrimarySegmentsOutside.Items,value)));
+    if strcmpi(key,'Primary Segment')
+      app.PrimarySegmentDropDown.Value = app.PrimarySegmentDropDown.ItemsData(find(strcmpi(app.PrimarySegmentDropDown.Items,value)));
+    elseif strcmpi(key,'Remove primary outside')
+      app.RemovePrimarySegmentsOutside.Value = app.RemovePrimarySegmentsOutside.ItemsData(find(strcmpi(app.RemovePrimarySegmentsOutside.Items,value)));
       if ~isequal(value,false)
         app.RemovePrimarySegments_CheckBox.Value = true;
       end
-    elseif strcmp(key,'Remove segments outside primary')
+    elseif strcmpi(key,'Remove segments outside primary')
       app.RemoveSecondarySegments_CheckBox.Value = value;
-    elseif strcmp(key,'Only One')
+    elseif strcmpi(key,'Only One')
       app.CheckBox_TestRun.Value = value;
-    elseif strcmp(key,'Parallelize')
+    elseif strcmpi(key,'Parallelize')
       app.CheckBox_Parallel.Value = false;
       if ~isequal(value,false)
         app.CheckBox_Parallel.Value = true;
         app.ParallelWorkersField.Value = value;
       end
-    elseif strcmp(key,'Save Snapshots')
+    elseif strcmpi(key,'Save Snapshots')
       app.measure_snapshot_selection = value;
-    elseif strcmpi(key,'SavetoEditField')
+    elseif ismember(key,{'SavetoEditField','Auto-save measurements to'})
       app.SavetoEditField.Value = value;  
     elseif strcmpi(key,'CheckBox_AnalyzeImmediately')
       app.CheckBox_AnalyzeImmediately.Value = str2bool(value);
@@ -373,12 +373,12 @@ function func(app, app_parameters, createCallbackFcn)
 
   for plugin=plugins'
     % Load analyze plugins and parameters
-    if strcmp(plugin.type,'analysis')
+    if strcmpi(plugin.type,'analysis')
       % Create new measure Tab and select the correct plugin by it's indentifier
       add_analyze(app, createCallbackFcn, plugin.identifier);
       an_num = length(app.analyze);
       tab_name = app.analyze{an_num}.tab.Title;
-      plugin_pretty_name = app.analyze{an_num}.AlgorithmDropDown.Items{find(strcmp(app.analyze{an_num}.AlgorithmDropDown.ItemsData,app.analyze{an_num}.AlgorithmDropDown.Value))};
+      plugin_pretty_name = app.analyze{an_num}.AlgorithmDropDown.Items{find(strcmpi(app.analyze{an_num}.AlgorithmDropDown.ItemsData,app.analyze{an_num}.AlgorithmDropDown.Value))};
 
       if isnan(plugin.name)
         plugin.name = '';
@@ -414,7 +414,7 @@ function func(app, app_parameters, createCallbackFcn)
           'WellConditionListBox',...
           'InputUITable',...
         };
-        if isstr(value) && strcmp(value,'Inf')
+        if isstr(value) && strcmpi(value,'Inf')
           value = Inf;
         end
         if isstr(value)
@@ -427,7 +427,7 @@ function func(app, app_parameters, createCallbackFcn)
           ui_label = ui_labels{uid};
           if isfield(app.analyze{an_num}, ui_label)
             for idx=1:length(app.analyze{an_num}.(ui_label))
-              if strcmp(app.analyze{an_num}.(ui_label){idx}.Text, key)
+              if strcmpi(app.analyze{an_num}.(ui_label){idx}.Text, key)
                 this_ui_component = app.analyze{an_num}.(ui_values{uid}){idx};
                 this_ui_component.Enable = true;
                 if isfield(this_ui_component.UserData,'ParamOptionalCheck')
@@ -460,6 +460,7 @@ function func(app, app_parameters, createCallbackFcn)
                     msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Measure'' and testing what can be entered.',value, key, plugin_pretty_name, tab_name);
                   elseif iscell(value)
                     msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Measure'' and testing what can be entered.',strjoin(value,','), key, plugin_pretty_name, tab_name);  
+                  end
                   endtitle_ = 'User Error - Bad Parameter Value';
                   throw_application_error(app,msg,title_)
                 end
