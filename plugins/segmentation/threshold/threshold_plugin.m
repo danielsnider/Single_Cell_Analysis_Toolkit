@@ -24,7 +24,7 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     img_thresh = img_smooth > prctile(img_smooth(:), thresh_param);
   % handle fixed intensity threshold
   else 
-    img_thresh = img_smooth > thresh_param;
+    img_thresh = img_smooth > str2num(thresh_param);
   end
   if ismember(debug_level,{'All'})
     f = figure(885); clf; set(f,'name','threshold','NumberTitle', 'off');

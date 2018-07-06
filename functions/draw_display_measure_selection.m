@@ -2,6 +2,7 @@ function fun(app)
   % Currently selected plate number
   plate_num = app.PlateDropDown.Value;
 
+  app.DisplayMeasureDropDown.Items = {}; % Default empty
   if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
     if ~isempty(app.ResultTable_for_display.Properties.VariableNames)
       names = app.ResultTable_for_display.Properties.VariableNames;

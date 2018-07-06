@@ -50,7 +50,7 @@ function fun(app, createCallbackFcn, plugin_identifier)
     %save('segment_plugins.mat','plugin_definitions')
     if isempty(plugin_definitions)
         load('segment_plugins.mat');
-        app.Button_ViewMeasurements.Enable = false;
+        handle_exe_mode(app);
     end
     plugin_names = {};
     plugin_pretty_names = {};
@@ -170,7 +170,7 @@ function fun(app, createCallbackFcn, plugin_identifier)
       % Sanity Check that plugin name exists
       index = find(strcmp(app.segment{seg_num}.AlgorithmDropDown.Items,plugin_identifier));
       if isempty(index)
-        msg = sprintf('An incorrect segmentation algorithm name "%s" has been specified. Please double check the spelling and what plugin names are available.',plugin_identifier);
+        msg = sprintf('An incorrect segmentation algorithm name "%s" has been specified. Please double check the spelling and check what plugin names are available.',plugin_identifier);
         title_ = 'User Error - Incorrect Plugin Name';
         throw_application_error(app,msg,title_)
       end

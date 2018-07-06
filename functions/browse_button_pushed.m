@@ -58,7 +58,7 @@ end
       % Image Naming Scheme Supported Check
     for plate_num=1:length(app.plates)
       naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
-      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats'};
+      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','IncuCyte'};
       known_naming_schemes_str=cellfun(@(x) [x ', '],known_naming_schemes,'UniformOutput',false);
       known_naming_schemes_str=[known_naming_schemes_str{:}];
       known_naming_schemes_str=known_naming_schemes_str(1:end-2);
@@ -116,6 +116,12 @@ end
       app.progressdlg2.Message = sprintf('%s\n%s',msg,'Loading saved parameters...');
       app.progressdlg2.Value = 0.9;
       load_app_parameters(app, app_parameters, createCallbackFcn);
+    end
+
+    if app.CheckBox_AnalyzeImmediately.Value
+      prompt_user = false;
+      start_processing_button_pushed(app,prompt_user);
+      run_all_analysis(app);
     end
 
     % Finished

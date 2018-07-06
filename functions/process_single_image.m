@@ -81,6 +81,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         new_sub_seg_data = sub_seg_data;
       end
       seg_result{seg_num}.matrix = new_sub_seg_data;
+      if isfield(app.segment{seg_num}, 'result') && isfield(app.segment{seg_num}.result, 'matrix')
+        app.segment{seg_num}.result.matrix = new_sub_seg_data;
+      else
+        app.segment{seg_num}.result = new_sub_seg_data;
+      end
     end
     % Remove primary segments found outside of a chosen secondary segment.
     if app.RemovePrimarySegments_CheckBox.Value
@@ -88,6 +93,11 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       primary_seg_data(secondary_seg_data==0)=0; % do remove of primary segments found outside of a chosen secondary segment
       primary_seg_data = new_bwlabel(primary_seg_data);
       seg_result{primary_seg_num}.matrix = primary_seg_data;
+    end
+    if isfield(app.segment{primary_seg_num}, 'result') && isfield(app.segment{primary_seg_num}.result, 'matrix')
+      app.segment{primary_seg_num}.result.matrix = primary_seg_data;
+    else
+      app.segment{primary_seg_num}.result = primary_seg_data;
     end
   end
 
@@ -126,6 +136,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
 
     if isempty(iterTable)
+      if ~is_parallel_processing
+        NewResultCallback(iterTable);
+      end
       return
     end
 
@@ -176,7 +189,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
     % Add Well Condition Metadata
-    if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs') || strcmp(plate.metadata.ImageFileFormat, 'IncuCyte')
       iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
       cell_struct = plate.wells_meta(image_file.row,image_file.column);
       if ~isempty(cell_struct) && ~isempty(cell_struct{:})
@@ -191,7 +204,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   end
   
   % Save Snapshots to disk. Will refactor at some point
-  if ~strcmp(app.measure_snapshot_selection,'No') & app.processing_running
+  if ~strcmp(app.measure_snapshot_selection,'No') & ~isempty(app.measure_snapshot_selection) & app.processing_running 
     if strcmp(app.measure_snapshot_selection,'Yes (All)') | (strcmp(app.measure_snapshot_selection,'Yes (1/50)') & mod(current_img_number,50)==0) | (strcmp(app.measure_snapshot_selection,'Yes (1/10)') & mod(current_img_number,10)==0)
       date_str = datestr(now,'yyyymmddTHHMMSS');
       if ~is_parallel_processing
@@ -212,8 +225,9 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
         save_dir = [app.SavetoEditField.Value '\Saved_Snapshots'];
       end
       mkdir(save_dir) % do every time because it's idempotent and won't fail
-      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
-        filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row, imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
+      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')||strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'IncuCyte')
+        filename = sprintf('%s\\montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row,...
+            imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint{:});
       else
         filename = sprintf('%s/montage_%s_plate%d_%s.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).experiment);
       end

@@ -3,9 +3,9 @@
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>1.7</param.version>
-    <param.authnamewatermark />
-    <param.email />
+    <param.version>2.2</param.version>
+    <param.authnamewatermark>Daniel Snider</param.authnamewatermark>
+    <param.email>danielsnider12@gmail.com</param.email>
     <param.company />
     <param.summary />
     <param.description />
@@ -125,7 +125,6 @@
       <file>${PROJECT_ROOT}\preprocess_plugins.mat</file>
       <file>${PROJECT_ROOT}\question-mark.png</file>
       <file>${PROJECT_ROOT}\question-sign.png</file>
-      <file>${PROJECT_ROOT}\ResultTable.mat</file>
       <file>${PROJECT_ROOT}\rounded-black-square-shape.png</file>
       <file>${PROJECT_ROOT}\ruler.PNG</file>
       <file>${PROJECT_ROOT}\saved_app_last_closed.mat</file>
