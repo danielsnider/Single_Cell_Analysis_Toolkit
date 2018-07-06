@@ -19,7 +19,7 @@ function fun(app)
     if length(segment_names) == 1 
         segment_names = {segment_names{1}};
     end
-    % Save
+    % Sav
     app.segment_names = segment_names;
 
     %% Update the segmentation tab with available segment values in dropdown section boxes for algorithms
