@@ -50,6 +50,7 @@ function [ResultDataStructure, uniResults] = Fixed_Plate_Data_Analysis(ResultTab
 %     verbose_Plot = 'Verbose Plots';
 % end
 
+% If Row variable name and Column variable name in RestulsTable is captalized, convert to lowercase
 if any(strcmp('Row',ResultTable.Properties.VariableNames))
     idx = find(strcmp('Row',ResultTable.Properties.VariableNames));
     ResultTable.Properties.VariableNames{idx} = 'row';
@@ -68,10 +69,12 @@ if Check_for_Old_GUI==true
     Nucleus_Area = 'NArea';
 end
 
+% Initialize ResultDataStructure to store calculated stats and other information
 ResultDataStructure = struct();
 ResultDataStructure.PlateMap = cell([6,10]);
 ResultDataStructure.PlateMap(cellfun('isempty',ResultDataStructure.PlateMap))={'NaN'};
 
+% Store original ResultTable in tmp var
 tmp_Original_ResultTable = ResultTable;
 
 % Initializing important variables
@@ -79,12 +82,13 @@ uniWells = unique(ResultTable(:,{'row','column'}));
 uniCellTreatments = table2array(unique(ResultTable(:,Column_Treatment),'stable'));
 uniWell_Conditions = unique(ResultDataStructure.PlateMap,'stable'); uniWell_Conditions(1) = [];
 
-uniDrugTreatments = table2array(unique(ResultTable(:,Row_Treatment),'stable'));
-uniDrugTreatments = uniDrugTreatments(~contains(uniDrugTreatments,control_treatment));
+Total_uniDrugTreatments = table2array(unique(ResultTable(:,Row_Treatment),'stable'));
+uniDrugTreatments = Total_uniDrugTreatments(~contains(Total_uniDrugTreatments,control_treatment));
+uniDrugTreatments_with_Control = Total_uniDrugTreatments(contains(Total_uniDrugTreatments,control_treatment));
 
-uniTreatments = join(table2array(unique(ResultTable(:,[Column_Treatment,Row_Treatment]),'stable')),', ');
-Treatments_w_o_Control = uniTreatments(~contains(uniTreatments,control_treatment));
-Control = uniTreatments(contains(uniTreatments,control_treatment));
+% uniTreatments = join(table2array(unique(ResultTable(:,[Column_Treatment,Row_Treatment]),'stable')),', ');
+% Treatments_w_o_Control = uniTreatments(~contains(uniTreatments,control_treatment));
+% Control = uniTreatments(contains(uniTreatments,control_treatment));
 
 MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
 
@@ -100,8 +104,10 @@ ResultTable.Reject=zeros(size(ResultTable.lGem));
 ResultTable.numinfield=zeros(size(ResultTable.lGem));
 ResultTable.Keep=false(size(ResultTable.lGem));
 
+% Sort ResultTable based on Measurement, then row and the column
 tmp_ResultTable = sortrows(ResultTable,{measurement_name, 'row', 'column'}, {'ascend'});
 
+% Get unique measurement (i.e. timepoints)
 uniTimePoint = (unique((tmp_ResultTable{:,measurement_name}) ,'sorted'));
 
 for timepoint = 1:length(uniTimePoint)
@@ -132,8 +138,19 @@ for timepoint = 1:length(uniTimePoint)
         ResultTable.Reject(FCells(~(idxEG1|idxLG1|idxG1S|idxS|idxG2)))=1;
         keepers=FCells(ResultTable.Reject(FCells)==0);
         ResultTable.Keep(keepers)=true;
+        
+        
+        % Plot DNA distribution WIP
+        
+%         Ch_for_Nucleus_int = {'NInt',1};
+%         DNA = ResultTable.(char(Ch_for_Nucleus_int(1)))(keepers,cell2mat(Ch_for_Nucleus_int(2)));
+%         figure(100); histogram(DNA)
+%         title('Histogram of DNA content')
+%         set(gca, 'FontSize', 12); xlabel('Nuclear DNA'); ylabel('Frequency');
+%         xlim([prctile((ResultTable.NInt(:,chDNA)), 0.09) prctile((ResultTable.NInt(:,chDNA)), 98.7)]);
+        
         % Collect various information about cells
-        [ResultDataStructure] = Fixed_Data_Stats_Collection(row,col,timepoint,keepers,ResultTable,Cytosol_Channel,Nucleus_Area,ResultDataStructure);
+%         [ResultDataStructure] = Fixed_Data_Stats_Collection(row,col,timepoint,keepers,ResultTable,Cytosol_Channel,Nucleus_Area,ResultDataStructure);
         % Add plate map to datastructure for future use
         ResultDataStructure.PlateMap{row,col} = char(join(table2array(unique(ResultTable(ResultTable.row==row&ResultTable.column==col,[Column_Treatment,Row_Treatment]))),', '));
         
@@ -142,11 +159,13 @@ end
 
 ResultDataStructure.PlateMap(cellfun('isempty',ResultDataStructure.PlateMap))={'NaN'};
 
-%% Plot microplate plots of cell cycle length and cell number
+%% ------------------------------ Plot microplate plots of cell cycle length and cell number ------------------------------
+
 % Create new ResultTable with only cells to keep
 ResultTable_cleaned = ResultTable(ResultTable.Keep(:,1)==1,:);
 ResultTable_cleaned = removevars(ResultTable_cleaned, {'lGem','EG1','LG1','G1S','S','G2','Reject','numinfield','Keep'});
-uniResults = make_uniResults(ResultTable_cleaned,measurement_name);
+total_measurement = 'Cell Number';
+uniResults = make_uniResults(ResultTable_cleaned,measurement_name,total_measurement);
 uniWells = unique(uniResults(:,{'row','column'}));
 
 %%%%%%%% Not good to do this
@@ -177,13 +196,13 @@ if all(verbose_Plot==true)
     for i = 1:size(uniCellTreatments,1)
         for k = 1:size(uniDrugTreatments)
             
-
             if contains(char(uniCellTreatments(i)),'+')
                 uniCellTreatExpression = strrep(char(uniCellTreatments(i)),'+','(+)');
             else 
                 uniCellTreatExpression = char(uniCellTreatments(i));
             end
             
+            % In PlateMap find location indexes of current unique cell type
             [idx_Row,idx_Col] = find(...
                 ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
                 ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,uniCellTreatExpression)));
@@ -198,6 +217,7 @@ if all(verbose_Plot==true)
                 subplot(2,round(size(uniTimePoint,1)/2),position);hold on;
                 
                 % Plotting Treatment
+                % Find index specific unique well condition(s)
                 [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,[char(uniCellTreatments(i)) ', ' char(uniDrugTreatments(k))]));
                 if isempty(idx_Row)&&isempty(idx_Col)
                     [idx_Row,idx_Col] = find(...
@@ -217,7 +237,7 @@ if all(verbose_Plot==true)
                 clearvars x y idx_Row idx_Col
                 
                 % Plotting Control
-                [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,[char(uniCellTreatments(i)) ', ' char(control_treatment)]));
+                [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,[char(uniCellTreatments(i)) ', ' char(uniDrugTreatments_with_Control(k))]));
                 if isempty(idx_Row)&&isempty(idx_Col)
                     [idx_Row,idx_Col] = find(...
                         ~cellfun(@isempty,regexp(ResultDataStructure.PlateMap,[char(uniDrugTreatments(k)) '$']))&...
@@ -429,55 +449,50 @@ hold off;
 
 %% Scatterplot CCL
 if average_replicates==true
+
+    linear_var_platemap = reshape(data_legend_platemap, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
+    data_order_to_process= reorderlist(linear_var_platemap);
+    
     % CCL
-    color_list = distinguishable_colors(60,[0 0.5 0 ]);
-    figure('Name', 'CCL ScatterPlot'); hold on; start_point = 1;end_point = size(cc_Interest,1);
-    for yy = 1:size(cc_Interest,2)
-        
-        y = cc_Interest(:,yy);
-        x = start_point:end_point;
-        plot(x, y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color_list(yy,:))
-        
-        txt1 = join(horzcat(repelem("CCL: ",size(y,1))', num2str(y)));
-        labelpoints(x,y,txt1,'N',0.2,1)
-        
-        start_point = start_point + size(cc_Interest,1);
-        end_point = end_point + size(cc_Interest,1);
-    end
-    x_labels = reshape(data_legend_platemap, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
-    ax = gca;
-    ax.XTick = 1:length(x_labels);
-    ax.XTickLabel = x_labels;
-    ax.XTickLabelRotation = 45;
-    title(['Cell Cycle Length for: ' Plot_Title],'Interpreter', 'none');ylabel('Cell Cycle (Hours)');xlabel('Well Condition')
-    grid on;
-    hold off;
+    keySet = reshape(data_legend_platemap, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
+    valueSet = reshape(cc_Interest, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
+    Cell_Cycle_Length_Map = containers.Map(keySet,valueSet);
     
+    clearvars keySet valueSet 
+    
+    Figure_Name = 'CCL ScatterPlot';
+    num_Points = double(Cell_Cycle_Length_Map.Count);
+    num_Points_to_Group = 2;
+    data_Map = Cell_Cycle_Length_Map;
+    text_point_label = "CCL: ";
+    plot_title = ['Cell Cycle Length for: ' Plot_Title];
+    y_label = 'Cell Cycle (Hours)';
+    x_label = 'Well Condition';
+    
+    dynamic_Scatter_Plot(Figure_Name, data_Map, data_order_to_process, num_Points, num_Points_to_Group, text_point_label, plot_title, y_label, x_label)
+
     % GR
-    color_list = distinguishable_colors(60,[0 0.5 0 ]);
-    figure('Name','GR ScatterPlot'); hold on; start_point = 1;end_point = size(mass_Interest,1);
-    for yy = 1:size(mass_Interest,2)
-        
-        y = mass_Interest(:,yy);
-        x = start_point:end_point;
-        plot(x, y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color_list(yy,:))
-        
-        txt1 = join(horzcat(repelem("GR: ",size(y,1))', num2str(y)));
-        labelpoints(x,y,txt1,'N',0.2,1)
-        
-        start_point = start_point + size(mass_Interest,1);
-        end_point = end_point + size(mass_Interest,1);
-    end
-    x_labels = reshape(data_legend_platemap, [size(mass_Interest,1)*size(mass_Interest,2) 1]);
-    ax = gca;
-    ax.XTick = 1:length(x_labels);
-    ax.XTickLabel = x_labels;
-    ax.XTickLabelRotation = 45;
-    title(['Growth Rate for: ' Plot_Title],'Interpreter', 'none');ylabel('Cell Cycle (Hours)');xlabel('Well Condition')
-    grid on;
-    hold off;
+    keySet = reshape(data_legend_platemap, [size(mass_Interest,1)*size(mass_Interest,2) 1]);
+    valueSet = reshape(mass_Interest, [size(mass_Interest,1)*size(mass_Interest,2) 1]);
+    bulk_protein_mass_Map = containers.Map(keySet,valueSet);
     
+    clearvars keySet valueSet
+    
+    Figure_Name = 'GR ScatterPlot';
+    num_Points = double(bulk_protein_mass_Map.Count);
+    num_Points_to_Group = 2;
+    data_Map = bulk_protein_mass_Map;
+    text_point_label = "GR: ";
+    plot_title = ['Growth Rate for: ' Plot_Title];
+    y_label = 'Growth Rate (Hours)';
+    x_label = 'Well Condition';
+    
+    dynamic_Scatter_Plot(Figure_Name, data_Map, data_order_to_process, num_Points, num_Points_to_Group, text_point_label, plot_title, y_label, x_label)
+ 
 end
+
+
+
 % %% Cell number
 %
 % ResultDataStructure.Numcells(:,:,3)

@@ -10,7 +10,21 @@ function MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,P
         try
             rownames(idcs(1:end),1) = uniResults.(char(MetaRows.names))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
         catch
-            rownames(idcs(1:end),1) = uniResults.(char(MetaRows))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
+            if size(MetaRows,2) == 1
+                rownames(idcs(1:end),1) = uniResults.(char(MetaRows))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
+            else
+                tmp2 = rownames;
+                for ii = 1:size(MetaRows,2)
+                    tmp = rownames;
+                    tmp(idcs(1:end),1) = uniResults.(char(MetaRows(ii)))(unique(uniResults.row,'stable')==unique(uniWells.row,'stable'));
+                    if isempty([tmp2{:}])
+                        tmp2 = tmp;
+                    else
+                        tmp2(idcs(1:end),1) = cellfun(@(org,new) [org ',' new],tmp2(idcs(1:end),1),tmp(idcs(1:end),1),'UniformOutput', false);
+                    end
+                end
+                rownames = tmp2;
+            end
         end
     end
     Default_Rows = {'A','B','C','D','E','F','G','H'};
@@ -30,7 +44,21 @@ function MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,P
         try
             colnames(1,idcs(1:end))=uniResults.(char(MetaCols.names))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
         catch
-            colnames(1,idcs(1:end))=uniResults.(char(MetaCols))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
+            if size(colnames,2) == 1
+                colnames(1,idcs(1:end))=uniResults.(char(MetaCols))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'));
+            else
+                tmp2 = colnames';
+                for ii = 1:size(MetaCols,2)
+                    tmp = colnames';
+                    tmp(idcs(1:end),1) = uniResults.(char(MetaCols(ii)))(unique(uniResults.column,'stable')==unique(uniWells.column,'stable'))';
+                    if isempty([tmp2{:}])
+                        tmp2 = tmp;
+                    else
+                        tmp2(idcs(1:end),1) = cellfun(@(org,new) [org ',' new],tmp2(idcs(1:end),1),tmp(idcs(1:end),1),'UniformOutput', false);
+                    end
+                end
+                colnames = tmp2';
+            end
         end
             
     end
