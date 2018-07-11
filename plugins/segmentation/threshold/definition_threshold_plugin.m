@@ -1,7 +1,7 @@
 function [params, algorithm] = fun()
 
   algorithm.name = 'Threshold Segmentation';
-  algorithm.help = '';
+  algorithm.help = 'Segment objects using a static or dynamic global threshold.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

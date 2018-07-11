@@ -189,7 +189,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end
     
     % Add Well Condition Metadata
-    if strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs') || strcmp(plate.metadata.ImageFileFormat, 'IncuCyte')
+    if ~isempty(plate.wells) && strcmp(plate.metadata.ImageFileFormat, 'OperettaSplitTiffs') || strcmp(plate.metadata.ImageFileFormat, 'IncuCyte')
       iterTable(:,'WellConditions') = plate.wells(image_file.row,image_file.column);
       cell_struct = plate.wells_meta(image_file.row,image_file.column);
       if ~isempty(cell_struct) && ~isempty(cell_struct{:})

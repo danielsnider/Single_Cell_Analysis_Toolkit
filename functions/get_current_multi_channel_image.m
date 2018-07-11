@@ -26,8 +26,15 @@ function multi_channel_img = fun(app)
       image_path = sprintf(...
         '%s/%s', image_dir,image_name);
       if ~exist(image_path) % If the file doesn't exist, reset the dropdown box values and return to avoid updating the figure
+        image_name = sprintf(...
+          'r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tif',...
+          row,column,field,plate_file_num,chan_num,timepoint);
+        image_path = sprintf(...
+          '%s/%s', image_dir,image_name);
+      end
+      if ~exist(image_path) % If the file doesn't exist, reset the dropdown box values and return to avoid updating the figure
         draw_display(app);
-        uialert(app.UIFigure,'Sorry, the image file you are trying to process does not exist. A bug allowed this to happen.','Bug', 'Icon','error');
+        uialert(app.UIFigure,sprintf('Sorry, the image file you are trying to process does not exist. A bug allowed this to happen. Image path: %s',image_path),'Bug', 'Icon','error');
         multi_channel_img = [];
         return
       end

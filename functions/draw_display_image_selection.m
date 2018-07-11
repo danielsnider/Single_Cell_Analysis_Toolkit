@@ -131,7 +131,7 @@ function fun(app)
     experiments_filtered_nums = [];
     for row_num=app.plates(plate_num).keep_rows
       for col_num=app.plates(plate_num).keep_columns
-        if ~isnan(experiments{row_num,col_num})
+        if ~isempty(experiments) && ~isnan(experiments{row_num,col_num})
           experiments_filtered_names{length(experiments_filtered_names)+1} = experiments{row_num,col_num};
           experiments_filtered_nums(length(experiments_filtered_nums)+1) = complex(row_num, col_num); % encode row and col positions in a complex number because matlab won't allow two seperate values per DataItem
         end

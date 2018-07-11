@@ -15,14 +15,14 @@ function MeasureTable=func(plugin_name, plugin_num, img, seg)
   % Pull out segment data
   seg_name = fields(seg);
   seg_name = seg_name{1}; % expecting only one
-  seg_data = seg.(seg_name);
+  seg_data = bwlabel(seg.(seg_name));
 
   [fx,fy]=imgradient(imgaussfilt(img_data,2));
   [fxx,fxy]=gradient(fx);
   [fyx,fyy]=gradient(fy);
   D=fyy.*fxx-fxy.*fyx;
 
-  SaddlePointImage=imgaussfilt(D,10);
+  SaddlePointImage=imgaussfilt(D,2.5);
   SaddlePointImageNormalized = normalize0to1(SaddlePointImage);
   stats=regionprops(seg_data,SaddlePointImageNormalized,'area','MeanIntensity','Centroid');
   NumberOfCells = max(seg_data(:));

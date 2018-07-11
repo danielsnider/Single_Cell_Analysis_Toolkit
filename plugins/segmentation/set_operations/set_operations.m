@@ -1,4 +1,4 @@
-function result = func(plugin_name, plugin_num, A, B, operation)
+function result = func(plugin_name, plugin_num, A, operation, B)
 
   is_3D = false;
   new_bwlabel = @bwlabel;
