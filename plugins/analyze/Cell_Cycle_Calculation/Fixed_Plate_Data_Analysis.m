@@ -1,4 +1,4 @@
-function [ResultDataStructure, uniResults] = Fixed_Plate_Data_Analysis(ResultTable,Check_for_Old_GUI,measurement_name,average_replicates,control_treatment,Row_Treatment,Column_Treatment,Nucleus_Channel,Cell_Cycle_Channel,Cytosol_Channel,Nucleus_Area,Bulk_Measure,verbose_Plot,Plot_Title,MetaRows,MetaCols)
+function [ResultDataStructure, uniResults,Cell_Cycle_Params] = Fixed_Plate_Data_Analysis(Cell_Cycle_Params)
 
 % addpath('R:\Justin_S\Single_Cell_Analysis_Toolkit\functions')
 % data = "JOLD";
@@ -50,6 +50,25 @@ function [ResultDataStructure, uniResults] = Fixed_Plate_Data_Analysis(ResultTab
 %     verbose_Plot = 'Verbose Plots';
 % end
 
+% Extract Params from Cell Cycle Parameters Structure
+ResultTable = Cell_Cycle_Params.ResultTable;
+Check_for_Old_GUI = Cell_Cycle_Params.Check_for_Old_GUI;
+measurement_name = Cell_Cycle_Params.measurement_name;
+average_replicates = Cell_Cycle_Params.average_replicates;
+control_treatment = Cell_Cycle_Params.control_treatment;
+Row_Treatment = Cell_Cycle_Params.Row_Treatment;
+Column_Treatment = Cell_Cycle_Params.Column_Treatment;
+Nucleus_Channel = Cell_Cycle_Params.Nucleus_Channel;
+Cell_Cycle_Channel = Cell_Cycle_Params.Cell_Cycle_Channel;
+Cytosol_Channel = Cell_Cycle_Params.Cytosol_Channel;
+Nucleus_Area = Cell_Cycle_Params.Nucleus_Area;
+Bulk_Measure = Cell_Cycle_Params.Bulk_Measure;
+verbose_Plot = Cell_Cycle_Params.verbose_Plot;
+Plot_Title = Cell_Cycle_Params.Plot_Title;
+MetaRows = Cell_Cycle_Params.MetaRows;
+MetaCols = Cell_Cycle_Params.MetaCols;
+
+
 % If Row variable name and Column variable name in RestulsTable is captalized, convert to lowercase
 if any(strcmp('Row',ResultTable.Properties.VariableNames))
     idx = find(strcmp('Row',ResultTable.Properties.VariableNames));
@@ -65,7 +84,7 @@ if Check_for_Old_GUI==true
     ChDNA = 1; chGEM = 2; chSE = 3;
     Nucleus_Channel = 'NInt';
     Cell_Cycle_Channel = 'NInt';
-    Cytosol_Channel = {'CInt',1};
+    Cytosol_Channel = {'CInt',chSE};
     Nucleus_Area = 'NArea';
 end
 
@@ -80,7 +99,7 @@ tmp_Original_ResultTable = ResultTable;
 % Initializing important variables
 uniWells = unique(ResultTable(:,{'row','column'}));
 uniCellTreatments = table2array(unique(ResultTable(:,Column_Treatment),'stable'));
-uniWell_Conditions = unique(ResultDataStructure.PlateMap,'stable'); uniWell_Conditions(1) = [];
+
 
 Total_uniDrugTreatments = table2array(unique(ResultTable(:,Row_Treatment),'stable'));
 uniDrugTreatments = Total_uniDrugTreatments(~contains(Total_uniDrugTreatments,control_treatment));
@@ -90,11 +109,15 @@ uniDrugTreatments_with_Control = Total_uniDrugTreatments(contains(Total_uniDrugT
 % Treatments_w_o_Control = uniTreatments(~contains(uniTreatments,control_treatment));
 % Control = uniTreatments(contains(uniTreatments,control_treatment));
 
-MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
+MetaDataColumns = ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
 
 %% ------------------------------ Main ------------------------------------------------------------
 % ResultTable{:,measurement_name} = num2cell(str2double(table2cell(ResultTable(:,measurement_name))));
-ResultTable.lGem = mylog((ResultTable{:,Cell_Cycle_Channel}));
+if Check_for_Old_GUI==true
+    ResultTable.lGem = mylog((ResultTable.(Cell_Cycle_Channel)(:,chGEM)));
+else
+     ResultTable.lGem = mylog((ResultTable{:,Cell_Cycle_Channel}));
+end
 ResultTable.EG1=zeros(size(ResultTable.lGem));
 ResultTable.LG1=zeros(size(ResultTable.lGem));
 ResultTable.G1S=zeros(size(ResultTable.lGem));
@@ -109,7 +132,7 @@ tmp_ResultTable = sortrows(ResultTable,{measurement_name, 'row', 'column'}, {'as
 
 % Get unique measurement (i.e. timepoints)
 uniTimePoint = (unique((tmp_ResultTable{:,measurement_name}) ,'sorted'));
-
+frame_counter = 1; 
 for timepoint = 1:length(uniTimePoint)
     current_timepoint = uniTimePoint(timepoint);
     for well = 1:size(uniWells,1)
@@ -127,8 +150,17 @@ for timepoint = 1:length(uniTimePoint)
             DNA = ResultTable.(Nucleus_Channel)(FCells,ChDNA);
         end
         lGem = ResultTable.lGem(FCells);
+        if verbose_Plot==false
+            plot_stages = 'image';
+        else
+            plot_stages = 'NOimage';
+        end
         % Separate Cells into 5 different cell stages
-        [idxEG1,idxLG1,idxG1S,idxS,idxG2] = FindStages_VarGem(DNA,lGem,FieldName,'NOimage');
+        if ~exist('frame','var')
+            [idxEG1,idxLG1,idxG1S,idxS,idxG2,~] = FindStages_VarGem(DNA,lGem,FieldName,frame_counter,plot_stages);
+        else
+            [idxEG1,idxLG1,idxG1S,idxS,idxG2,frame] = FindStages_VarGem(DNA,lGem,FieldName,frame_counter,plot_stages,frame);
+        end
         ResultTable.EG1(FCells(idxEG1))=1;
         ResultTable.LG1(FCells(idxLG1))=1;
         ResultTable.G1S(FCells(idxG1S))=1;
@@ -150,14 +182,50 @@ for timepoint = 1:length(uniTimePoint)
 %         xlim([prctile((ResultTable.NInt(:,chDNA)), 0.09) prctile((ResultTable.NInt(:,chDNA)), 98.7)]);
         
         % Collect various information about cells
-%         [ResultDataStructure] = Fixed_Data_Stats_Collection(row,col,timepoint,keepers,ResultTable,Cytosol_Channel,Nucleus_Area,ResultDataStructure);
+        [ResultDataStructure] = Fixed_Data_Stats_Collection(row,col,timepoint,keepers,ResultTable,Cytosol_Channel,Nucleus_Area,ResultDataStructure);
         % Add plate map to datastructure for future use
         ResultDataStructure.PlateMap{row,col} = char(join(table2array(unique(ResultTable(ResultTable.row==row&ResultTable.column==col,[Column_Treatment,Row_Treatment]))),', '));
-        
+        frame_counter = frame_counter + 1;
     end
 end
 
 ResultDataStructure.PlateMap(cellfun('isempty',ResultDataStructure.PlateMap))={'NaN'};
+
+uniWell_Conditions = unique(ResultDataStructure.PlateMap,'stable'); uniWell_Conditions(1) = [];
+
+Cell_Cycle_Params.Nucleus_Channel = Nucleus_Channel;
+Cell_Cycle_Params.Cell_Cycle_Channel = Cell_Cycle_Channel;
+Cell_Cycle_Params.Cytosol_Channel = Cytosol_Channel;
+Cell_Cycle_Params.ResultDataStructure = ResultDataStructure;
+
+% Plot Cell Cycle Stage Plot
+if verbose_Plot==false
+%     [h, w, p] = size(frame(1).cdata);  % use 1st frame to get dimensions
+%     hf = figure;
+%     % resize figure based on frame's w x h, and place at (150, 150)
+%     set(hf, 'position', [150 150 w h]);
+%     axis off
+%     movie(hf,frame,1,1);
+
+    answer = questdlg('Would you like to save a gif of Cell Cycle Stage Plot?', ...
+        'Save gif prompt', ...
+        'Yes','No','No');
+    % Handle response
+    switch answer
+        case 'Yes'
+            disp([answer ' saving gif of Cell Cycle Stage plot.'])
+            save_dir = uigetdir(pwd,'Select Directory to Save Cell Cycle Stage plot In');
+            date_str = datestr(now,'yyyymmddTHHMMSS');
+            gif_filename = sprintf('%s/Cell_Cycle_Stage_Plot_%s.gif', save_dir, date_str);
+            movie2gif(frame, gif_filename, 'LoopCount', Inf, 'DelayTime', 0.5)
+
+        case 'No'
+            disp([answer ' will not save gif of Cell Cycle Stage plot.'])
+
+    end
+
+
+end
 
 %% ------------------------------ Plot microplate plots of cell cycle length and cell number ------------------------------
 
@@ -171,7 +239,7 @@ uniWells = unique(uniResults(:,{'row','column'}));
 %%%%%%%% Not good to do this
 % uniResults.Properties.VariableNames{6} = 'Treatment'; MetaCols = 'Treatment';
 
-[uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells);
+[uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot);
 
 % Plot Microplate Plot for Cell Cycle Length
 data_to_plot = 'Cell_Cycle'; Main_Title = 'Cell Cycle Length (Hours)'; color = 'Dark2';rounding_decimal=2;
@@ -253,6 +321,9 @@ if all(verbose_Plot==true)
                     y(:,r) = (ResultDataStructure.Pdensity{idx_Row(r),idx_Col(r),timepoint});
                 end
                 plot(x,y,'r')
+                if i == 1
+                    legend({'Treatment','Control'})
+                end
                 clearvars x y idx_Row idx_Col
                 
                 title([cell2mat(current_timepoint) 'Hours'])
@@ -273,6 +344,12 @@ end
 % Growth Rate Equation: v = 1/Nt * dMt/dt
 clearvars x y_Mass y_cellNum
 uniDrugTreatments = table2array(unique(ResultTable(:,Row_Treatment),'stable'));
+
+for i=1:size(uniCellTreatments,1)
+    tmp(i) = {strjoin(uniCellTreatments(i,:),', ')};
+end
+uniCellTreatments = tmp';
+
 
 for i = 1:size(uniCellTreatments,1)
     if verbose_Plot==true
@@ -493,42 +570,45 @@ end
 
 
 
-% %% Cell number
-%
-% ResultDataStructure.Numcells(:,:,3)
-%
-%
-% %%  ------------------------------ G1 Length --------------------------------
-%
-% % ResultTable.row = num2str(ResultTable.row);
-% % ResultTable.column = num2str(ResultTable.column);
-% ResultTable = sortrows(ResultTable, {'TimePoint','row','column'},'ascend');
-%
-% uniWells = unique(ResultTable(:,{'row','column',measurement_name,MetaDataColumns{:}}),'stable');
-%
-%
-%
-% for i = 1:size(uniWells,1)
-%
-%    currentWell = table2cell(uniWells(i,3:end)); row = table2array(uniWells(i,1)); col = table2array(uniWells(i,2));
-%
-%    DNA = ResultTable.Nucleus_DAPI_MeanIntensity(all(ResultTable.row==row & ResultTable.column==col & contains(table2cell(ResultTable(:,{measurement_name,meta_info{:}})),currentWell),2));
-%
-%    figure(900);clf;hold on;
-%    histogram(DNA)
-%    set(gca, 'FontSize', 12); xlabel('Nuclear DNA'); ylabel('Frequency');
-%    title(['Row: ' num2str(row) ' | Col: ' num2str(col) ' | TimePoint: ' char(table2array(uniWells(i,3)))])
-%    xlim([prctile(DNA, 0.09) prctile(DNA, 98.7)]);
-% %    pause(0.001)
-%    hold off;
-%
-%
-%
-% end
+%% Cell Size
+data_order_to_process= reorderlist(uniWell_Conditions)';
 
+fig = figure('Name','Cell Size');hold on;position = 1;
+for condition = 1:size(data_order_to_process,1)
 
+%     subplot(3,6,position)
+    
+    [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,data_order_to_process(condition)));
+    y = [];
+    for well = 1:size(idx_Row,1)
+        row = idx_Row(well); col = idx_Col(well);
 
+        try
+            y = mean(ResultTable.(Cytosol_Channel)(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel));
+            y_std = std(ResultTable.(Cytosol_Channel)(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel));
+        catch
+            if isempty(y)
+                y = mean(ResultTable.(Cytosol_Channel{1})(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel{2}));
+                y_std = std(ResultTable.(Cytosol_Channel{1})(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel{2}));
+            else
+                y = [y mean(ResultTable.(Cytosol_Channel{1})(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel{2}))];
+                y_std = [y_std std(ResultTable.(Cytosol_Channel{1})(contains(ResultTable.WellConditions,data_order_to_process(condition)) & ResultTable.row==row & ResultTable.column==col,Cytosol_Channel{2}))];
+            end
+        end
+        
+        
 
+    end
+    errorbar(repelem(condition,size(idx_Row,1)),y,y_std,'s',...
+            'MarkerSize',10)
+    ax = gca;
+    ax.XTick = 1:length(data_order_to_process);
+    ax.XTickLabel = data_order_to_process;
+    ax.XTickLabelRotation = 45;
+    plot_title = ['Cell Size for: ' Plot_Title];
+    title(plot_title,'Interpreter', 'none')
+    grid on;
+%     position = position + 1;
 
 end
 

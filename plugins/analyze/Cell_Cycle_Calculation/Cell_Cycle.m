@@ -28,6 +28,28 @@ end
 
 set(0,'DefaultFigureWindowStyle','docked')
 
+% Save input arguments as a structure
+Cell_Cycle_Params = struct();
+Cell_Cycle_Params.ResultTable = ResultTable;
+Cell_Cycle_Params.Check_for_Old_GUI = Check_for_Old_GUI;
+Cell_Cycle_Params.measurement_name = measurement_name;
+Cell_Cycle_Params.Imaging_Type = Imaging_Type;
+Cell_Cycle_Params.average_replicates = average_replicates;
+Cell_Cycle_Params.control_treatment = control_treatment;
+Cell_Cycle_Params.Row_Treatment = Row_Treatment;
+Cell_Cycle_Params.Column_Treatment = Column_Treatment;
+Cell_Cycle_Params.Nucleus_Channel = Nucleus_Channel;
+Cell_Cycle_Params.Cell_Cycle_Channel = Cell_Cycle_Channel;
+Cell_Cycle_Params.Cytosol_Channel = Cytosol_Channel;
+Cell_Cycle_Params.Nucleus_Area = Nucleus_Area;
+Cell_Cycle_Params.Bulk_Measure = Bulk_Measure;
+Cell_Cycle_Params.verbose_Plot = verbose_Plot;
+Cell_Cycle_Params.Plot_Title = Plot_Title;
+Cell_Cycle_Params.MetaRows = MetaRows;
+Cell_Cycle_Params.MetaCols = MetaCols;
+
+
+
 % ResultTable=app.ResultTable;
 ResultTable.(measurement_name)=ResultTable.(measurement_name);
 % ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}
@@ -47,7 +69,8 @@ if strcmp(Imaging_Type,'DPC')
     total_measurement = char(Total_Measurements(jj));
     [uniResults,uniWells] = make_uniResults(ResultTable, measurement_name,total_measurement);
     
-    [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells);
+    [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot);
+    
      
     % Plot Microplate Plot for Cell Cycle Length
     data_to_plot = 'Cell_Cycle'; Main_Title = ['Cell Cycle Length (Hours) Based on ' total_measurement]; color = 'Dark2';rounding_decimal=2;
@@ -74,7 +97,7 @@ if strcmp(Imaging_Type,'DPC')
 end
 
 if strcmp(Imaging_Type,'Fixed')
-    [ResultDataStructure, uniResults] = Fixed_Plate_Data_Analysis(ResultTable,Check_for_Old_GUI,measurement_name,average_replicates,control_treatment,Row_Treatment,Column_Treatment,Nucleus_Channel,Cell_Cycle_Channel,Cytosol_Channel,Nucleus_Area,Bulk_Measure,verbose_Plot,Plot_Title,MetaRows,MetaCols);
+    [ResultDataStructure, uniResults,Cell_Cycle_Params] = Fixed_Plate_Data_Analysis(Cell_Cycle_Params);
     assignin('base','uniResults',uniResults);
     evalin('base','openvar(''uniResults'')');
     assignin('base','uniResults',ResultDataStructure);
