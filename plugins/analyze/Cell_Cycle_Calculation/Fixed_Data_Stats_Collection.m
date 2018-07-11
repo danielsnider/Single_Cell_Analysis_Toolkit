@@ -78,18 +78,66 @@ function [DataStructure] = Fixed_Data_Stats_Collection(row,col,timepoint,keepers
             DataStructure.MedNucAreaCC(row,col,timepoint,3) = median(ResultTable.(Nucleus_Area)(ResultTable.Keep & ResultTable.G1S));
             DataStructure.MedNucAreaCC(row,col,timepoint,4) = median(ResultTable.(Nucleus_Area)(ResultTable.Keep & ResultTable.S));
             DataStructure.MedNucAreaCC(row,col,timepoint,5) = median(ResultTable.(Nucleus_Area)(ResultTable.Keep & ResultTable.G2));  
+            
+            
             try
-                [f1,s1] = ksdensity(ResultTable.(Ch_for_Cytosol_int)(keepers),(mean(ResultTable.(Ch_for_Cytosol_int)(keepers))-2*std(ResultTable.(Ch_for_Cytosol_int)(keepers))):((mean(ResultTable.(Ch_for_Cytosol_int)(keepers))+3*std(ResultTable.(Ch_for_Cytosol_int)(keepers)))-(mean(ResultTable.(Ch_for_Cytosol_int)(keepers))-2*std(ResultTable.(Ch_for_Cytosol_int)(keepers))))/100:(mean(ResultTable.(Ch_for_Cytosol_int)(keepers))+3*std(ResultTable.(Ch_for_Cytosol_int)(keepers))));
+                [f1,s1] = ksdensity(ResultTable.(Ch_for_Cytosol_int)(keepers),...
+                    (mean(ResultTable.(Ch_for_Cytosol_int)(keepers))-...
+                    2*std(ResultTable.(Ch_for_Cytosol_int)(keepers))):((mean(ResultTable.(Ch_for_Cytosol_int)(keepers))+...
+                    3*std(ResultTable.(Ch_for_Cytosol_int)(keepers)))-(mean(ResultTable.(Ch_for_Cytosol_int)(keepers))-...
+                    2*std(ResultTable.(Ch_for_Cytosol_int)(keepers))))/100:(mean(ResultTable.(Ch_for_Cytosol_int)(keepers))+...
+                    3*std(ResultTable.(Ch_for_Cytosol_int)(keepers))));
             catch
-                [f1,s1] = ksdensity(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))),(mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))-2*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))):((mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))+3*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2)))))-(mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))-2*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))))/100:(mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))+3*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))));
+                [f1,s1] = ksdensity(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))),...
+                    (mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))-...
+                    2*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))):((mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))+...
+                    3*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2)))))-(mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))-...
+                    2*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))))/100:(mean(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))+...
+                    3*std(ResultTable.(char(Ch_for_Cytosol_int(1)))(keepers,cell2mat(Ch_for_Cytosol_int(2))))));
             end
             disp('--- Collecting Protein Density')
             DataStructure.Paxis{row,col,timepoint}=s1;
             DataStructure.Pdensity{row,col,timepoint}=f1;
-            [f2,s2] = ksdensity(ResultTable.(Nucleus_Area)(keepers),(mean(ResultTable.(Nucleus_Area)(keepers))-2*std(ResultTable.(Nucleus_Area)(keepers))):((mean(ResultTable.(Nucleus_Area)(keepers))+3*std(ResultTable.(Nucleus_Area)(keepers)))-(mean(ResultTable.(Nucleus_Area)(keepers))-2*std(ResultTable.(Nucleus_Area)(keepers))))/100:(mean(ResultTable.(Nucleus_Area)(keepers))+3*std(ResultTable.(Nucleus_Area)(keepers))));
+            
+            [f2,s2] = ksdensity(ResultTable.(Nucleus_Area)(keepers),(mean(ResultTable.(Nucleus_Area)(keepers))-...
+                2*std(ResultTable.(Nucleus_Area)(keepers))):((mean(ResultTable.(Nucleus_Area)(keepers))+...
+                3*std(ResultTable.(Nucleus_Area)(keepers)))-(mean(ResultTable.(Nucleus_Area)(keepers))-...
+                2*std(ResultTable.(Nucleus_Area)(keepers))))/100:(mean(ResultTable.(Nucleus_Area)(keepers))+...
+                3*std(ResultTable.(Nucleus_Area)(keepers))));
             disp('--- Collecting Nucleus Density')
             DataStructure.Naxis{row,col,timepoint}=s2;
             DataStructure.Ndensity{row,col,timepoint}=f2;
+            
+%             % Alternatve way of getting DNA density
+%             
+%             Ch_for_Nucleus_int = {'NInt',1};
+%             DNA = ResultTable.(char(Ch_for_Nucleus_int(1)))(keepers,cell2mat(Ch_for_Nucleus_int(2)));
+%             
+%             % Set adaptive thresholds for DNA
+%             [fi,xi] = ksdensity(DNA,linspace( prctile(DNA,0.5),prctile(DNA, 98), 5e2));
+%             xi = xi(fi>max(fi)/5); fi = fi(fi>max(fi)/5);
+%             [~,loc] = findpeaks(fi);
+%             if length(loc)==1
+%                 pk1DNA = xi(loc);
+%             elseif length(loc)==2
+%                 pk1DNA = xi(min(loc));
+%             else
+%                 disp('Nothing Here');
+%             end
+%             %     pk1DNA = xi(fi==max(fi));  % DNA level of 2N peak
+%             %     [fi,xi] = ksdensity(DNA, 0.5*pk1DNA:0.02*pk1DNA:2.5*pk1DNA);
+%             %     pk1DNA = xi(fi==max(fi));
+%             DataStructure.DNA2N{row,col,timepoint}=pk1DNA;
+%             %pk2DNA = xi(fi==max(fi(xi>1.7*pk1DNA)));
+% %             DNA_thr1 = 0.8*pk1DNA;
+% %             DNA_thr2 = 1.2*pk1DNA;
+% %             DNA_thr3 = 1.85*pk1DNA;
+% %             DNA_thr4 = 2.3*pk1DNA;
+            
+            
+            
+            
+            
  disp('Finished Collecting Stats on cells...')
  disp('--------------------------------------------------------------------------')     
 %%           

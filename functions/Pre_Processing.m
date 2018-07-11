@@ -1,4 +1,4 @@
-function Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,Imaging_Type,Plot_Title)
+function Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,Imaging_Type,Plot_Title,total_measurement)
 
 % Pre-Processing Data
 
@@ -22,7 +22,7 @@ if average_replicates==true
     if contains(Imaging_Type,'DPC')
         % Averaging Cell Cycle numbers
         Avg_uniResults = grpstats(uniResults,meta_info,{'mean','std'},'DataVars',{'Doubling_Time', 'Cell_Cycle'});
-        Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Plot_Title)
+        Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Plot_Title,total_measurement)
         
 %     elseif contains(Imaging_Type,'Fixed')
 % %             uniCondition = unique(uniResults.WellConditions,'stable');

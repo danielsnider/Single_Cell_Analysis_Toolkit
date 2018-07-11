@@ -1,4 +1,5 @@
-function [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,varargin)
+function [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot,varargin)
+
 
 %% Get column indexes for TP_{time}_Hr headers
 count = zeros(1,size(uniResults.Properties.VariableNames,2))*nan;
@@ -26,6 +27,7 @@ x = unique(cell2mat(TimePoint),'stable');
 Doubling_Time=cell(size(uniWells,1),1);
 Cell_Cycle=cell(size(uniWells,1),1);
 
+figure('Name','Log2 Fitting');hold on;position = 1;
 %% loop over all wells to calculate cell cyle
 for well = 1:size(uniWells,1)
     % old if below varagin is empty if DPC aquisition FIX THIS
@@ -41,13 +43,18 @@ for well = 1:size(uniWells,1)
         if size(y,2)>1
             y = median(y,2);
         end
-        [fit1,~,~] = fit(x,y,f,'StartPoint',[1 1],'Robust','on');
+        [fit1,gof,~] = fit(x,y,f,'StartPoint',[1 1],'Robust','on');
         
-        if true == false
-            figure('Name','Log2 Fitting');hold on;
+        if verbose_Plot == true
+            if position == 10
+                figure('Name','Log2 Fitting');hold on;position = 1;
+            end
+            subplot(2,5,position)
             plot(fit1,x,y,'bo')
-            xlabel('Time Point (Hour)');ylabel('Cell Number');title(['Log2 Cell Proliferation Fitting: ' char(uniResults.WellConditions(well))])
-            hold off;
+            xlabel('Time Point (Hour)');ylabel('Cell Number');title(['Row: ' num2str(uniWells.row(well)) '	| Col: ' num2str(uniWells.column(well))])
+            text(0,(max(y)),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
+            legend('off')
+            position = position + 1;
         end
         
         m = coeffvalues(fit1); % Slope
@@ -70,11 +77,16 @@ for well = 1:size(uniWells,1)
         %     options = fitoptions('Method', 'LinearLeastSquares','Robust', 'Bisquare');
         [fit1,~,~] = fit(x2,y,f,'StartPoint',[1 1],'Robust','on');
         
-        if true == false
-            figure('Name','Log2 Fitting');hold on;
-            plot(fit1,x2,y,'bo')
-            xlabel('Time Point (Hour)');ylabel('Cell Number');title(['Log2 Cell Proliferation Fitting: ' char(uniResults.WellConditions(well))])
-            hold off;
+        if verbose_Plot == true
+            if position == 10
+                figure('Name','Log2 Fitting');hold on;position = 1;
+            end
+            subplot(2,5,position)
+            plot(fit1,x,y,'bo')
+            xlabel('Time Point (Hour)');ylabel('Cell Number');title([char(uniResults.WellConditions(well))])
+            text(0,(max(y)),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
+            legend('off')
+            position = position + 1;
         end
         
         m = coeffvalues(fit1); % Slope

@@ -1,4 +1,4 @@
-function [idxEG1,idxLG1,idxG1S,idxS,idxG2] = FindStages_VarGem(DNA,lGem,FieldName,varargin)
+function [idxEG1,idxLG1,idxG1S,idxS,idxG2,frame] = FindStages_VarGem(DNA,lGem,FieldName,frame_counter,varargin)
 % Assigns cells to five cell cycle stages.
 % DIFFERENCE FROM FindStages_v2: GEMININ THRESHOLD FOR S-PHASE AND G2 CELLS
 % LOWERED (LINES 111-112). USE THIS VERSION FOR "MESSIER" POPULATIONS, WHERE GEMININ LEVELS
@@ -112,17 +112,23 @@ idxS = DNA>DNA_thr2&DNA<DNA_thr3&lGem>Gem_thr1; %Changed from FindStages_v2.m
 idxG2 = DNA>DNA_thr3&DNA<DNA_thr4&lGem>Gem_thr2; %Changed from FindStages_v2.m
 % Visualization
 if length(varargin)>0 && strcmp(varargin{1},'image')
-    figure(900);clf;hold on
+    fig = figure(900);clf;hold on
+    
+    subplot(1,2,1)
     plot(DNA(idxEG1), lGem(idxEG1), 'go');hold on;
     plot(DNA(idxLG1), lGem(idxLG1), 'ro');
     plot(DNA(idxG1S), lGem(idxG1S), 'yo');
     plot(DNA(idxS), lGem(idxS), 'co');
     plot(DNA(idxG2), lGem(idxG2), 'mo');
     plot(DNA, lGem, '.');
+    plot([1 1]*pk1DNA, [prctile(lGem, 1) prctile(lGem, 98)], 'k'); %2N DNA
+    plot([prctile(DNA, 1) prctile(DNA, 98)], [1 1]*pk1Gem, 'k');
+    plot([prctile(DNA, 1) prctile(DNA, 98)], [1 1]*pk2Gem, 'k');
     hold off
-    legend('EG1', 'LG1', 'G1S', 'S', 'G2');
+    legendObj = legend('EG1', 'LG1', 'G1S', 'S', 'G2','Location','northeastoutside');
+%     set(legendObj, 'Position', 'southeast')
     title(FieldName)
-    xlabel('DNA'); ylabel('log(Geminin)');
+    set(gca, 'FontSize', 14); xlabel('DNA'); ylabel('log(Geminin)');
     if pk1Gem-0.5*(pk2Gem-pk1Gem)<pk2Gem+0.8*(pk2Gem-pk1Gem)
         minLim=pk1Gem-0.5*(pk2Gem-pk1Gem);
         maxLim=pk2Gem+0.8*(pk2Gem-pk1Gem);
@@ -130,9 +136,49 @@ if length(varargin)>0 && strcmp(varargin{1},'image')
         minLim=pk2Gem+0.8*(pk2Gem-pk1Gem);
         maxLim=pk1Gem-0.5*(pk2Gem-pk1Gem);
     end
-    xlim([pk1DNA*0.6 pk1DNA*3]); ylim([minLim maxLim])
+%     xlim([pk1DNA*0.6 pk1DNA*3]); ylim([minLim maxLim])
+    xlim([prctile(DNA, 1) prctile(DNA, 99)]); ylim([prctile(lGem, 1) prctile(lGem, 99)])
 %     axis tight
+
+    subplot(1,2,2); plot(DNA, lGem, '.')
+    title(FieldName)
+    set(gca, 'FontSize', 14); xlabel('DNA'); ylabel('log(Geminin)');
+    xlim([prctile(DNA, 1) prctile(DNA, 99)]); ylim([prctile(lGem, 1) prctile(lGem, 99)])
+    
+    if length(varargin)>0 && length(varargin)<2
+        frame(frame_counter) = getframe(fig);
+    elseif length(varargin)>0 && length(varargin)<3
+        tmp = varargin{2};
+        frame = tmp;
+        frame(frame_counter) = getframe(fig);
+    end
+    
+% figure(1);
+%     subplot(1,2,1)
+%     plot(DNA(idxEG1), Gem(idxEG1), 'go');hold on;
+%     plot(DNA(idxLG1), Gem(idxLG1), 'ro');
+%     plot(DNA(idxG1S), Gem(idxG1S), 'yo');
+%     plot(DNA(idxS), Gem(idxS), 'co');
+%     plot(DNA(idxG2), Gem(idxG2), 'mo');
+%     plot(DNA, Gem, '.'); 
+%     plot([1 1]*pk1DNA, [prctile(Gem, 1) prctile(Gem, 98)], 'k'); %2N DNA
+%     plot([prctile(DNA, 1) prctile(DNA, 98)], [1 1]*pk1Gem, 'k');
+%     plot([prctile(DNA, 1) prctile(DNA, 98)], [1 1]*pk2Gem, 'k'); hold off
+%     %legend('EG1', 'LG1', 'G1S', 'S', 'G2');
+%     title(['Well: row ' int2str(row) ', col ' int2str(col)])
+%     set(gca, 'FontSize', 14); xlabel('DNA'); ylabel('Gem');
+%     %xlim([pk1DNA*0.6 pk1DNA*3]); ylim([pk1Gem-0.5*(pk2Gem-pk1Gem) pk2Gem+0.8*(pk2Gem-pk1Gem)])
+%     xlim([prctile(DNA, 1) prctile(DNA, 99)]); ylim([prctile(Gem, 1) prctile(Gem, 99)])
+%     subplot(1,2,2); plot(DNA, Gem, '.')
+%     title(['Well: row ' int2str(row) ', col ' int2str(col)])
+%     set(gca, 'FontSize', 14); xlabel('DNA'); ylabel('Gem');
+%     xlim([prctile(DNA, 1) prctile(DNA, 99)]); ylim([prctile(Gem, 1) prctile(Gem, 99)])
+%     pause(0.5);
+
+else
+    frame = struct;
 end
+
 
 
 
