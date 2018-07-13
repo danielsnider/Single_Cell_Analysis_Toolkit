@@ -48,32 +48,32 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     imshow(im_open,[]);
   end
 
-  % MAGIC
+  % Remove large regions with low entropy 
   im_smooth = imgaussfilt(img,5,'filtersize',55);
   im_stdev = stdfilt(im_smooth);
   im_stdev_thresh = im_stdev<.6;
   im_stdev_open = imopen(im_stdev_thresh,strel('disk',55));
   if ismember(debug_level,{'All'})
-    figure; imshow(im_stdev_open,[]);
+    f = figure(2881); clf; set(f,'name','low entropy mask','NumberTitle', 'off');
+    imshow(im_stdev_open,[]);
   end
   im_open(im_stdev_open==1)=0;
   if ismember(debug_level,{'All'})
-    figure; imshow(im_open,[]);
-  end
-  filled_img = imfill(im_open,'holes');
-  if ismember(debug_level,{'All'})
-    figure; imshow(filled_img,[]);
+    f = figure(2881); clf; set(f,'name','low entropy removed','NumberTitle', 'off');
+    imshow(im_open,[]);
   end
 
   % Min size
-  im_areafilt = bwareafilt(filled_img,[min_area max_area]);
+  im_areafilt = bwareafilt(im_open,[min_area max_area]);
   if ismember(debug_level,{'All'})
     f = figure(2880); clf; set(f,'name','min max size filter','NumberTitle', 'off');
     imshow(im_areafilt,[]);
   end
 
+  % Return result
   result = im_areafilt;
 
+  % Visualize
   if ismember(debug_level,{'All','Result Only'})
     f = figure(17883); clf; set(f,'name',[plugin_name ' Result'],'NumberTitle', 'off')
     if min(img(:)) < prctile(img(:),99.5)
