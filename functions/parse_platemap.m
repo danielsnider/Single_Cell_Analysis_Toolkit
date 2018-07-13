@@ -1,4 +1,4 @@
-.qgfunction [plates, app_parameters] = func(full_path)
+function [plates, app_parameters] = func(full_path)
   % full_path = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\MY_PLATEMAP.xlsx';
   [num,txt,raw] = xlsread(full_path);
 
@@ -134,10 +134,24 @@
       end
     end    
     
-    
+
+    %% Add the suffix to each well
+    well_suffix = raw{starty+2, startx}; % suffix position
+    if ~isnan(well_suffix) % if there is a suffix in the correct position
+      for xx=1:size(plate.wells,2)
+        for yy=1:size(plate.wells,1)
+          if ~isnan(plate.wells{yy,xx}) % if there is a value in the well position
+            plate.wells{yy,xx} = [num2str(plate.wells{yy,xx}) ' ' well_suffix];
+          end
+        end
+      end
+    end
+
+    % Keep raw but now create a key value layout for well metadata
+    plate.wells_meta = plate.wells;
+      
     %% Add the experimental information found in the condition columns to the well info of each individual well (seperated by commas)
     % Initialize a cope of plate.wells to store meta-datastructures
-    plate.wells_meta = plate.wells;
     % Loop over condition columns
     for n=1:length(condition_column_keys)
       key = condition_column_keys{n};

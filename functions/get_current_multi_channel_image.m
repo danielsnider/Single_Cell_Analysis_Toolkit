@@ -71,6 +71,19 @@ function multi_channel_img = fun(app)
     contains(cellfun(@(x) (num2str(x)),{(app.plates(plate_num).img_files_subset.field)},'UniformOutput',false),num2str(field))&...
     ismember(cellfun(@(x) (num2str(x)),[(app.plates(plate_num).img_files_subset.timepoint)],'UniformOutput',false),num2str(timepoint)));
     
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'CellomicsTiffs'})
+    % Build path to current image from dropdown selections
+    image_dir = app.plates(plate_num).metadata.ImageDir;
+    row = app.RowDropDown.Value;
+    column = app.ColumnDropDown.Value;
+    field = app.FieldDropDown.Value;
+    timepoint = app.TimepointDropDown.Value;
+    
+    multi_channel_img = app.plates(plate_num).img_files_subset(ismember([app.plates(plate_num).img_files_subset.row],row) & ...
+      ismember([app.plates(plate_num).img_files_subset.column],column) & ...
+      ismember([app.plates(plate_num).img_files_subset.field],field) & ...
+      ismember([app.plates(plate_num).img_files_subset.timepoint],timepoint));
+
   end
       
       

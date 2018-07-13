@@ -13,6 +13,8 @@ function img_path = fun(app, chan_num)
       '%s/r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tiff',...
       img_dir,row,column,field,plate_file_num,chan_num,timepoint);
 
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'CellomicsTiffs'})
+    fix_me
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
     multi_channel_img = get_current_multi_channel_image(app);
     if isempty(multi_channel_img.chans)

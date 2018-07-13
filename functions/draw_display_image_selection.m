@@ -113,7 +113,7 @@ function fun(app)
     pos(2) = 222; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
-  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs') | strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'IncuCyte')
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
     app.RowDropDown.Visible = 'on';
     app.ColumnDropDown.Visible = 'on';
     app.FieldDropDown.Visible = 'on';
@@ -131,7 +131,7 @@ function fun(app)
     experiments_filtered_nums = [];
     for row_num=app.plates(plate_num).keep_rows
       for col_num=app.plates(plate_num).keep_columns
-        if ~isempty(experiments) && ~isnan(experiments{row_num,col_num})
+        if ~isempty(experiments) && row_num <= size(experiments,1) && col_num <= size(experiments,2) && ~isempty(experiments{row_num,col_num})
           experiments_filtered_names{length(experiments_filtered_names)+1} = experiments{row_num,col_num};
           experiments_filtered_nums(length(experiments_filtered_nums)+1) = complex(row_num, col_num); % encode row and col positions in a complex number because matlab won't allow two seperate values per DataItem
         end

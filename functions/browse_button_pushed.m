@@ -58,7 +58,7 @@ end
       % Image Naming Scheme Supported Check
     for plate_num=1:length(app.plates)
       naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
-      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','IncuCyte'};
+      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','IncuCyte','CellomicsTiffs'};
       known_naming_schemes_str=cellfun(@(x) [x ', '],known_naming_schemes,'UniformOutput',false);
       known_naming_schemes_str=[known_naming_schemes_str{:}];
       known_naming_schemes_str=known_naming_schemes_str(1:end-2);

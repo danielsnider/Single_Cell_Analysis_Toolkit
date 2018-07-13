@@ -1,11 +1,8 @@
 function fun(app, plate_num)
   img_dir = app.plates(plate_num).metadata.ImageDir;
 
-  % The plate number in the filename of images
-  plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
-
   % List Image Files
-  img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
+  img_files = dir([img_dir '\*.tif*']); % ex. \path\Images\*.tif*
   app.plates(plate_num).img_files = img_files;
   
   if isempty(img_files)
@@ -14,27 +11,28 @@ function fun(app, plate_num)
     throw_application_error(app,msg,title_);
   end
 
-  % Get unique row, column, etc. values from all the image names
-  rows = cellfun(@(x) str2num(x(2:3)), {img_files.name},'UniformOutput',false);
+  % Example file name:     'CBLG-3776-1NW7_180627130001i3t001A01f01d1.TIF'
+
+  img_filename_meta_info_extraction = regexp({img_files.name},'.*t(?<timepoints>\d+)(?<rows>[A-Z])(?<columns>\d+)f(?<fields>\d+).*','names');
+  % row_letters = cellfun(@(x) x.rows,img_filename_meta_info_extraction,'UniformOutput',false)
+  % uniq_row_letters = unique(rows,'sort');
+  rows = cellfun(@(x) uint8(upper(x.rows))-64,img_filename_meta_info_extraction,'UniformOutput',false);
   uniq_rows = unique([rows{:}],'sort');
-  columns = cellfun(@(x) str2num(x(5:6)), {img_files.name},'UniformOutput',false);
+  columns = cellfun(@(x) str2num(x.columns),img_filename_meta_info_extraction,'UniformOutput',false);
   uniq_columns = unique([columns{:}],'sort');
-  fields = cellfun(@(x) str2num(x(8:9)), {img_files.name},'UniformOutput',false);
-  uniq_fields = unique([fields{:}],'sort');
-  plates = cellfun(@(x) str2num(x(11:12)), {img_files.name},'UniformOutput',false);
-  uniq_plates = unique([plates{:}],'sort');
-  channels = cellfun(@(x) str2num(x(16)), {img_files.name},'UniformOutput',false);
-  uniq_channels = unique([channels{:}],'sort');
-  paren = @(x, varargin) str2num(x{varargin{:}}); % helper to extract value from array in one line
-  timepoints = cellfun(@(x) paren(strsplit(x,{'sk','fk'}),2), {img_files.name},'UniformOutput',false);
-  uniq_timepoints = unique([timepoints{:}],'sort');
+  fields = cellfun(@(x) str2num(x.fields),img_filename_meta_info_extraction,'UniformOutput',false);
+  uniq_fields = (unique([fields{:}],'sort'));
+  timepoints = cellfun(@(x) str2num(x.timepoints),img_filename_meta_info_extraction,'UniformOutput',false);
+  uniq_timepoints = (unique([timepoints{:}],'sort'));
 
   app.plates(plate_num).rows = uniq_rows;
   app.plates(plate_num).columns = uniq_columns;
   app.plates(plate_num).fields = uniq_fields;
   app.plates(plate_num).timepoints = uniq_timepoints;
+
+  uniq_channels = 1; % LIMITATION(Dan): I have only had access to a dataset with 1 channel
+  channels = ones(length(fields));
   app.plates(plate_num).channels = uniq_channels;
-  app.plates(plate_num).plates = uniq_plates;
 
   r = num2cell(rows);
   [app.plates(plate_num).img_files.row] = r{:};
@@ -46,8 +44,6 @@ function fun(app, plate_num)
   [app.plates(plate_num).img_files.timepoint] = t{:};
   c = num2cell(channels);
   [app.plates(plate_num).img_files.channel] = c{:};
-  p = num2cell(plates);
-  [app.plates(plate_num).img_files.plate] = p{:};
 
   % Reorganize
   img_files = app.plates(plate_num).img_files;

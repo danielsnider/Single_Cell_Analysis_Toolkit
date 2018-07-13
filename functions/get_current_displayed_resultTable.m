@@ -5,7 +5,7 @@ function subsetTable = fun(app)
   subsetTable = table();
 
   if any(ismember(fields(app),'ResultTable_for_display')) && istable(app.ResultTable_for_display)
-    if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
       % Currently selected image is uniquely identified by row, column, field, and timepoint
       row = app.RowDropDown.Value;
       column = app.ColumnDropDown.Value;
