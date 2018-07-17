@@ -1,3 +1,8 @@
+THIS FILE IS DEPRECATED
+THIS FILE IS DEPRECATED
+THIS FILE IS DEPRECATED
+THIS FILE IS DEPRECATED
+
 function img_path = fun(app, chan_num)
   plate_num = app.PlateDropDown.Value;
 

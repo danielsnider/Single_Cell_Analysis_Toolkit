@@ -1,6 +1,6 @@
 function [params, algorithm] = fun()
 
-  algorithm.name = 'Threshold Segmentation (Gonska)';
+  algorithm.name = 'Gonska Segmentation';
   algorithm.help = 'This plugin is tailored to the needs of the Gonska Lab.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
@@ -47,6 +47,12 @@ function [params, algorithm] = fun()
   params(n).name = 'Max Area';
   params(n).default = Inf;
   params(n).help = 'Remove segments that are larger than the max area.';
+  params(n).type = 'numeric';
+
+  n = n + 1;
+  params(n).name = 'Segmentation Sensitivity';
+  params(n).default = 2;
+  params(n).help = 'The amount of gaussian blurring on the distance transformed object mask for the input to watershed segmentation.';
   params(n).type = 'numeric';
 
   n = n + 1;

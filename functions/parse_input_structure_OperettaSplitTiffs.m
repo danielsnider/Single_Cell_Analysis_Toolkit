@@ -64,6 +64,8 @@ function fun(app, plate_num)
     multi_channel_img.field = image_file.field{:};
     multi_channel_img.timepoint = image_file.timepoint{:};
     multi_channel_img.ImageName = image_file.name;
+    multi_channel_img.well_info_string = app.plates(plate_num).wells{multi_channel_img.row, multi_channel_img.column};
+    multi_channel_img.well_info_struct = app.plates(plate_num).wells_meta{multi_channel_img.row, multi_channel_img.column};
     for chan_num=[uniq_channels]
       image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff
       image_filename(16) = chan_nums_str{chan_num}; % change the channel number

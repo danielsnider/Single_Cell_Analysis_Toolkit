@@ -71,6 +71,10 @@ function fun(app)
     %% TRACK CELLS
     app.log_processing_message(app, 'Tracking...');
     [imageTable,DiffTable] = cell_tracking_v1_simple(imageTable, composite_differences, time_column_name, CentroidName);
+
+    %% Timelapse filtering (keep only objects that are seen at all timepoints)
+    % Elimate objects whos centroids don't lie within objects that exist at all timepoints
+    
   
     % Store result
     TrackedTable = [TrackedTable; imageTable];

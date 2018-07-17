@@ -165,7 +165,7 @@ try
         if isfield(param,'sub_tab')
             label_pos = [-50 v_offset-25 200 70]; %[5 280 80 70] old: [-20 v_offset-52 200 70]
         else
-            label_pos = [400 v_offset-5 200 22];
+            label_pos = [400 v_offset 200 22];
         end
         
         help_pos = [param_pos(1)+130 param_pos(2)+1 20 20];
@@ -187,7 +187,7 @@ try
             end
         end
         % Parameter Input Box
-        if ismember(param.type,{'numeric','text','dropdown','checkbox','slider','listbox'})
+        if ismember(param.type,{'numeric','text','dropdown','checkbox','slider','listbox','operate_on'})
             % Set an index number for this component
             if ~isfield(app.analyze{an_num},'fields')
                 app.analyze{an_num}.fields = {};
@@ -207,6 +207,10 @@ try
             elseif strcmp(param.type,'dropdown')
                 app.analyze{an_num}.fields{field_num} = uidropdown(current_tab);
                 app.analyze{an_num}.fields{field_num}.Items = param.options;
+            elseif strcmp(param.type,'operate_on')
+                app.analyze{an_num}.fields{field_num} = uidropdown(current_tab);
+                app.analyze{an_num}.fields{field_num}.Items = param.options;
+                app.analyze{an_num}.fields{field_num}.UserData.operate_on = true; % set this special flag
             elseif strcmp(param.type,'checkbox')
                 app.analyze{an_num}.fields{field_num} = uicheckbox(current_tab);
                 app.analyze{an_num}.fields{field_num}.Text = '';
@@ -495,8 +499,6 @@ try
             if isfield(param,'optional') && ~isempty(param.optional)
                 app.analyze{an_num}.InputUITable{drop_num}.UserData.ParamOptionalCheck = MakeOptionalCheckbox(app, an_num, param, param_index,current_tab);
             end
-            
-            
             
         else
             msg = sprintf('Unkown parameter type with name "%s" and type "%s". See file "definition_%s.m" and correct this issue.',param.name, param.type,algo_name);

@@ -45,7 +45,7 @@ function [plates, app_parameters] = func(full_path)
         break
       end
       key = string(raw{starty,iter_xoffset});
-      if isempty(key) | ismissing(key)==1 % reached empty cell 
+      if isempty(key) | ismissing(key)==1 % reached empty cell
         break
       end
       key = genvarname(key);
@@ -101,7 +101,7 @@ function [plates, app_parameters] = func(full_path)
           break
         end
         key = raw{yoffset, iter_xoffset};
-        if isempty(key) % reached empty cell 
+        if any(isnan(key)) || isempty(key) % reached empty cell 
           break
         end
         values = {raw{yoffset+1:yoffset+plate.rows,iter_xoffset}};
@@ -124,7 +124,7 @@ function [plates, app_parameters] = func(full_path)
           break
         end
         key = raw{iter_yoffset, xoffset};
-        if isempty(key) % reached empty cell 
+        if any(isnan(key)) || isempty(key) % reached empty cell 
           break
         end
         values = {raw{iter_yoffset, xoffset+1:xoffset+plate.columns}};
@@ -176,6 +176,9 @@ function [plates, app_parameters] = func(full_path)
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
           plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val;
+          if ~isnan(well_suffix) % if there is a suffix in the correct position
+            plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(well_suffix)) = txt_str{yy,xx};
+          end
         end
       end
     end
@@ -206,7 +209,10 @@ function [plates, app_parameters] = func(full_path)
             plate.wells_meta{yy,xx} = struct();
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
-          
+          if ~isnan(well_suffix) % if there is a suffix in the correct position
+            plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(well_suffix)) = txt_str{yy,xx};
+          end
+
           % Temporary fix. Need to delve further into what the issue might
           % be
           % disp(key)

@@ -119,15 +119,19 @@ end
     end
 
     if app.CheckBox_AnalyzeImmediately.Value
-      prompt_user = false;
-      start_processing_button_pushed(app,prompt_user);
+      if length(app.measure)>0
+        prompt_user = false;
+        start_processing_button_pushed(app,prompt_user);
+      end
       run_all_analysis(app);
     end
 
     % Finished
-    app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
-    app.progressdlg2.Value = 1;
-    close(app.progressdlg2);
+    if isvalid(app.progressdlg2)        
+        app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
+        app.progressdlg2.Value = 1;
+        close(app.progressdlg2);
+    end
     app.log_processing_message(app, 'Ready.');
     busy_state_change(app,'not busy');
     % uialert(app.UIFigure,'Loading complete.','Ready', 'Icon','success');

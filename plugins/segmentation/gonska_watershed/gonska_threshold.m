@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, close_size, open_size, min_area, max_area, debug_level)
+function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, close_size, open_size, min_area, max_area, bwdist_smooth_param, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -59,17 +59,27 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
   end
   im_open(im_stdev_open==1)=0;
   if ismember(debug_level,{'All'})
-    f = figure(2881); clf; set(f,'name','low entropy removed','NumberTitle', 'off');
+    f = figure(2881); clf; set(f,'n`me','low entropy removed','NumberTitle', 'off');
     imshow(im_open,[]);
   end
 
+  % Segmentation
+  im_bwdist = bwdist(~im_open);
+  im_ws = watershed(-imgaussfilt(im_bwdist,bwdist_smooth_param));
+  im_ws(im_open==0)=0;
+  if ismember(debug_level,{'All'})
+    f = figure(7880); clf; set(f,'name','watershed','NumberTitle', 'off');
+    figure;imshow(im_ws,[]);
+  end
+
   % Min size
-  im_areafilt = bwareafilt(im_open,[min_area max_area]);
+  im_areafilt = bwareafilt(im_ws>0,[min_area max_area]);
   if ismember(debug_level,{'All'})
     f = figure(2880); clf; set(f,'name','min max size filter','NumberTitle', 'off');
     imshow(im_areafilt,[]);
   end
 
+ 
   % Return result
   result = im_areafilt;
 
