@@ -58,7 +58,7 @@ function [params, algorithm] = fun()
   params(n).type = 'text';
 
   n = n + 1;
-  params(n).name = 'Save Figure at Magnification';
+  params(n).name = 'Save Figures at Magnification';
   params(n).default = 1;
   params(n).help = '';
   params(n).type = 'numeric';

@@ -89,6 +89,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
   for tid=1:num_timepoints
     seg = filtered_segments(tid).data;
     seg = seg > 0;
+    num_objects(tid) = max(max(bwlabel(seg)));
     areas(tid) = sum(seg(:));
     norm_areas(tid) = areas(tid) ./ areas(1); % divide all by the first point
   end
@@ -153,6 +154,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
       ResultTable.(meta_name) = segments(1).info.well_info_struct.(meta_name);
     end
   end
+  ResultTable.Number_of_Organoids = max(num_objects(:));
   ResultTable.Area_Pixel_Count = areas;
   ResultTable.Area_Normalized_Change = norm_areas;
   Experiment_Name = sprintf('%s, Row %d, Column %d, Field %d, Image Name %s',segments(1).info.well_info_string, segments(1).info.row, segments(1).info.column, segments(1).info.field, segments(1).info.ImageName); % ex.     '0.128 Forskolin mM, Something L-Arg (1mM), Treatment??? (Arg), Row 1, Column 1, Field 1, Image Name CBLG-3776-1NW7_180627130001i3t001A01f01d1.TIF'

@@ -227,7 +227,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       mkdir(save_dir) % do every time because it's idempotent and won't fail
       if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
         filename = sprintf('%s\\montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row,...
-            imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint{:});
+            imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
       else
         filename = sprintf('%s/montage_%s_plate%d_%s.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).experiment);
       end
