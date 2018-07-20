@@ -67,9 +67,9 @@ function [params, algorithm] = fun()
   params(n).optional_default_state = false;
 
   n = n + 1;
-  params(n).name = 'Remove Objects Touching Boarder';
+  params(n).name = 'Remove Objects Touching Border';
   params(n).default = 0;
-  params(n).help = 'Remove segments that are touching the boarder of the image. If you specify a value of 25 (or any value between 0 and 100), then objects will be removed if 25% or more of their perimeter is touching the boarder. If you specify 0, any boarder touch will reject the object.';
+  params(n).help = 'Remove segments that are touching the border of the image. If you specify a value of 25 (or any value between 0 and 100), then objects will be removed if 25% or more of their perimeter is touching the border. If you specify 0, any border touch will reject the object.';
   params(n).type = 'numeric';
   params(n).limits = [0 100];
   params(n).optional = true;

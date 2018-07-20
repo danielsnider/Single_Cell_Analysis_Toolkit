@@ -57,11 +57,11 @@ function [params, algorithm] = fun()
   params(n).help = '';
   params(n).type = 'text';
 
-  n = n + 1;
-  params(n).name = 'Save Figures at Magnification';
-  params(n).default = 1;
-  params(n).help = '';
-  params(n).type = 'numeric';
-  params(n).limits = [0.001 10];
+  % n = n + 1;
+  % params(n).name = 'Save Figures at Magnification';
+  % params(n).default = 1;
+  % params(n).help = '';
+  % params(n).type = 'numeric';
+  % params(n).limits = [0.001 10];
 
 end

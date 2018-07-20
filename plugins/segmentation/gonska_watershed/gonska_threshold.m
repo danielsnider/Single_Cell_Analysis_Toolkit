@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, close_size, open_size, min_area, max_area, bwdist_smooth_param, debug_level)
+function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, min_area, max_area, bwdist_smooth_param, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -16,21 +16,30 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
   end
 
   % Threshold
-  T = adaptthresh(im_smooth, thresh_param);
+  median_val = double(median(img(:)));
+  adaptive_sensitivity = 30;
+  adaptive_factor = adaptive_sensitivity*median_val*.001+thresh_param;
+  if adaptive_factor > 0.5
+    adaptive_factor = 0.5;
+  end
+  if adaptive_factor < 0
+    adaptive_factor = 0;
+  end
+  T = adaptthresh(im_smooth, adaptive_factor);
   im_thresh = imbinarize(im_smooth,T);
   if ismember(debug_level,{'All'})
     f = figure(2885); clf; set(f,'name','threshold','NumberTitle', 'off');
     imshow(im_thresh,[]);
   end
 
-  % Shrink white objects to remove small dots and thin lines
-  im_close = imclose(im_thresh,strel('disk',close_size));
-  if ismember(debug_level,{'All'})
-    f = figure(2884); clf; set(f,'name','imclose','NumberTitle', 'off');
-    imshow(im_thresh,[]);
-  end
+  % % Shrink white objects to remove small dots and thin lines
+  % im_close = imclose(im_thresh,strel('disk',close_size));
+  % if ismember(debug_level,{'All'})
+  %   f = figure(2884); clf; set(f,'name','imclose','NumberTitle', 'off');
+  %   imshow(im_thresh,[]);
+  % end
 
-  im_bordercleared = imclearborder(im_close);
+  im_bordercleared = imclearborder(im_thresh);
   if ismember(debug_level,{'All'})
     f = figure(2883); clf; set(f,'name','clearborder','NumberTitle', 'off');
     imshow(im_bordercleared,[]);
@@ -42,11 +51,11 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     imshow(im_filled,[]);
   end
     
-  im_open = imopen(im_filled,strel('disk',open_size));
-  if ismember(debug_level,{'All'})
-    f = figure(2881); clf; set(f,'name','imopen','NumberTitle', 'off');
-    imshow(im_open,[]);
-  end
+  % im_open = imopen(im_filled,strel('disk',open_size));
+  % if ismember(debug_level,{'All'})
+  %   f = figure(2881); clf; set(f,'name','imopen','NumberTitle', 'off');
+  %   imshow(im_open,[]);
+  % end
 
   % Remove large regions with low entropy 
   im_smooth = imgaussfilt(img,5,'filtersize',55);
@@ -57,23 +66,24 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
     f = figure(2881); clf; set(f,'name','low entropy mask','NumberTitle', 'off');
     imshow(im_stdev_open,[]);
   end
-  im_open(im_stdev_open==1)=0;
+  im_filled(im_stdev_open==1)=0;
   if ismember(debug_level,{'All'})
-    f = figure(2881); clf; set(f,'n`me','low entropy removed','NumberTitle', 'off');
-    imshow(im_open,[]);
+    f = figure(2881); clf; set(f,'name','low entropy removed','NumberTitle', 'off');
+    imshow(im_filled,[]);
   end
 
-  % Segmentation
-  im_bwdist = bwdist(~im_open);
-  im_ws = watershed(-imgaussfilt(im_bwdist,bwdist_smooth_param));
-  im_ws(im_open==0)=0;
-  if ismember(debug_level,{'All'})
-    f = figure(7880); clf; set(f,'name','watershed','NumberTitle', 'off');
-    figure;imshow(im_ws,[]);
-  end
+  % v1
+  % % Segmentation
+  % im_bwdist = bwdist(~im_open);
+  % im_ws = watershed(-imgaussfilt(im_bwdist,bwdist_smooth_param));
+  % im_ws(im_open==0)=0;
+  % if ismember(debug_level,{'All'})
+  %   f = figure(7880); clf; set(f,'name','watershed','NumberTitle', 'off');
+  %   figure;imshow(im_ws,[]);
+  % end
 
-  % Min size
-  im_areafilt = bwareafilt(im_ws>0,[min_area max_area]);
+  % Min size (2D)
+  im_areafilt = bwareafilt(im_filled,[min_area max_area]);
   if ismember(debug_level,{'All'})
     f = figure(2880); clf; set(f,'name','min max size filter','NumberTitle', 'off');
     imshow(im_areafilt,[]);

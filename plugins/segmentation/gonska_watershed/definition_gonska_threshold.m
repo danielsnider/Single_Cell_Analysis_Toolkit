@@ -20,22 +20,22 @@ function [params, algorithm] = fun()
 
   n = n + 1;
   params(n).name = 'Adaptive Threshold Sensitivity';
-  params(n).default = 0.4;
+  params(n).default = 0;
   params(n).help = 'Determine which pixels get thresholded as foreground pixels, specified as a real, nonnegative numeric scalar in the range [0,1]. High sensitivity values lead to thresholding more pixels as foreground, at the risk of including some background pixels. The type of thresholding performed is: Adaptive image threshold using local first-order statistics. More info: https://www.mathworks.com/help/images/ref/adaptthresh.html';
   params(n).type = 'numeric';
   params(n).limits = [0 1];
 
-  n = n + 1;
-  params(n).name = 'Close Morph Size';
-  params(n).default = 0;
-  params(n).help = 'Remove small dots and thin lines of this size. A setting of 0 effectively disables this step.';
-  params(n).type = 'numeric';
+  % n = n + 1;
+  % params(n).name = 'Close Morph Size';
+  % params(n).default = 0;
+  % params(n).help = 'Remove small dots and thin lines of this size. A setting of 0 effectively disables this step.';
+  % params(n).type = 'numeric';
 
-  n = n + 1;
-  params(n).name = 'Open Morph Size';
-  params(n).default = 0;
-  params(n).help = 'Connect nearby objects within this amount. A setting of 0 effectively disables this step.';
-  params(n).type = 'numeric';
+  % n = n + 1;
+  % params(n).name = 'Open Morph Size';
+  % params(n).default = 0;
+  % params(n).help = 'Connect nearby objects within this amount. A setting of 0 effectively disables this step.';
+  % params(n).type = 'numeric';
 
   n = n + 1;
   params(n).name = 'Min Area';
