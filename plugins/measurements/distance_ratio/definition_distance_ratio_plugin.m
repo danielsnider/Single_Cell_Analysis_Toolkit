@@ -1,7 +1,7 @@
 function [params, algorithm] = fun()
 
   algorithm.name = 'Distance Ratio Between Objects';
-  algorithm.help = 'This plugin calculates whether objects are closer to one point or another. A value of 0 means the object is touching the start point, and a value of 1 means the object is tocuhing the end point. A value of 0.5 means that the object is located half way between the start and end points.';
+  algorithm.help = 'This plugin calculates whether objects are closer to type of segment or another. A value of 0 means the object is touching the start point, and a value of 1 means the object is tocuhing the end point. A value of 0.5 means that the object is located half way between the start and end points.';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

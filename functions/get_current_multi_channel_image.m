@@ -26,8 +26,15 @@ function multi_channel_img = fun(app)
       image_path = sprintf(...
         '%s/%s', image_dir,image_name);
       if ~exist(image_path) % If the file doesn't exist, reset the dropdown box values and return to avoid updating the figure
+        image_name = sprintf(...
+          'r%02dc%02df%02dp%02d-ch%dsk%dfk1fl1.tif',...
+          row,column,field,plate_file_num,chan_num,timepoint);
+        image_path = sprintf(...
+          '%s/%s', image_dir,image_name);
+      end
+      if ~exist(image_path) % If the file doesn't exist, reset the dropdown box values and return to avoid updating the figure
         draw_display(app);
-        uialert(app.UIFigure,'Sorry, the image file you are trying to process does not exist. A bug allowed this to happen.','Bug', 'Icon','error');
+        uialert(app.UIFigure,sprintf('Sorry, the image file you are trying to process does not exist. A bug allowed this to happen. Image path: %s',image_path),'Bug', 'Icon','error');
         multi_channel_img = [];
         return
       end
@@ -64,6 +71,19 @@ function multi_channel_img = fun(app)
     contains(cellfun(@(x) (num2str(x)),{(app.plates(plate_num).img_files_subset.field)},'UniformOutput',false),num2str(field))&...
     ismember(cellfun(@(x) (num2str(x)),[(app.plates(plate_num).img_files_subset.timepoint)],'UniformOutput',false),num2str(timepoint)));
     
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'CellomicsTiffs'})
+    % Build path to current image from dropdown selections
+    image_dir = app.plates(plate_num).metadata.ImageDir;
+    row = app.RowDropDown.Value;
+    column = app.ColumnDropDown.Value;
+    field = app.FieldDropDown.Value;
+    timepoint = app.TimepointDropDown.Value;
+    
+    multi_channel_img = app.plates(plate_num).img_files_subset(ismember([app.plates(plate_num).img_files_subset.row],row) & ...
+      ismember([app.plates(plate_num).img_files_subset.column],column) & ...
+      ismember([app.plates(plate_num).img_files_subset.field],field) & ...
+      ismember([app.plates(plate_num).img_files_subset.timepoint],timepoint));
+
   end
       
       

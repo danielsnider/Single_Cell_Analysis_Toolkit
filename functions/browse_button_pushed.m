@@ -58,7 +58,7 @@ end
       % Image Naming Scheme Supported Check
     for plate_num=1:length(app.plates)
       naming_scheme = app.plates(plate_num).metadata.ImageFileFormat;
-      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','IncuCyte'};
+      known_naming_schemes = {'OperettaSplitTiffs','ZeissSplitTiffs', 'SingleChannelFiles', 'XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','IncuCyte','CellomicsTiffs'};
       known_naming_schemes_str=cellfun(@(x) [x ', '],known_naming_schemes,'UniformOutput',false);
       known_naming_schemes_str=[known_naming_schemes_str{:}];
       known_naming_schemes_str=known_naming_schemes_str(1:end-2);
@@ -119,15 +119,19 @@ end
     end
 
     if app.CheckBox_AnalyzeImmediately.Value
-      prompt_user = false;
-      start_processing_button_pushed(app,prompt_user);
+      if length(app.measure)>0
+        prompt_user = false;
+        start_processing_button_pushed(app,prompt_user);
+      end
       run_all_analysis(app);
     end
 
     % Finished
-    app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
-    app.progressdlg2.Value = 1;
-    close(app.progressdlg2);
+    if isvalid(app.progressdlg2)        
+        app.progressdlg2.Message = sprintf('%s\n%s',msg,'Finished.');
+        app.progressdlg2.Value = 1;
+        close(app.progressdlg2);
+    end
     app.log_processing_message(app, 'Ready.');
     busy_state_change(app,'not busy');
     % uialert(app.UIFigure,'Loading complete.','Ready', 'Icon','success');

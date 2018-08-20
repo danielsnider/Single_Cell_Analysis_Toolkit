@@ -42,7 +42,7 @@ function fun(app)
       app.progressdlg2.Value = count / num_imgs_to_process;
       app.log_processing_message(app, msg);
 
-      if strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')||strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'OperettaSplitTiffs')
+      if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
         app.RowDropDown.Value = img.row;
         app.ColumnDropDown.Value = img.column;
         app.FieldDropDown.Value = img.field;

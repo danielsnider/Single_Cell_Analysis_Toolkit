@@ -32,18 +32,6 @@ function fun(app, prompt_user)
   
   start_processing(app);
 
-  %% Save Results To Disk
-  if ~isempty(app.ResultTable)
-      % ~strcmp(app.SavetoEditField.Value,'choose a path') &  ~strcmp(app.SavetoEditField.Value,'') & 
-      tStart = tic; % Start Timer
-      ResultTable_To_Save = app.ResultTable;
-      save_measurements(app, 'save_both_file_types', 'no_prompt_save_location');
-      tEnd = toc(tStart); % Stop Timer
-      fprintf('Saving ResultTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
-  elseif isempty(app.SavetoEditField.Value)
-      app.SavetoEditField.Value = 'choose a path';
-  end
-
   if ~isempty(app.ResultTable)
     % Make buttons visible
     app.Button_ViewMeasurements.Visible = 'on';
@@ -53,6 +41,16 @@ function fun(app, prompt_user)
     app.NumberBeforeFiltering.Value = height(app.ResultTable);
     app.NumberAfterFiltering.Value = height(app.ResultTable);
     app.ResultTable_filtered = table();
+
+    %% Save Results To Disk
+    % ~strcmp(app.SavetoEditField.Value,'choose a path') &  ~strcmp(app.SavetoEditField.Value,'') & 
+    tStart = tic; % Start Timer
+    ResultTable_To_Save = app.ResultTable;
+    save_measurements(app, 'save_both_file_types', 'no_prompt_save_location');
+    tEnd = toc(tStart); % Stop Timer
+    fprintf('Saving ResultTable took: %d minutes and %f seconds\n', floor(tEnd/60), rem(tEnd,60));
+  elseif isempty(app.SavetoEditField.Value)
+    app.SavetoEditField.Value = 'choose a path';
   end
 
   update_figure(app);

@@ -45,7 +45,7 @@ function [plates, app_parameters] = func(full_path)
         break
       end
       key = string(raw{starty,iter_xoffset});
-      if isempty(key) | ismissing(key)==1 % reached empty cell 
+      if isempty(key) | ismissing(key)==1 % reached empty cell
         break
       end
       key = genvarname(key);
@@ -101,7 +101,7 @@ function [plates, app_parameters] = func(full_path)
           break
         end
         key = raw{yoffset, iter_xoffset};
-        if isempty(key) % reached empty cell 
+        if any(isnan(key)) || isempty(key) % reached empty cell 
           break
         end
         values = {raw{yoffset+1:yoffset+plate.rows,iter_xoffset}};
@@ -124,7 +124,7 @@ function [plates, app_parameters] = func(full_path)
           break
         end
         key = raw{iter_yoffset, xoffset};
-        if isempty(key) % reached empty cell 
+        if any(isnan(key)) || isempty(key) % reached empty cell 
           break
         end
         values = {raw{iter_yoffset, xoffset+1:xoffset+plate.columns}};
@@ -134,10 +134,24 @@ function [plates, app_parameters] = func(full_path)
       end
     end    
     
-    
+
+    %% Add the suffix to each well
+    well_suffix = raw{starty+2, startx}; % suffix position
+    if ~isnan(well_suffix) % if there is a suffix in the correct position
+      for xx=1:size(plate.wells,2)
+        for yy=1:size(plate.wells,1)
+          if ~isnan(plate.wells{yy,xx}) % if there is a value in the well position
+            plate.wells{yy,xx} = [num2str(plate.wells{yy,xx}) ' ' well_suffix];
+          end
+        end
+      end
+    end
+
+    % Keep raw but now create a key value layout for well metadata
+    plate.wells_meta = plate.wells;
+      
     %% Add the experimental information found in the condition columns to the well info of each individual well (seperated by commas)
     % Initialize a cope of plate.wells to store meta-datastructures
-    plate.wells_meta = plate.wells;
     % Loop over condition columns
     for n=1:length(condition_column_keys)
       key = condition_column_keys{n};
@@ -162,6 +176,9 @@ function [plates, app_parameters] = func(full_path)
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
           plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(key)) = val;
+          if ~isnan(well_suffix) % if there is a suffix in the correct position
+            plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(well_suffix)) = txt_str{yy,xx};
+          end
         end
       end
     end
@@ -192,7 +209,10 @@ function [plates, app_parameters] = func(full_path)
             plate.wells_meta{yy,xx} = struct();
           end
           plate.wells_meta{yy,xx}.WellCondition = txt_str{yy,xx};
-          
+          if ~isnan(well_suffix) % if there is a suffix in the correct position
+            plate.wells_meta{yy,xx}.(matlab.lang.makeValidName(well_suffix)) = txt_str{yy,xx};
+          end
+
           % Temporary fix. Need to delve further into what the issue might
           % be
           % disp(key)

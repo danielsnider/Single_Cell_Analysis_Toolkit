@@ -7,6 +7,7 @@ function img = do_preprocess_image(app, plate_num, chan_num, image_file)
 
     %% Load Image
     img = read_image(app, image_file, chan_num);
+    app.current_image_name = image_file;
 
     % Get name of requested channel based on the current plate
     chan_name = app.plates(plate_num).chan_names(chan_num);

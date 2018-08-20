@@ -66,6 +66,10 @@ function fun(app)
     elseif ismember(naming_scheme, {'IncuCyte'})
         parse_input_structure_IncuCyteTiffs(app, plate_num);
         app.plates(plate_num).supports_3D = false;
+
+    elseif ismember(naming_scheme, {'CellomicsTiffs'})
+        parse_input_structure_CellomicsTiffs(app, plate_num);
+        app.plates(plate_num).supports_3D = false;
     end
 
     % Enable by default all channels for display in the figure
