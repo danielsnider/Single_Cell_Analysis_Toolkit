@@ -1,5 +1,7 @@
-function Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,Imaging_Type,Plot_Title,total_measurement)
-
+function Pre_Processing(ResultDataStructure,average_replicates,control_treatment,Plot_Title,total_measurement,MetaRows,MetaCols)
+uniResults = ResultDataStructure.uniResults;
+uniWells = ResultDataStructure.uniWells;
+ResultTable = ResultDataStructure.ResultTable;
 % Pre-Processing Data
 
 %Get column indexes for TP_{time}_Hr headers
@@ -19,55 +21,85 @@ clearvars count
 
 if average_replicates==true
     
-    if contains(Imaging_Type,'DPC')
+        uniColumnTreatments = table2array(unique(ResultTable(:,MetaCols),'stable'));
+        uniWell_Conditions = unique(ResultDataStructure.PlateMap,'stable'); uniWell_Conditions(1) = [];
+        
         % Averaging Cell Cycle numbers
         Avg_uniResults = grpstats(uniResults,meta_info,{'mean','std'},'DataVars',{'Doubling_Time', 'Cell_Cycle'});
-        Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Plot_Title,total_measurement)
         
-%     elseif contains(Imaging_Type,'Fixed')
-% %             uniCondition = unique(uniResults.WellConditions,'stable');
-% %             tmp_uniResults = uniResults;
-% %             tmp_uniResults(:,{'row','column','Doubling_Time','Cell_Cycle'}) = [];
-% %             Avg_uniResults = Cell_Cycle_Calculation(tmp_uniResults,uniWells);
-% %       
-% 
-%         
-%         uniCondition = unique(uniResults.WellConditions,'stable');
-%         tmp_uniResult = cell([length(uniCondition)+1 end_idx]);
-%         tmp_uniResult = uniResults.Properties.VariableNames;
-%         for i = 1:length(uniCondition)
-%             condition = uniCondition(i);
-%             tmp_uniResult{i+1,1} = (cat(1,uniResults.row(contains(uniResults.WellConditions,condition))'));
-%             tmp_uniResult{i+1,2} = (cat(1,uniResults.column(contains(uniResults.WellConditions,condition))'));
-%             meta_to_fill = table2cell(unique((uniResults((contains(uniResults.WellConditions,condition)),meta_info))));
-%             count = 1;
-%             for j = 3:length(meta_info)+2
-%                 tmp_uniResult(i+1,j) = meta_to_fill(count);
-%                 count = count+1;
-%             end
-%             for k = start_idx:end_idx
-%                 tmp_uniResult{i+1,k} = cat(1,uniResults.(char(uniResults.Properties.VariableNames(k)))(contains(uniResults.WellConditions,condition))');
-%             end
-%         end
-%         tmp_uniResult = cell2table(tmp_uniResult(2:end,:));
-%         tmp_uniResult.Properties.VariableNames = uniResults.Properties.VariableNames;
-%         uniWells = unique(uniResults.WellConditions,'stable');
-%         Avg_uniResults = Cell_Cycle_Calculation(tmp_uniResult,uniWells,'Averaged'); 
-%         
-%         % Old Averaging
-% %         Avg_uniResults = grpstats(uniResults,meta_info,'mean','DataVars',Time_Points);
-% %         uniWells = unique(Avg_uniResults.WellConditions,'stable');
-% %         Avg_uniResults = Cell_Cycle_Calculation(Avg_uniResults,uniWells);
-% %         
-%         Cell_Cycle_ScatterPlot(Avg_uniResults,normalize_by,control_treatment,Imaging_Type,Plot_Title)
-%     end
-         
+        [fh,tmp] = Get_User_Desired_Labels(ResultDataStructure.PlateMap);
+        Controls = ResultDataStructure.PlateMap(unique(tmp.UserData.datatable_row), unique(tmp.UserData.datatable_col))';
+        Controls = unique(reshape(Controls,[(size(Controls,1)*size(Controls,2)),1]));
+        Treatments = unique(ResultDataStructure.PlateMap(~contains(ResultDataStructure.PlateMap,Controls)&...
+            ~contains(ResultDataStructure.PlateMap,'NaN')));
+        keySet = {'Control', 'Drug_Treatments'};
+        value = {Controls,Treatments};
+        Treatments = containers.Map(keySet,value);
+        
+        uniWell_Conditions = uniWell_Conditions((contains(uniWell_Conditions,Treatments('Control'))|contains(uniWell_Conditions,Treatments('Drug_Treatments')))&contains(uniWell_Conditions,uniColumnTreatments));
+        
+        close(fh)
+        clearvars tmp
+        
+        fig = uifigure('Position',[100 100 500 500]);
+        
+        % Create uilabel
+        text = sprintf('%s\n%s\n%s','Select which meta-column you would like to separate your data by.','This will separate your data into different plots based on unique cases','in the meta-column you select.');
+        Description_label = uilabel(fig,...
+            'Text',text,'Position',[20 80 450 750]);
+        Description_label.FontSize = 14;
+        
+        % Create list box
+        Group_Plotting_List = uilistbox(fig,...
+            'Position',[20 20 350 400],...
+            'Items',[{'Well_Info'},MetaRows,MetaCols]);
+        
+        btn = uibutton(fig,...
+            'push',...
+            'Text', 'OK',...
+            'Position',[380,100, 100, 22],...
+            'ButtonPushedFcn', @(btn, event) ButtonPushed(fig,'invisible','resume'));
+        
+        uiwait(fig)
+        Group_by_Value = Group_Plotting_List.Value;
+       
+        
+        unique_Grouping = unique(Avg_uniResults.(Group_by_Value),'stable');
+        
+        for i = 1:size(unique_Grouping,1)
+            group = uniWell_Conditions(contains(uniWell_Conditions,unique_Grouping(i)));
+            data_order_to_process = reorderlist(group);
+            
+            WellConditions_Index = find(strcmp(Avg_uniResults.Properties.VariableNames,'WellConditions'))+1:find(strcmp(Avg_uniResults.Properties.VariableNames,'GroupCount'))-1;
+            target_row_result_idxs = contains(join(table2cell(Avg_uniResults(:,WellConditions_Index)),', '),data_order_to_process');
+            
+            
+            keySet = data_order_to_process;
+            valueSet = Avg_uniResults.mean_Cell_Cycle(target_row_result_idxs);
+            Cell_Cycle_Length_Map = containers.Map(keySet,valueSet);
+            
+            clearvars keySet valueSet
+        
+            % Get the total number of unique specific conditions to group by -- to colour code the same experiement testing different conditions
+            unique_measurement_count = size(unique(Avg_uniResults(:,find(strcmp(Avg_uniResults.Properties.VariableNames,'GroupCount'))-1),'stable'),1);
+            
+            
+            Figure_Name = 'CCL ScatterPlot';
+            num_Points = double(size(group,1));
+            num_Points_to_Group = unique_measurement_count;
+            data_Map = Cell_Cycle_Length_Map;
+            text_point_label = "CCL: ";
+            plot_title = ['Cell Cycle Length for: ' Plot_Title '_' char(unique_Grouping(i))];
+            y_label = 'Cell Cycle (Hours)';
+            x_label = 'Well Condition';
 
+            dynamic_Scatter_Plot(Figure_Name, data_Map, data_order_to_process, num_Points, num_Points_to_Group, text_point_label, plot_title, y_label, x_label)
+
+        end
+        close(fig)
+%         Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Plot_Title,total_measurement)
+        
+        
 end
-
-
-
-
-
 
 end

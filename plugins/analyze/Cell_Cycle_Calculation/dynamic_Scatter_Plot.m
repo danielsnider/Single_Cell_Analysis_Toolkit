@@ -12,7 +12,7 @@
 function dynamic_Scatter_Plot(Figure_Name, data_Map, data_order_to_process, num_Points, num_Points_to_Group, text_point_label, plot_title, y_label, x_label)
 
     color_list = distinguishable_colors(60,[0 0.5 0 ]);
-    figure('Name', Figure_Name); hold on; colour_count = 1;
+    figure('Name', Figure_Name); hold on; colour_count = 1; yMin = 0; yMax = 1;
     % Loop over each point
     for yy = 1:num_Points
         
@@ -23,12 +23,28 @@ function dynamic_Scatter_Plot(Figure_Name, data_Map, data_order_to_process, num_
             % Add text label 
             txt1 = join(horzcat(repelem(text_point_label,size(y,1))', num2str(y)));
             labelpoints(x,y,txt1,'N',0.2,1)
-
+            
+        % Deal with color grouping
         if ~mod(yy,num_Points_to_Group)
             colour_count = colour_count + 1;
         end
         
+        % Get Min y point
+        if yMin == 0 && y>0
+            yMin = y;
+        elseif yMin > y
+            yMin = y;
+        end
+        
+        % Get Max y point
+        if yMax < y
+            yMax = y;
+        end
+        
+        
     end
+    ylim([yMin-2 yMax+2])   % scale so all points are visible on plot
+    xlim([ 0 num_Points+1])
     x_labels = data_order_to_process';
     ax = gca;
     ax.XTick = 1:length(x_labels);

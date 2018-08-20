@@ -1,29 +1,31 @@
-[file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select Dataset that contains paths to all your ResultTables');
-Data = readtable([path '\' file]);
-% 
-% answer = 'Yes';
-% path_list = cell(1,1); count = 1;
-% while strcmp(answer,'Yes')
-%     
-%     path_list(count,1) = cellstr(uigetdir('*C:\'));
-%     count = count +1;
-%     answer = questdlg('Would you like to add another ResultTable?', 'Path to ResultTable', 'Yes','No','No');
-%     
-% end
+function User_Imputed_ResultTable(Dataset_Path,PlateMap_Path, Save_Dir)
 
 
+if nargin == 0
+    [file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select Dataset that contains paths to all your ResultTables');
+    Data = readtable([path '\' file]);
+    
+    [file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select the excel file that contains your plate map');
+    
+    [num,txt,raw] = xlsread([path '\' file]);
+    prompt_save = true;
+elseif nargin > 3 
+    error('User_Imputed_ResultTable:TooManyInputs', ...
+        'requires at most 3 optional inputs or None');
+elseif nargin < 3
+     error('User_Imputed_ResultTable:MissingInput', ...
+        'requires at most 3 optional inputs or None');
+else
+    Data = readtable(Dataset_Path);
+    [num,txt,raw] = xlsread(PlateMap_Path);
+    prompt_save = false;
+end
 
-% PlateMap = Data.Plate_Map;
+Plate_Dim = regexp(raw{1,1},'BeginPlate-Rows=(?<Row>\d+),Columns=(?<Column>\d+)','names');
 
-% [num,txt,raw] = xlsread('R:\Justin_S\Single_Cell_Analysis_Toolkit\Justin 20180112\DPC\Concatenated Result tables from old GUI\Plate map 20180212_cycE1.xlsx');
-
-[file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select the excel file that contains your plate map');
-
-[num,txt,raw] = xlsread([path '\' file]);
-
-col_Conditions = raw(cell2mat(cellfun(@ischar,(raw(:,1)),'UniformOutput',false)),1);
+col_Conditions = raw(str2double(Plate_Dim.Row)+2:end,1);
 col_Conditions = cellfun(@(s) strrep(s,' ','_'),col_Conditions,'UniformOutput',false);
-row_Conditions = raw(1,cell2mat(cellfun(@ischar,(raw(1,:)),'UniformOutput',false)));
+row_Conditions = raw(1,str2double(Plate_Dim.Column)+2:end);
 row_Conditions = cellfun(@(s) strrep(s,' ','_'),row_Conditions,'UniformOutput',false);
 
 % Get Well Meta-Info based on 96-Well Plate
@@ -72,10 +74,20 @@ for well = 1:size(uniWells,1)
     row = uniWells.Row(well); col = uniWells.Column(well);
     tmp = [char(table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3)))];
     for ii = 1:size(col_Conditions,1)
-        tmp = [tmp ', ' char(table2cell(Col_Conditions.(char(col_Conditions(ii)))(Col_Conditions.(char(col_Conditions(ii))).col==col,2)))]; 
+        if isnan(cell2mat(table2cell(Col_Conditions.(char(col_Conditions(ii)))(Col_Conditions.(char(col_Conditions(ii))).col==col,2))))
+            continue
+        else
+            tmp = [tmp ', ' char(table2cell(Col_Conditions.(char(col_Conditions(ii)))(Col_Conditions.(char(col_Conditions(ii))).col==col,2)))]; 
+        end
+        
     end
     for jj = 1:size(row_Conditions,2)
-        tmp = [tmp ', ' char(table2cell(Row_Conditions.(char(row_Conditions(jj)))(Row_Conditions.(char(row_Conditions(jj))).row==row,2)))];
+        % Skip empty cells
+        if isnan(cell2mat(table2cell(Row_Conditions.(char(row_Conditions(jj)))(Row_Conditions.(char(row_Conditions(jj))).row==row,2))))
+            continue
+        else
+            tmp = [tmp ', ' char(table2cell(Row_Conditions.(char(row_Conditions(jj)))(Row_Conditions.(char(row_Conditions(jj))).row==row,2)))];
+        end
     end
     WellConditions.WellConditions(WellConditions.row==row&WellConditions.column==col) = cellstr(tmp);    
 end
@@ -130,4 +142,10 @@ for idx = 1:size(col_fieldnames,1)
     end
 end
 
-uisave('ResultTable','ResultTable')
+switch prompt_save
+    case true
+        uisave('ResultTable','ResultTable')
+    case false
+        filename = [Save_Dir '\ResultTable.mat'];
+        save(filename)
+end

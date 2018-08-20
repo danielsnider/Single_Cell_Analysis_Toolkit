@@ -1,7 +1,18 @@
-function [uniResults,uniWells] = make_uniResults(ResultTable, measurement_name, total_measurement)
+function [ResultDataStructure,uniResults,uniWells] = make_uniResults(ResultTable, measurement_name, control_treatment, total_measurement)
 
 uniResults = table();
-% uniResults.TimePoint = (unique(ResultTable.TimePoint,'sorted'))
+ResultDataStructure = struct();
+
+ResultTable_Headers = ResultTable.Properties.VariableNames;
+[~, idxCol_WellCondition] =  find(strcmp(ResultTable_Headers,'WellConditions'));
+tmp = table2cell(ResultTable(:,idxCol_WellCondition:end));
+tmp = regexprep(tmp, '\W$', '');
+[~,idxCol] = find(strcmp(tmp,control_treatment));
+idxCol_containing_Control = unique(idxCol,'stable');
+Control_Col = char(ResultTable_Headers(idxCol_WellCondition+idxCol_containing_Control-1));
+Current_End_Col = char(ResultTable_Headers(end));
+ResultTable = movevars(ResultTable, Control_Col, 'After', Current_End_Col);
+Well_Meta_Cols = ResultTable_Headers(find(strcmp(ResultTable_Headers,'Well_Info')==1):end);
 
 MetaDataColumns = ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
 % MetaDataColumns=ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'Well_Info')):end);
@@ -29,5 +40,8 @@ for well = 1:size(uniWells,1)
         %         pause(0.05)
     end
     count=count+1;
+    ResultDataStructure.PlateMap{row,col} = char(join(table2array(unique(ResultTable(ResultTable.row==row&ResultTable.column==col,Well_Meta_Cols))),', '));
 end
+ResultDataStructure.PlateMap(cellfun('isempty',ResultDataStructure.PlateMap))={'NaN'};
+
 end

@@ -1,4 +1,4 @@
-function [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot,varargin)
+function [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot,total_measurement,varargin)
 
 
 %% Get column indexes for TP_{time}_Hr headers
@@ -27,7 +27,11 @@ x = unique(cell2mat(TimePoint),'stable');
 Doubling_Time=cell(size(uniWells,1),1);
 Cell_Cycle=cell(size(uniWells,1),1);
 
-figure('Name','Log2 Fitting');hold on;position = 1;
+Fig_Num = 1;
+if verbose_Plot == true
+    figure('Name','Log2 Fitting');hold on;position = 1;
+    suptitle(['Fits for: ' total_measurement ' ' num2str(Fig_Num)])
+end
 %% loop over all wells to calculate cell cyle
 for well = 1:size(uniWells,1)
     % old if below varagin is empty if DPC aquisition FIX THIS
@@ -47,12 +51,20 @@ for well = 1:size(uniWells,1)
         
         if verbose_Plot == true
             if position == 10
+                Fig_Num = Fig_Num +1;
                 figure('Name','Log2 Fitting');hold on;position = 1;
+                suptitle(['Fits for: ' total_measurement ' ' num2str(Fig_Num)])
             end
             subplot(2,5,position)
             plot(fit1,x,y,'bo')
             xlabel('Time Point (Hour)');ylabel('Cell Number');title(['Row: ' num2str(uniWells.row(well)) '	| Col: ' num2str(uniWells.column(well))])
-            text(0,(max(y)),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
+            y_axis_limits = ylim;
+            if (y_axis_limits(2) - y_axis_limits(1)) <= 1.5
+                diff = 0.1;
+            else
+                diff = 0.5;
+            end
+            text(x(1)+0.5,(y_axis_limits(2)-diff),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
             legend('off')
             position = position + 1;
         end
@@ -60,7 +72,7 @@ for well = 1:size(uniWells,1)
         m = coeffvalues(fit1); % Slope
         Doubling_Time(well,1)=num2cell(m(2));
         Cell_Cycle(well,1)=num2cell(((1/m(2))));
-        clearvars fit1
+        clearvars fit1 y_axis_limits diff
     catch
         
         disp(['Calculating...   |Well Info: ' char(uniWells(well))])
@@ -79,12 +91,20 @@ for well = 1:size(uniWells,1)
         
         if verbose_Plot == true
             if position == 10
+                Fig_Num = Fig_Num +1;
                 figure('Name','Log2 Fitting');hold on;position = 1;
+                suptitle(['Fits for: ' total_measurement ' ' num2str(Fig_Num)])
             end
             subplot(2,5,position)
             plot(fit1,x,y,'bo')
             xlabel('Time Point (Hour)');ylabel('Cell Number');title([char(uniResults.WellConditions(well))])
-            text(0,(max(y)),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
+            y_axis_limits = ylim;
+            if (y_axis_limits(2) - y_axis_limits(1)) <= 1.5
+                diff = 0.1;
+            else
+                diff = 0.5;
+            end
+            text(x(1)+0.5,(y_axis_limits(2)-diff),sprintf('Rsq = %g\nAdj = %g',gof.rsquare,gof.adjrsquare))
             legend('off')
             position = position + 1;
         end
@@ -92,7 +112,7 @@ for well = 1:size(uniWells,1)
         m = coeffvalues(fit1); % Slope
         Doubling_Time(well,1)=num2cell(m(2));
         Cell_Cycle(well,1)=num2cell(((1/m(2))));
-        clearvars fit1
+        clearvars fit1 y_axis_limits diff
         
     end
 end

@@ -1,4 +1,4 @@
-.qgfunction [plates, app_parameters] = func(full_path)
+function [plates, app_parameters] = func(full_path)
   % full_path = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\MY_PLATEMAP.xlsx';
   [num,txt,raw] = xlsread(full_path);
 
