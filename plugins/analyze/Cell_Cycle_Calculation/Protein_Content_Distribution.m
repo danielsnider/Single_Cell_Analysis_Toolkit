@@ -23,9 +23,10 @@ clearvars x y
                 % Plotting Treatment
                 % Find index specific unique well condition(s)
                 current_treatment = (uniDrugTreatments(contains(uniDrugTreatments,unique_main_conditions(i))));
-                colours = {'b','k'};
+                colours = {'blue','black','green','cyan','magenta','yellow'};
                 for j = 1:size(current_treatment,1)
                     treatment = char(current_treatment(j));
+                    sub_treat = strtrim(erase(treatment,unique_main_conditions));
                     [idx_Row,idx_Col] = find(strcmp(ResultDataStructure.PlateMap,treatment));
                     
                     if isempty(idx_Row)&&isempty(idx_Col)
@@ -38,9 +39,13 @@ clearvars x y
                     end
                     
                     if j ==1
-                    p1 = plot(x,y,colours{j});
+                        p1{j} = plot(x,y,colours{j});
+                        tmp = {['\color{' colours{j} '}' sub_treat]};
+                        legend_color_map = tmp;
                     else
-                        p2 = plot(x,y,colours{j});
+                        p1{j} = plot(x,y,colours{j});
+                        tmp = {['\color{' colours{j} '}' sub_treat]};
+                        legend_color_map = [legend_color_map, tmp];
                     end
                     
                     clearvars x y idx_Row idx_Col
@@ -57,13 +62,21 @@ clearvars x y
                     x(:,r) = (ResultDataStructure.Paxis{idx_Row(r),idx_Col(r),timepoint});
                     y(:,r) = (ResultDataStructure.Pdensity{idx_Row(r),idx_Col(r),timepoint});
                 end
-                p3 = plot(x,y,'r');
+                p3 = plot(x,y,'red');
+                tmp = {['\color{red}' Control_Var]};
+                        legend_color_map = [legend_color_map, tmp];
                 if timepoint == 1
-                    if j ==2
-                    legend([p1(1) p2(1) p3(1)], {'\color{blue} Dox100','\color{blue} Dox50','\color{red} Control'})  
-                    else
-                        legend([p1(1) p3(1)], {'\color{blue} Dox50','\color{red} Control'})  
+%                     if j ==2
+%                         legend([p1(1) p2(1) p3(1)], {'\color{blue} Dox100','\color{blue} Dox50','\color{red} Control'})  
+%                     else
+%                         legend([p1(1) p3(1)], {'\color{blue} Dox50','\color{red} Control'})  
+%                     end
+                    p = [];
+                    for k = 1:size(p1,2)
+                        tmp_p = p1{1,k}(1);
+                        p = [p tmp_p];
                     end
+                    legend([p p3(1)], legend_color_map) 
                 end
                 clearvars x y idx_Row idx_Col
                 

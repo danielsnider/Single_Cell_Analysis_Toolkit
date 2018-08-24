@@ -1,6 +1,6 @@
 function User_Imputed_ResultTable(Dataset_Path,PlateMap_Path, Save_Dir)
 
-
+clc
 if nargin == 0
     [file,path,~] = uigetfile('R:\Justin_S\*.xlsx','Select Dataset that contains paths to all your ResultTables');
     Data = readtable([path '\' file]);
@@ -29,6 +29,7 @@ row_Conditions = raw(1,str2double(Plate_Dim.Column)+2:end);
 row_Conditions = cellfun(@(s) strrep(s,' ','_'),row_Conditions,'UniformOutput',false);
 
 % Get Well Meta-Info based on 96-Well Plate
+disp('Fetching Well Meta-Info based on 96-Well Plate')
 Well_Conditons = cell(60,3);idx = 1;
 for row = 2:9
     for col = 2:13        
@@ -41,6 +42,7 @@ end
 Well_Conditons = cell2table(Well_Conditons,'VariableNames',{'row','column','Well_Info'});
 
 % Get Row Conditions based on 96-Well Plate
+disp('Fetching Row Conditions based on 96-Well Plate')
 tmp_Row_Con=num2cell(1:8)';
 Row_Conditions = struct;
 for item = 14:size(raw,2)
@@ -52,6 +54,7 @@ for item = 14:size(raw,2)
 end
 
 % Get Column Conditons based on 96-Well Plate
+disp('Fetching Column Conditions based on 96-Well Plate')
 tmp_Col_Con=num2cell(1:12)';
 Col_Conditions = struct;
 for item = 10:size(raw,1)
@@ -62,6 +65,7 @@ for item = 10:size(raw,1)
     tmp_Col_Con=num2cell(1:12)';
 end
 
+disp('Concatenate row and column meta-data to get Well specific condition')
 load([char(Data.Path_to_Dataset(1)) '\ResultTable.mat']);
 uniWells = unique(ResultTable(:,{'Row','Column'}));
 WellConditions = table();
@@ -93,6 +97,7 @@ for well = 1:size(uniWells,1)
 end
 
 % Combine ResultsTables with TimePoint
+disp('Concatenate ResultTables with TimePoint IDs')
 Paths = Data.Path_to_Dataset;
 TimePoints = Data.Time_Point;
 iterTable = table();
@@ -120,6 +125,7 @@ for well = 1:size(uniWells,1)
     ResultTable.Well_Info(ResultTable.Row==row&ResultTable.Column==col,1) = table2cell(Well_Conditons(Well_Conditons.row==row&Well_Conditons.column==col,3));
 end
 
+disp('Attaching other relevant well meta-data to ResultTable')
 row_fieldnames = fieldnames(Row_Conditions);
 for idx = 1:size(row_fieldnames,1)
     field = row_fieldnames(idx);
@@ -141,6 +147,8 @@ for idx = 1:size(col_fieldnames,1)
         ResultTable.(matlab.lang.makeValidName(char(field)))(ResultTable.Column==col,1) = table2cell(Col_metadata(Col_metadata.col==col,2));
     end
 end
+
+disp('Finished Concatenating ResultTable')
 
 switch prompt_save
     case true

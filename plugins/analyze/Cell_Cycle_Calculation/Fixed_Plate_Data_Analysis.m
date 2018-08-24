@@ -76,6 +76,10 @@ verbose_Plot = Cell_Cycle_Params.verbose_Plot;
 Plot_Title = Cell_Cycle_Params.Plot_Title;
 MetaRows = Cell_Cycle_Params.MetaRows;
 MetaCols = Cell_Cycle_Params.MetaCols;
+Control_Rows = Cell_Cycle_Params.Control_Rows;
+Control_Cols = Cell_Cycle_Params.Control_Cols;
+separate_data_by_meta_var = Cell_Cycle_Params.separate_data_by_meta_var;
+list_order = Cell_Cycle_Params.list_order;
 
 
 % If Row variable name and Column variable name in RestulsTable is captalized, convert to lowercase
@@ -229,6 +233,7 @@ for timepoint = 1:length(uniTimePoint)
 end
 
 ResultDataStructure.PlateMap(cellfun('isempty',ResultDataStructure.PlateMap))={'NaN'};
+ResultDataStructure.PlateMap = strtrim(ResultDataStructure.PlateMap);
 
 uniWell_Conditions = unique(ResultDataStructure.PlateMap,'stable'); uniWell_Conditions(1) = [];
 Fixed_Cells_Args.uniWell_Conditions = uniWell_Conditions;
@@ -298,10 +303,13 @@ if verbose_Plot==true
 end
 
 %% ------------------------------ User pick what samples they want results for ------------------------------
-% Get user to specify which wells are control wells
-[fh,tmp] = Get_User_Desired_Labels(ResultDataStructure.PlateMap);
-
-Controls = ResultDataStructure.PlateMap(unique(tmp.UserData.datatable_row), unique(tmp.UserData.datatable_col))';
+if isempty(Control_Rows) && isempty(Control_Cols)
+    % Get user to specify which wells are control wells
+    [fh,tmp] = Get_User_Desired_Labels(ResultDataStructure.PlateMap);
+    Control_Rows = unique(tmp.UserData.datatable_row);
+    Control_Cols = unique(tmp.UserData.datatable_col);
+end
+Controls = ResultDataStructure.PlateMap(Control_Rows, Control_Cols)';
 Controls = unique(reshape(Controls,[(size(Controls,1)*size(Controls,2)),1]));
 
 Treatments = unique(ResultDataStructure.PlateMap(~contains(ResultDataStructure.PlateMap,Controls)&...
@@ -323,8 +331,9 @@ value = {Controls,Treatments};
 Treatments = containers.Map(keySet,value);
 Fixed_Cells_Args.Treatments = Treatments;
 clearvars tmp
-close(fh)
-
+if isempty(Control_Rows) && isempty(Control_Cols)
+    close(fh)
+end
 uniWell_Conditions = uniWell_Conditions((contains(uniWell_Conditions,Treatments('Control'))|contains(uniWell_Conditions,Treatments('Drug_Treatments')))&contains(uniWell_Conditions,uniColumnTreatments));
 
 %% ------------------------------ Protein Mass vs.Frequency ---------------------------------------
@@ -343,41 +352,50 @@ if average_replicates==true
     
     ResultTable_Conditions = [{'Well_Info'},Column_Treatment,Row_Treatment(1)];
     
-    fig = uifigure('Position',[100 100 500 500]);
-    
-    % Create uilabel
+    if isempty(separate_data_by_meta_var)
+        fig = uifigure('Position',[100 100 500 500]);
+        
+        % Create uilabel
         text = sprintf('%s\n%s\n%s','Select which meta-column you would like to separate your data by.','This will separate your data into different plots based on unique cases','in the meta-column you select.');
         Description_label = uilabel(fig,...
             'Text',text,'Position',[20 80 450 750]);
         Description_label.FontSize = 14;
-    
-    % Create list box
-    Group_Plotting_List = uilistbox(fig,...
-        'Position',[20 20 350 400],...
-        'Items',[{'Well_Info'},Column_Treatment,Row_Treatment(1)]);
-    
-    btn = uibutton(fig,...
-               'push',...
-               'Text', 'OK',...
-               'Position',[380,100, 100, 22],...
-               'ButtonPushedFcn', @(btn, event) ButtonPushed(fig,'invisible','resume'));
-    
-    uiwait(fig)
-    Group_by_Value = Group_Plotting_List.Value;
-
+        
+        % Create list box
+        Group_Plotting_List = uilistbox(fig,...
+            'Position',[20 20 350 400],...
+            'Items',[{'Well_Info'},Column_Treatment,Row_Treatment(1)]);
+        
+        btn = uibutton(fig,...
+            'push',...
+            'Text', 'OK',...
+            'Position',[380,100, 100, 22],...
+            'ButtonPushedFcn', @(btn, event) ButtonPushed(fig,'invisible','resume'));
+        
+        uiwait(fig)
+        Group_by_Value = Group_Plotting_List.Value;
+    else
+        Group_by_Value = char(separate_data_by_meta_var);
+    end
     unique_Grouping = unique(ResultTable_cleaned.(Group_by_Value),'stable');
 
     for i = 1:size(unique_Grouping,1)
         fprintf('Working on: %s\n', unique_Grouping{i});
         
         group = linear_var_platemap(contains(linear_var_platemap,unique_Grouping(i)));
-        Control_bool_idx = (contains(group,control_treatment));
-        if find(Control_bool_idx) ~= 1
-            group = [group(Control_bool_idx), group(~Control_bool_idx)]';
-        end
-        data_order_to_process = group;
+%         Control_bool_idx = (contains(group,control_treatment));
+%         if find(Control_bool_idx) ~= 1
+%             group = [group(Control_bool_idx); group(~Control_bool_idx)]'';
+%         end
+%         data_order_to_process = group;
 %         data_order_to_process= reorderlist(group);
         
+        if isempty(list_order)
+            data_order_to_process = reorderlist(group);
+        else
+            data_order_to_process = auto_reorderlist(group,list_order);
+        end
+
         % CCL
         keySet = reshape(data_legend_platemap, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
         valueSet = reshape(cc_Interest, [size(cc_Interest,1)*size(cc_Interest,2) 1]);
@@ -418,7 +436,7 @@ if average_replicates==true
         
     end
     
-     if ~isempty(Group_by_Value)
+     if isempty(separate_data_by_meta_var)
         close(fig)
      end
     
@@ -430,7 +448,11 @@ end
 
 
 %% ------------------------------ Cell Size ------------------------------------------
-data_order_to_process= reorderlist(uniWell_Conditions)';
+if isempty(list_order)
+    data_order_to_process= reorderlist(uniWell_Conditions)';
+else
+    data_order_to_process = auto_reorderlist(uniWell_Conditions,list_order);
+end
 
 fig = figure('Name','Cell Size');hold on; yMin = 0; yMax = 1;
 for condition = 1:size(data_order_to_process,1)
@@ -448,12 +470,12 @@ for condition = 1:size(data_order_to_process,1)
             y_std = tmp_y_std;
         catch
             if isempty(y)
-                ResultTable_Conditions = char(join(table2array((ResultTable_cleaned(:,[{'Well_Info'},Column_Treatment,Row_Treatment(1)]))),', '));
+                ResultTable_Conditions = char(join(table2array((ResultTable_cleaned(:,Well_Meta_Cols))),', '));
                 tmp_y = mean(ResultTable_cleaned.(Cytosol_Channel{1})(strcmp(ResultTable_Conditions,strtrim(data_order_to_process(condition))) &...
                     ResultTable_cleaned.row==row & ResultTable_cleaned.column==col,Cytosol_Channel{2}));
                 y = tmp_y;
                 tmp_y_std = std(ResultTable_cleaned.(Cytosol_Channel{1})(strcmp(ResultTable_Conditions,strtrim(data_order_to_process(condition))) &...
-                    ResultTable_cleaned.row==row & ResultTable_cleaned.column==col,Cytosol_Channel{2}));;
+                    ResultTable_cleaned.row==row & ResultTable_cleaned.column==col,Cytosol_Channel{2}));
                 y_std = tmp_y_std;
             else
                 tmp_y = mean(ResultTable_cleaned.(Cytosol_Channel{1})(contains(ResultTable_cleaned.WellConditions,strtrim(data_order_to_process(condition))) & ResultTable_cleaned.row==row & ResultTable_cleaned.column==col,Cytosol_Channel{2}));

@@ -10,6 +10,10 @@ verbose_Plot = Cell_Cycle_Params.verbose_Plot;
 Plot_Title = Cell_Cycle_Params.Plot_Title;
 MetaRows = Cell_Cycle_Params.MetaRows;
 MetaCols = Cell_Cycle_Params.MetaCols;
+Control_Rows = Cell_Cycle_Params.Control_Rows;
+Control_Cols = Cell_Cycle_Params.Control_Cols;
+separate_data_by_meta_var = Cell_Cycle_Params.separate_data_by_meta_var;
+list_order = Cell_Cycle_Params.list_order;
 
 % Get number of cells per measurement for each well
 Total_Measurements = {'Cell Number','NArea'}';
@@ -42,7 +46,7 @@ for jj = 1:size(Total_Measurements,1)
     ResultDataStructure.uniWells = uniWells;
     ResultDataStructure.ResultTable = ResultTable;
     if average_replicates==true
-        Pre_Processing(ResultDataStructure,average_replicates,control_treatment,Plot_Title,total_measurement,MetaRows,MetaCols)
+        Pre_Processing(ResultDataStructure,average_replicates,control_treatment,Plot_Title,total_measurement,MetaRows,MetaCols,Control_Rows,Control_Cols,separate_data_by_meta_var,list_order)
     end
     
     %     assignin('base','uniResults',uniResults);

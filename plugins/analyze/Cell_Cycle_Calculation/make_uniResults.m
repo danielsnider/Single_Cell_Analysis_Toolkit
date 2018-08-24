@@ -12,6 +12,7 @@ idxCol_containing_Control = unique(idxCol,'stable');
 Control_Col = char(ResultTable_Headers(idxCol_WellCondition+idxCol_containing_Control-1));
 Current_End_Col = char(ResultTable_Headers(end));
 ResultTable = movevars(ResultTable, Control_Col, 'After', Current_End_Col);
+ResultTable_Headers = ResultTable.Properties.VariableNames;
 Well_Meta_Cols = ResultTable_Headers(find(strcmp(ResultTable_Headers,'Well_Info')==1):end);
 
 MetaDataColumns = ResultTable.Properties.VariableNames(find(strcmpi(ResultTable.Properties.VariableNames,'WellConditions')):end);
