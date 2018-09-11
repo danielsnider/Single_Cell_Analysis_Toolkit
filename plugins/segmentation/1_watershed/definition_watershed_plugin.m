@@ -31,7 +31,7 @@ function [params, algorithm] = fun()
   params(n).default = 0.75;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
-  params(n).limits = [0.00001 Inf];
+  params(n).limits = [0.00001 Inf];0
   params(n).optional = true;
   params(n).optional_default_state = true;
 

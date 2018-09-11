@@ -1,6 +1,19 @@
 % Create the function for the ButtonPushedFcn callback
-function ButtonPushed(hObject)
+function ButtonPushed(hObject,varargin)
         uiresume(hObject)
-        hObject.Visible = 'off';
-%         close(hObject) 
+        
+disp("Button Pushed")        
+
+if any(contains(varargin,{'invisible'}))
+    hObject.Visible = 'off';
+end
+
+if any(contains(varargin,{'close'}))
+        close(hObject) 
+end
+
+if any(contains(varargin,{'resume'}))
+        uiresume
+end
+
 end

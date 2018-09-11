@@ -1,4 +1,4 @@
-function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Plot_Title,total_measurement)
+function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Plot_Title,total_measurement)
 
 
     %% Splitting Well Condition into their seperate meta-info based on separation by commas
@@ -83,7 +83,7 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Pl
 
         % Re-Arranging Well Condition meta-info
         tmp = tmp3;
-        tmp(:,control_idx_metainfo_col_new) = [];
+        tmp(:,control_idx_metainfo_col_new) ={[]};
         tmp(:,control_idx_metainfo_col_new) = tmp(:,unique(control_idx_metainfo_col));
         tmp(:,unique(control_idx_metainfo_col)) = tmp3(:,control_idx_metainfo_col_new);
         tmp3 = tmp;
@@ -100,13 +100,9 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Pl
         %% Actual Plotting
         color = color_list(count,:);
         for sub_condition = 1:length(current_condition)
-            if contains(Imaging_Type,'DPC')
                 y = Avg_uniResults.mean_Cell_Cycle(contains(Avg_uniResults.WellConditions,current_condition(sub_condition)));
                 y_err = Avg_uniResults.std_Cell_Cycle(contains(Avg_uniResults.WellConditions,current_condition(sub_condition)));
-               
-            elseif contains(Imaging_Type,'Fixed')
-                y = Avg_uniResults.Cell_Cycle(contains(Avg_uniResults.WellConditions,current_condition(sub_condition)));
-            end
+
             plot_handle = plot(count,y, 'o','MarkerEdgeColor','b','MarkerFaceColor',color);
 %             hDatatip = makedatatip(plot_handle,[1 1]);
             txt1 = ['CCL: ' num2str(y)];
@@ -115,9 +111,7 @@ function Cell_Cycle_ScatterPlot(Avg_uniResults,control_treatment,Imaging_Type,Pl
 %             annotation('textarrow',count,y+0.1,'String',txt1)
 %             annotation(fig_Hobj,'textarrow',[0,0.1],[0,0],'String',txt1)
             
-            if contains(Imaging_Type,'DPC')
-                errorbar(count,y, y_err,'LineStyle', '--', 'Color', color)
-            end
+              errorbar(count,y, y_err,'LineStyle', '--', 'Color', color)
 %             % Draw a line for the control median
 %             if any(strcmp(string(current_condition(sub_condition)),string(normalize_by)))
 %                 line(1:count,repmat(y,1,count),'Color',color,'LineStyle','--','LineWidth', 0.5)

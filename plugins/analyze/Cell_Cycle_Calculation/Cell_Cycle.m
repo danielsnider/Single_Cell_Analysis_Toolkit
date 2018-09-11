@@ -51,49 +51,20 @@ Cell_Cycle_Params.MetaCols = MetaCols;
 
 
 % ResultTable=app.ResultTable;
-ResultTable.(measurement_name)=ResultTable.(measurement_name);
+% ResultTable.(measurement_name)=ResultTable.(measurement_name);
 % ResultTable(contains(ResultTable.(measurement_name),'14Hr'),23)={'14'}
 
 if strcmp(ResultTable.Properties.VariableNames{1},'Row')
     ResultTable.Properties.VariableNames{1} = 'row';
     ResultTable.Properties.VariableNames{2} = 'column';
+    Cell_Cycle_Params.ResultTable = ResultTable;
 end
 % ResultTable.TimePoint=str2double(ResultTable.TimePoint);
 
 if strcmp(Imaging_Type,'DPC')
-    % Get number of cells per measurement for each well
-    Total_Measurements = {'Cell Number','NArea'}';
-%     total_measurement = 'NArea';
-%     total_measurement = 'Cell Number';
-    for jj = 1:size(Total_Measurements,1)
-    total_measurement = char(Total_Measurements(jj));
-    [uniResults,uniWells] = make_uniResults(ResultTable, measurement_name,total_measurement);
-    
-    [uniResults,start_idx,end_idx] = Cell_Cycle_Calculation(uniResults,uniWells,verbose_Plot);
-    
-     
-    % Plot Microplate Plot for Cell Cycle Length
-    data_to_plot = 'Cell_Cycle'; Main_Title = ['Cell Cycle Length (Hours) Based on ' total_measurement]; color = 'Dark2';rounding_decimal=2;
-    color = 'cool(6)';
-    MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal)
-    
-    if verbose_Plot==true
-        
-        % Microplate Plot for Cell Number
-        for i = start_idx:end_idx
-            data_to_plot = char(uniResults.Properties.VariableNames(i));
-            Main_Title = ['Total ' total_measurement ' at:  (' data_to_plot ')']; color = 'Spectral';
-            MicroPlate_Plotting(uniResults,uniWells,data_to_plot,color,Main_Title,Plot_Title,MetaRows,MetaCols,rounding_decimal)
-        end
-    end
-    
-    if average_replicates==true
-        Pre_Processing(uniResults,uniWells,average_replicates,control_treatment,Imaging_Type,Plot_Title,total_measurement)
-    end
-    
-%     assignin('base','uniResults',uniResults);
-%     evalin('base','openvar(''uniResults'')');
-    end
+    [uniResults] = DPC_Image_Pipeline(Cell_Cycle_Params);
+    assignin('base','uniResults',uniResults);
+    evalin('base','openvar(''uniResults'')');
 end
 
 if strcmp(Imaging_Type,'Fixed')
