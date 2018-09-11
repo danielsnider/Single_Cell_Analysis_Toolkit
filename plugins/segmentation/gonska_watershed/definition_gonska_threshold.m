@@ -25,18 +25,6 @@ function [params, algorithm] = fun()
   params(n).type = 'numeric';
   params(n).limits = [0 1];
 
-  % n = n + 1;
-  % params(n).name = 'Close Morph Size';
-  % params(n).default = 0;
-  % params(n).help = 'Remove small dots and thin lines of this size. A setting of 0 effectively disables this step.';
-  % params(n).type = 'numeric';
-
-  % n = n + 1;
-  % params(n).name = 'Open Morph Size';
-  % params(n).default = 0;
-  % params(n).help = 'Connect nearby objects within this amount. A setting of 0 effectively disables this step.';
-  % params(n).type = 'numeric';
-
   n = n + 1;
   params(n).name = 'Min Area';
   params(n).default = 400;
@@ -50,10 +38,22 @@ function [params, algorithm] = fun()
   params(n).type = 'numeric';
 
   n = n + 1;
-  params(n).name = 'Segmentation Sensitivity';
-  params(n).default = 2;
-  params(n).help = 'The amount of gaussian blurring on the distance transformed object mask for the input to watershed segmentation.';
+  params(n).name = 'Solidity';
+  params(n).default = 0.8;
+  params(n).help = 'Remove segments that are lower than the set solidity threshold. Must be within 0 and 1.';
   params(n).type = 'numeric';
+  params(n).optional = true;
+  params(n).optional_default_state = true;
+  params(n).limits = [0 1];
+
+  n = n + 1;
+  params(n).name = 'Eccentricity';
+  params(n).default = 0.7;
+  params(n).help = 'Remove segments that are higher than the set eccentricity threshold. Must be within 0 and 1.';
+  params(n).type = 'numeric';
+  params(n).optional = true;
+  params(n).optional_default_state = false;
+  params(n).limits = [0 1];
 
   n = n + 1;
   params(n).name = 'Display Figures';

@@ -12,11 +12,22 @@ function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_p
   y_res = size(img1,2);
   % timepoint = unique(ObjectsInFrame.timepoint);
 
+  if isstruct(seg1)
+    seg1 = seg1.data;
+  end
+
+  if isstruct(seg2)
+    seg2 = seg2.data;
+  end
+
   % This plugin visualizes only 2D so take only one slice from our 3D stacks
-  % img1 = img1(:,:,zslice_num);
-  % seg1 = bwlabel(seg1(:,:,zslice_num));
-  % img2 = img2(:,:,zslice_num);
-  % seg2 = seg2(:,:,zslice_num);  
+  if ndims(img1) == 3
+    zslice_num = floor(size(img1,3)/2);
+    img1 = img1(:,:,zslice_num);
+    seg1 = bwlabel(seg1(:,:,zslice_num));
+    img2 = img2(:,:,zslice_num);
+    seg2 = seg2(:,:,zslice_num);  
+  end
   
   % Keep only the arrow start point that are for objects that can be seen
   % in this slice 

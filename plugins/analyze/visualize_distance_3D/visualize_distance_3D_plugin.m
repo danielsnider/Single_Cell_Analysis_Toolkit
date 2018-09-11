@@ -1,4 +1,14 @@
 function fun(plugin_name, plugin_num, Distances, seg1, img1, seg2, img2, start_points, end_points, dist_font_size, id_font_size, color_by_tracking_ids, ObjectsInFrame)
+
+  if isstruct(seg1)
+    seg1 = seg1.data;
+  end
+
+  if isstruct(seg2)
+    seg2 = seg2.data;
+  end
+
+
   Distances = ObjectsInFrame.(Distances.name);
   start_points = ObjectsInFrame.(start_points.name);
   end_points = ObjectsInFrame.(end_points.name);

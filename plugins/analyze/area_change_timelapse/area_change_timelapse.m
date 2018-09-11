@@ -137,7 +137,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
   f = figure(plugin_num+3499); clf; set(f,'name',plugin_name,'NumberTitle', 'off');
   plot(1:length(norm_areas),norm_areas,'LineWidth',1.5)
   hold on
-  ylim([.75 1.40]);
+  ylim([.5 2]);
 
   % Style
   set(gca,'FontSize',12);
@@ -182,20 +182,22 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
 
   %% Save Statistics
   ResultTable = table();
-  ResultTable.Imagename = segments(1).info.ImageName;
+  ResultTable.Imagename = ImageName;
+  ResultTable.RowColumn = ImageName(34:36);
   ResultTable.row = segments(1).info.row;
   ResultTable.column = segments(1).info.column;
   ResultTable.field = segments(1).info.field;
   if isstruct(segments(1).info.well_info_struct)
     for meta_name = fields(segments(1).info.well_info_struct)'
       meta_name = meta_name{:};
-      ResultTable.(meta_name) = segments(1).info.well_info_struct.(meta_name);
+      ResultTable.(meta_name) = cell(1);
+      ResultTable.(meta_name) = {segments(1).info.well_info_struct.(meta_name)};
     end
   end
   ResultTable.Number_of_Organoids = num_objects;
   ResultTable.Area_Pixel_Count = areas;
   ResultTable.Area_Normalized_Change = norm_areas;
-  Experiment_Name = sprintf('%s, Row %d, Column %d, Field %d, Image Name %s',segments(1).info.well_info_string, segments(1).info.row, segments(1).info.column, segments(1).info.field, segments(1).info.ImageName); % ex.     '0.128 Forskolin mM, Something L-Arg (1mM), Treatment??? (Arg), Row 1, Column 1, Field 1, Image Name CBLG-3776-1NW7_180627130001i3t001A01f01d1.TIF'
+  Experiment_Name = sprintf('%s, Row %d, Column %d, Field %d, Image Name %s',segments(1).info.well_info_string, segments(1).info.row, segments(1).info.column, segments(1).info.field, ImageName); % ex.     '0.128 Forskolin mM, Something L-Arg (1mM), Treatment??? (Arg), Row 1, Column 1, Field 1, Image Name CBLG-3776-1NW7_180627130001i3t001A01f01d1.TIF'
   ResultTable.AnalysisDateTime = date_str;
   ResultTable.Experiment_Name = Experiment_Name;
   save_file = sprintf('%s_results.csv',save_path_prefix);
@@ -213,8 +215,19 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     thisResult = readtable(save_file);
     data_loc = find(ismember(allResults.Experiment_Name,Experiment_Name)); % location of this time course data in the CSV file
     [allResults, thisResult] = append_missing_columns_table_pair(allResults, thisResult);
+
+
     if isempty(data_loc)
-      allResults = [allResults; thisResult]; % append this result
+      % allResults = [allResults; thisResult]; % append this result % UPDATE this doesn't work with columns of different types
+      %% Convert all table values to cells so that a single column can have both numeric and string values
+      % Reorder column names of tables to be in the same order so that joining works
+      original_column_order = allResults.Properties.VariableNames;
+      thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
+      allResults = allResults(:,sort(allResults.Properties.VariableNames));
+      % Join table and convert all table values to cells so that a single column can have both numeric and string values
+      allResults = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', allResults.Properties.VariableNames);
+      % Reorder table columns to the original order
+      allResults = allResults(:,original_column_order);
     else
       allResults(data_loc,allResults.Properties.VariableNames) = thisResult(1,allResults.Properties.VariableNames); % update this result for all variables
     end

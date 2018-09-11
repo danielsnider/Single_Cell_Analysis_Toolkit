@@ -1,7 +1,7 @@
 function [params, algorithm] = fun()
 
   algorithm.name = 'Mitosis Detection with Saddle Points';
-  algorithm.help = 'See: https://en.wikipedia.org/wiki/Saddle_point';
+  algorithm.help = 'Detect probability of a cell being in Mitosis. More info about saddle points here: https://en.wikipedia.org/wiki/Saddle_point';
   algorithm.maintainer = 'Daniel Snider <danielsnider12@gmail.com>';
 
   n = 0;

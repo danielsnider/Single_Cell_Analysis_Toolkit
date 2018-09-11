@@ -159,5 +159,13 @@ function fun(app)
     app.TimepointDropDown.ItemsData = app.plates(plate_num).keep_timepoints;
   end
 
-
+  % Handle case where there is no image available at the current image selection, set by the above. This happens on startup if there is no image in row=1,column=1 position.
+  if isempty(get_current_multi_channel_image(app))
+    if isfield(app.plates(plate_num).img_files_subset(1),'row')
+        app.RowDropDown.Value = app.plates(plate_num).img_files_subset(1).row;
+    end
+    if isfield(app.plates(plate_num).img_files_subset(1),'column')
+        app.ColumnDropDown.Value = app.plates(plate_num).img_files_subset(1).column;
+    end
+  end
 end
