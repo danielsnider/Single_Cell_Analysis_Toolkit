@@ -1,9 +1,9 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="3467958208" file="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3467958208" file="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>2.10</param.version>
+    <param.version>2.12</param.version>
     <param.authnamewatermark>Daniel Snider</param.authnamewatermark>
     <param.email>danielsnider12@gmail.com</param.email>
     <param.company />
@@ -136,9 +136,9 @@
     <fileset.package />
     <fileset.depfun />
     <build-deliverables>
-      <file location="${PROJECT_ROOT}\GUI\for_testing" name="splash.png" optional="false">C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\splash.png</file>
-      <file location="${PROJECT_ROOT}\GUI\for_testing" name="GUI.exe" optional="false">C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\GUI.exe</file>
-      <file location="${PROJECT_ROOT}\GUI\for_testing" name="readme.txt" optional="true">C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\GUI\for_testing" name="readme.txt" optional="true">C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\readme.txt</file>
+      <file location="${PROJECT_ROOT}\GUI\for_testing" name="GUI.exe" optional="false">C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\GUI.exe</file>
+      <file location="${PROJECT_ROOT}\GUI\for_testing" name="splash.png" optional="false">C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\splash.png</file>
     </build-deliverables>
     <workflow />
     <matlab>

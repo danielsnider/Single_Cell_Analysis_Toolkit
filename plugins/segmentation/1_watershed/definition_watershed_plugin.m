@@ -31,14 +31,14 @@ function [params, algorithm] = fun()
   params(n).default = 0.75;
   params(n).help = 'The amount to gaussian smooth the image. Greater values will smooth things together. Lower values will allow for more seeds.';
   params(n).type = 'numeric';
-  params(n).limits = [0.00001 Inf];0
+  params(n).limits = [0.00001 Inf];
   params(n).optional = true;
   params(n).optional_default_state = true;
 
   n = n + 1;
   params(n).name = 'Threshold';
   params(n).default = 150;
-  params(n).help = 'Remove segments of the image that are less than the threshold.';
+  params(n).help = 'Exclude pixels of the image that are less than the threshold.';
   params(n).type = 'numeric';
 
   n = n + 1;
