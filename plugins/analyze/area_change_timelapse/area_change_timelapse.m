@@ -160,7 +160,6 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
 
         if ndims(imageData) == 2
           imageData = cat(3, imageData, imageData, imageData);
-          o = cat(3, o, o, o);
         end
       
         if ndims(imageData) == 3
@@ -316,19 +315,29 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     allResults = readtable(all_results_file);
     thisResult = readtable(save_file);
     data_loc = find(ismember(allResults.Experiment_Name,Experiment_Name)); % location of this time course data in the CSV file
+
+    % Add missing columns
     [allResults, thisResult] = append_missing_columns_table_pair(allResults, thisResult);
 
+    %% Convert (AllResults) all table values to cells so that a single column can have both numeric and string values
+    % Reorder column names of tables to be in the same order so that joining works
+    original_column_order = allResults.Properties.VariableNames;
+    thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
+    allResults = allResults(:,sort(allResults.Properties.VariableNames));
+    % Join table and convert all table values to cells so that a single column can have both numeric and string values
+    allResults = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', allResults.Properties.VariableNames);
+    % Reorder table columns to the original order
+    %% Convert (thisResult) all table values to cells so that a single column can have both numeric and string values
+    original_column_order = thisResult.Properties.VariableNames;
+    thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
+    allResults = allResults(:,sort(allResults.Properties.VariableNames));
+    % Join table and convert all table values to cells so that a single column can have both numeric and string values
+    thisResult = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', thisResult.Properties.VariableNames);
+    % Reorder table columns to the original order
+    thisResult = thisResult(:,original_column_order);
 
     if isempty(data_loc)
       % allResults = [allResults; thisResult]; % append this result % UPDATE this doesn't work with columns of different types
-      %% Convert all table values to cells so that a single column can have both numeric and string values
-      % Reorder column names of tables to be in the same order so that joining works
-      original_column_order = allResults.Properties.VariableNames;
-      thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
-      allResults = allResults(:,sort(allResults.Properties.VariableNames));
-      % Join table and convert all table values to cells so that a single column can have both numeric and string values
-      allResults = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', allResults.Properties.VariableNames);
-      % Reorder table columns to the original order
       allResults = allResults(:,original_column_order);
     else
       try
@@ -494,5 +503,6 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     export_fig(fig_name,save_mag);
 
   end
+
 
 end

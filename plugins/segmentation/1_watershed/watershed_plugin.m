@@ -15,7 +15,6 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     imshow(img_smooth,[]);
   end
 
-
   % threshold
   img_thresh = img_smooth > thresh_param;
   if ismember(debug_level,{'All'})

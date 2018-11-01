@@ -461,7 +461,7 @@ function func(app, app_parameters, createCallbackFcn)
                   elseif iscell(value)
                     msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Measure'' and testing what can be entered.',strjoin(value,','), key, plugin_pretty_name, tab_name);  
                   end
-                  endtitle_ = 'User Error - Bad Parameter Value';
+                  title_ = 'User Error - Bad Parameter Value';
                   throw_application_error(app,msg,title_)
                 end
                 value_set = true;
