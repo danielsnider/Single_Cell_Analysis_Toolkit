@@ -111,7 +111,7 @@ function fun(app, createCallbackFcn)
       'ValueChangedFcn', createCallbackFcn(app, @CheckCallback, true));
 
 
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs','IXMCTiffs'})
       Plate_Map_Table_visibility = 'on';
       Filter_Data_visibility = 'on';
       Filter_Row_visibility = 'on';

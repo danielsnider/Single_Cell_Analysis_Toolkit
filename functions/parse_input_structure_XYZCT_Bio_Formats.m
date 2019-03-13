@@ -45,6 +45,8 @@ function fun(app, plate_num)
     else
       try
         data = bfopen(full_path,1, 1, 1, 1);
+        % series_data = bfopenSeries(img_path,series_id,select_images, debug_level);
+        % dat=series_data{1};
       catch ME
         error_msg = getReport(ME,'extended','hyperlinks','off');
         msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',full_path,error_msg);
