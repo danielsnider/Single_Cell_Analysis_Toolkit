@@ -1,9 +1,9 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="3467958208" file="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Dropbox\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="2058001266" file="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI.prj" location="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit" name="GUI" preferred-package-location="C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>GUI</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>2.17</param.version>
+    <param.version>2.22</param.version>
     <param.authnamewatermark>Daniel Snider</param.authnamewatermark>
     <param.email>danielsnider12@gmail.com</param.email>
     <param.company />
@@ -134,7 +134,9 @@
       <file>${PROJECT_ROOT}\undo-arrow_shift_right.png</file>
     </fileset.resources>
     <fileset.package />
-    <fileset.depfun />
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}\HELIX.png</file>
+    </fileset.depfun>
     <build-deliverables>
       <file location="${PROJECT_ROOT}\GUI\for_testing" name="readme.txt" optional="true">C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\readme.txt</file>
       <file location="${PROJECT_ROOT}\GUI\for_testing" name="GUI.exe" optional="false">C:\Users\danie\Documents\Kafri\Projects\Single_Cell_Analysis_Toolkit\GUI\for_testing\GUI.exe</file>

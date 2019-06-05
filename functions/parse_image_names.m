@@ -47,7 +47,7 @@ function fun(app)
       parse_input_structure_SingleChannelFiles(app, plate_num);
       app.plates(plate_num).supports_3D = false;
 
-    elseif ismember(naming_scheme, {'XYZCT-Bio-Format-SingleFile'})
+    elseif ismember(naming_scheme, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
       parse_input_structure_XYZCT_Bio_Formats(app, plate_num);
       app.plates(plate_num).supports_3D = true;
 

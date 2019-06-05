@@ -48,7 +48,7 @@ function multi_channel_img = fun(app)
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats'})
     img_num = app.ExperimentDropDown.Value;
     multi_channel_img = app.ExperimentDropDown.UserData(img_num);
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
     img_num = app.ExperimentDropDown.Value;
     img_name = app.ExperimentDropDown.Items{app.ExperimentDropDown.Value};
     timepoint = app.TimepointDropDown.Value;

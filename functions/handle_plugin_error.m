@@ -6,11 +6,14 @@ function handle_plugin_error(app,ME,plugin_type,plugin_num)
 %         app.StartupLogTextArea.tx.String = {};
     end
     error_msg = getReport(ME,'extended','hyperlinks','off');
+    disp(error_msg);
     maintainer = app.(plugin_type){plugin_num}.algorithm_info.maintainer;
     algo_name = app.(plugin_type){plugin_num}.tab.Title;
     algo_file = app.(plugin_type){plugin_num}.AlgorithmDropDown.Value;
     msg = sprintf('An error occured in the plugin ''%s.m'' for ''%s''. Please check the error message below. If you are unable fix the error yourself please contact the maintainer of the plugin ''%s'' or report it in detail to: https://github.com/danielsnider/Single_Cell_Analysis_Toolkit/issues\n\nThe error was:\n\n%s', algo_file, algo_name,maintainer,error_msg);
     Title = sprintf('Plugin Error ''%s.m''',algo_file);
+    app.log_processing_message(app, Title);
+    app.log_processing_message(app, msg);
     uialert(app.UIFigure,msg,Title, 'Icon','error');
     msgID = 'APP:PluginError';
     msg = msg;

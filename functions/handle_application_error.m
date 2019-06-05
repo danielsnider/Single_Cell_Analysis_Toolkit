@@ -12,6 +12,7 @@ function handle_application_error(app,ME)
     error_msg = getReport(ME,'extended','hyperlinks','off');
     disp(error_msg);
     msg = sprintf('Sorry, an application error occured. Please check the error below for any obvious problems. You may need to restart the application at this time. If the problem persists please report it in detail to: https://github.com/danielsnider/Single_Cell_Analysis_Toolkit/issues\n\nThe error was:\n\n%s',error_msg);
+    app.log_processing_message(app, msg);
     uialert(app.UIFigure,msg,'Application Error', 'Icon','error');
     msgID = 'APP:ApplicationError';
     causeException = MException(msgID,msg);

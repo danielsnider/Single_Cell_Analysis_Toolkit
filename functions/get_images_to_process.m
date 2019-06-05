@@ -13,7 +13,7 @@ function imgs_to_process = fun(app)
     end
     num_channels = length(plate.channels);
       
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','XYZCT-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','OperettaSplitTiffs','IncuCyte', 'CellomicsTiffs'})
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'ZeissSplitTiffs','SingleChannelFiles','XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile','MultiChannelFiles','XYZ-Bio-Formats','XYZC-Bio-Formats','OperettaSplitTiffs','IncuCyte', 'CellomicsTiffs'})
       imgs_to_process = [imgs_to_process; app.plates(plate_num).img_files_subset];
     end
   end
