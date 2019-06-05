@@ -21,7 +21,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   image_file = imgs_to_process(current_img_number);
   plate_num = image_file.plate_num;
   plate = app.plates(plate_num);
-
+  
   if ~is_parallel_processing
     if app.progressdlg.CancelRequested
         return
@@ -220,13 +220,13 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       else
         h = figure(111); % set focus to display figure
       end
-      save_dir = [app.mainDir '\Saved_Snapshots'];
+      save_dir = [app.mainDir '/Saved_Snapshots'];
       if ~strcmp(app.SavetoEditField.Value, 'choose a path')
-        save_dir = [app.SavetoEditField.Value '\Saved_Snapshots'];
+        save_dir = [app.SavetoEditField.Value '/Saved_Snapshots'];
       end
       mkdir(save_dir) % do every time because it's idempotent and won't fail
       if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
-        filename = sprintf('%s\\montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row,...
+        filename = sprintf('%s/montage_%s_plate%d_row%d_column%d_field%d_timepoint%d.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).row,...
             imgs_to_process(current_img_number).column, imgs_to_process(current_img_number).field, imgs_to_process(current_img_number).timepoint);
       else
         filename = sprintf('%s/montage_%s_plate%d_%s.png', save_dir, date_str, plate_num, imgs_to_process(current_img_number).experiment);
@@ -252,4 +252,5 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   else
     NewResultCallback(iterTable);
   end
+  
 end

@@ -5,8 +5,8 @@ function throw_application_error(app,msg,title)
   end
   uialert(app.UIFigure,msg,title, 'Icon','error');
   msgID = 'APP:ApplicationError';
-  ME = MException(msgID,msg);
-  causeException = MException(msgID,msg);
+  ME = MException(msgID,regexprep(regexprep(msg,'\n+',''),'\','/'));
+  causeException = MException(msgID,regexprep(regexprep(msg,'\n+',''),'\','/'));
   ME = addCause(ME,causeException);
   throw(ME);
 end

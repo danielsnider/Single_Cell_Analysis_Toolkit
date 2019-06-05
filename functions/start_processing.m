@@ -92,10 +92,14 @@ function fun(app, NewResultCallback)
         end
         pause(1);
       end
-
+      % Convert app's class from class GUI to class struct
+      % Had to convert from class GUI to class struct, because for some
+      % reason, when passed through to parfor, app is passed as an empty
+      % GUI, but this is not the case for class struct. Weird...
+      app_struct = class_app_gui_to_struct(app);
       %% PARALLEL LOOP
-      parfor current_img_number = 1:NumberOfImages
-        process_single_image(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
+      parfor (current_img_number = 1:NumberOfImages)
+        process_single_image(app_struct,current_img_number,NumberOfImages,imgs_to_process,is_parallel_processing,NewResultQueue,ProcessingLogQueue,UiAlertQueue)
       end
     else
       is_parallel_processing = false;
@@ -128,7 +132,7 @@ function fun(app, NewResultCallback)
     end
 
     % Update list of measurements in the display tab
-    draw_display_measure_selection(app);
+    draw_display_measure_selection(app); 
 
     % Update list of measurements in the analyze tab
     changed_MeasurementNames(app);

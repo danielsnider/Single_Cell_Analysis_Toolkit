@@ -1,5 +1,6 @@
 function fun(app, plate_num)
   img_dir = app.plates(plate_num).metadata.ImageDir;
+  
   % The plate number in the filename of images
   plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
 
@@ -8,7 +9,7 @@ function fun(app, plate_num)
   app.plates(plate_num).img_files = img_files;
   
   if isempty(img_files)
-    msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+    msg = sprintf('Aborting because there were no image files found in:\n\n "%s".\n\n Please correct the ImageDir setting in the file:\n\n "%s".\n',img_dir, app.ChooseplatemapEditField.Value);
     title_ = 'Image Files Not Found';
     throw_application_error(app,msg,title_);
   end

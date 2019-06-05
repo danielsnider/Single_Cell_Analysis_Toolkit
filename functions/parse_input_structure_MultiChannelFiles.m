@@ -17,7 +17,7 @@ function parse_input_structure_MultiChannelFiles(app, plate_num)
   img_files(ismember({img_files.name},banned_names)) = []; % do delete
   
   if isempty(img_files)
-    msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+    msg = sprintf('Aborting because there were no image files found in:\n\n "%s".\n\n Please correct the ImageDir setting in the file:\n\n "%s".\n',img_dir, app.ChooseplatemapEditField.Value);
     title_ = 'Image Files Not Found';
     throw_application_error(app,msg,title_);
   end
