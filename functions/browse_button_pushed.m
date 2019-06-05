@@ -24,7 +24,7 @@ end
 
     % Browse for path if the testing files don't exist
     if isempty(app.ChooseplatemapEditField.Value)
-      [FileName,PathName,FilterIndex] = uigetfile('*','Pick a plate map (.xlsx) or saved state (.mat)');
+      [FileName,PathName,FilterIndex] = uigetfile({'*.xlsx';'*.mat';'*.*'},'Pick a plate map (.xlsx) or saved state (.mat)');
       if ~FileName
          return
       end

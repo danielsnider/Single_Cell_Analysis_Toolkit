@@ -1,11 +1,10 @@
 function fun(app, plate_num)
   img_dir = app.plates(plate_num).metadata.ImageDir;
-
   % The plate number in the filename of images
   plate_num_file_part = sprintf('p%02d',app.plates(plate_num).plate_num); % ex. p01   Needed to handle different plate numbers in image filenames.
 
   % List Image Files
-  img_files = dir([img_dir '\*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
+  img_files = dir([img_dir '/*' plate_num_file_part '*.tif*']); % ex. \path\Images\*p01*.tif*
   app.plates(plate_num).img_files = img_files;
   
   if isempty(img_files)
@@ -69,7 +68,7 @@ function fun(app, plate_num)
     for chan_num=[uniq_channels]
       image_filename = image_file.name; % ex. r02c02f01p01-ch2sk1fk1fl1.tiff
       image_filename(16) = chan_nums_str{chan_num}; % change the channel number
-      multi_channel_img.chans(chan_num).path = [image_file.folder '\' image_filename];
+      multi_channel_img.chans(chan_num).path = [image_file.folder '/' image_filename];
     end
     multi_channel_imgs = [multi_channel_imgs; multi_channel_img];
   end
