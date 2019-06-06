@@ -87,10 +87,15 @@ function fun(app)
   avail_mem_GiB = sys.PhysicalMemory.Available / 1024^3;
   total_mem_GiB = sys.PhysicalMemory.Total / 1024^3;
   elseif ismac
-      % Do something
-      msg='Available memory searching has not been setup yet for MacOS';
-      title='Unsupported MacOS';
-      throw_application_error(app, msg, title);
+%       % Do something
+%       msg='Available memory searching has not been setup yet for MacOS';
+%       title='Unsupported MacOS';
+%       throw_application_error(app, msg, title);
+      
+      [~,sys] = system('sysctl -a | grep hw.memsize | awk ''{print $2}''');
+      total_mem_GiB = (eval(sys)/1024^3);
+      
+      
   elseif isunix
     [user,sys] = unix('free | grep Mem');
     [user,sys] = unix('free -m');
