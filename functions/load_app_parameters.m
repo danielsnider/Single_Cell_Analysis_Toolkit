@@ -344,9 +344,13 @@ function func(app, app_parameters, createCallbackFcn)
     if strcmpi(key,'Primary Segment')
       app.PrimarySegmentDropDown.Value = app.PrimarySegmentDropDown.ItemsData(find(strcmpi(app.PrimarySegmentDropDown.Items,value)));
     elseif strcmpi(key,'Remove primary outside')
+      if value==0 % If user sets to FALSE, continue
+          continue
+      else
       app.RemovePrimarySegmentsOutside.Value = app.RemovePrimarySegmentsOutside.ItemsData(find(strcmpi(app.RemovePrimarySegmentsOutside.Items,value)));
       if ~isequal(value,false)
         app.RemovePrimarySegments_CheckBox.Value = true;
+      end
       end
     elseif strcmpi(key,'Remove segments outside primary')
       app.RemoveSecondarySegments_CheckBox.Value = value;
