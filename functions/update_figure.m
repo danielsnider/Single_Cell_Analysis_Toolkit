@@ -1,4 +1,4 @@
-function fun(app, imgs, segments, subsetTable, plate)
+function f = fun(app, imgs, segments, subsetTable, plate)
   try
     if no_images_loaded(app)
         return
@@ -103,7 +103,7 @@ function fun(app, imgs, segments, subsetTable, plate)
     % Need to add something here for parallel, change figure number to random available number and then delete
     
     % Display
-    f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off');
+    f = figure(111); clf; set(f, 'name','Display','NumberTitle', 'off'); % @NOTE: I have returned f handle for top function return, so that f can be used by other functions. JS July 31, 2019
     if ndims(composite_img) <= 3
       imshow(composite_img,[]);
     elseif ndims(composite_img) == 4

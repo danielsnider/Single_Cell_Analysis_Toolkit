@@ -79,7 +79,21 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
       else
         % Do not remove all segments found outside of the primary segment.
         new_sub_seg_data = sub_seg_data;
-      end
+    %% Perform Segmentation
+  if ~is_parallel_processing
+    if app.progressdlg.CancelRequested
+        return
+    end
+    app.progressdlg.Message = sprintf('%s\n%s',msg,'Segmenting image...');
+    app.progressdlg.Value = (0.33 / NumberOfImages) + ((current_img_number-1) / NumberOfImages);
+  end
+  % Loop over each configured segment and execute the segmentation algorithm
+  seg_result = {};
+  for seg_num=1:length(app.segment)
+    algo_name = app.segment{seg_num}.AlgorithmDropDown.Value;
+    seg_result{seg_num} = do_segmentation(app, seg_num, algo_name, imgs);
+  end
+   end
       seg_result{seg_num}.matrix = new_sub_seg_data;
       if isfield(app.segment{seg_num}, 'result') && isfield(app.segment{seg_num}.result, 'matrix')
         app.segment{seg_num}.result.matrix = new_sub_seg_data;
@@ -112,9 +126,43 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
   iterTable = table();
   if ~isempty(primary_seg_num)
     % Loop over each configured measurement and execute the measurement code
-    for meas_num=1:length(app.measure)
+    for meas_num=1:length(app.measure)     
       algo_name = app.measure{meas_num}.AlgorithmDropDown.Value;
       MeasureTable = do_measurement(app, plate, meas_num, algo_name, seg_result, imgs);
+      
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      %%%   Segmentation KeyPress Evaluations   %%%
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+      
+
+      if app.CheckBox_EvaluateSegmentation.Value
+          % Initialize an empty keypress
+          keypress=[];
+          fig_h = update_figure( app, imgs, seg_result, iterTable, plate);
+          % Need to ensure fig_h UserData is empty on every iteration of a new
+          % img
+          set(fig_h, 'UserData', [])
+          if isempty(keypress)
+              set(fig_h, 'KeyPressFcn', @goodcellbadcell);
+          end
+          % Need to pause to give user some time to annotate cell
+          pause(2)
+          keypress = get(fig_h, 'UserData');
+          if ~isempty(keypress)
+              if keypress=='g' | keypress=='b'
+                  keypress_final = keypress;
+                  % Re-set fig_h callback function to an empty callback to
+                  % prevent accidental clicks
+                  set(fig_h, 'KeyPressFcn', [])
+              end
+          else
+              keypress_final = '';
+          end
+      else
+          keypress_final = '';
+      end
+      
+      
       % Remove duplicate columns, keep the column that got there first
       new_col_names = MeasureTable.Properties.VariableNames(~ismember(MeasureTable.Properties.VariableNames,iterTable.Properties.VariableNames));
       MeasureTable = MeasureTable(:,new_col_names);
@@ -130,6 +178,14 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
           throw_application_error(app,msg,title_);
         end
 
+        if keypress_final == 'g'
+            MeasureTable.cell_segmentation_evaluation = repelem(1,size(MeasureTable,1))';
+        elseif keypress_final == 'b'
+            MeasureTable.cell_segmentation_evaluation = repelem(0,size(MeasureTable,1))';
+        else
+            MeasureTable.cell_segmentation_evaluation = repelem(nan,size(MeasureTable,1))';
+        end
+        
         % Append new measurements
         iterTable=[iterTable MeasureTable];
       end
@@ -203,7 +259,7 @@ function fun(app,current_img_number,NumberOfImages,imgs_to_process,is_parallel_p
     end    
   end
   
-  % Save Snapshots to disk. Will refactor at some point
+  % Save Snapshots to disk. @TODO: Will refactor at some point
   if ~strcmp(app.measure_snapshot_selection,'No') & ~isempty(app.measure_snapshot_selection) & app.processing_running 
     if strcmp(app.measure_snapshot_selection,'Yes (All)') | (strcmp(app.measure_snapshot_selection,'Yes (1/50)') & mod(current_img_number,50)==0) | (strcmp(app.measure_snapshot_selection,'Yes (1/10)') & mod(current_img_number,10)==0)
       date_str = datestr(now,'yyyymmddTHHMMSS');
