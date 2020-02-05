@@ -1,5 +1,7 @@
-function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_disk, max_dyn_range, remove_abridged_object_tracking, sweller_threshold, save_growth_plot, save_path)
+function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_disk, max_dyn_range, remove_abridged_object_tracking, sweller_threshold, save_growth_plot, manually_filter_organoids, save_path)
   
+  manually_filter_organoids
+
   % Check if save path is empty, ask the human
   if isempty(save_path)
     save_path = uigetdir('\','Choose a folder to save analysis to');
