@@ -46,10 +46,25 @@ function [params, algorithm] = fun()
   params(n).type = 'checkbox';
 
   n = n + 1;
+  params(n).name = 'Minimum Growth';
+  params(n).default = '1.5%';
+  params(n).help = 'Don''t count objects that grow less than this amount. Enter between -999% and 999%.';
+  params(n).type = 'text';
+  params(n).optional = true;
+  params(n).optional_default_state = true;
+
+  n = n + 1;
   params(n).name = 'Save Growth Plot to Disk';
   params(n).default = false;
   params(n).help = 'A growth plot will be saved to disk.';
   params(n).type = 'checkbox';
+
+  n = n + 1;
+  params(n).name = 'Manually Filter Organoids';
+  params(n).default = 'Off';
+  params(n).help = 'By manually clicking on organiods you can choose whether to keep or remove them.';
+  params(n).type = 'dropdown';
+  params(n).options = {'Click to Keep','Click to Remove','Off'};
 
   n = n + 1;
   params(n).name = 'Save Results To';

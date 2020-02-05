@@ -1,4 +1,4 @@
-function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, min_area, max_area, solidity_threshold, eccentricity_threshold, debug_level)
+function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, neighborhood_param, min_area, max_area, mean_intensity_threshold, solidity_threshold, eccentricity_threshold, debug_level)
     
   warning off all
   cwp=gcp('nocreate');
@@ -16,16 +16,21 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
   end
 
   % Threshold
-  median_val = double(median(img(:)));
-  adaptive_sensitivity = 30;
-  adaptive_factor = adaptive_sensitivity*median_val*.001+thresh_param;
-  if adaptive_factor > 0.5
-    adaptive_factor = 0.5;
+  % median_val = double(median(img(:)));
+  % adaptive_sensitivity = 30;
+  % adaptive_factor = adaptive_sensitivity*median_val*.001+thresh_param;
+  % if adaptive_factor > 0.5
+  %   adaptive_factor = 0.5;
+  % end
+  % if adaptive_factor < 0
+  %   adaptive_factor = 0;
+  % end
+  % T = adaptthresh(im_smooth, adaptive_factor);
+
+  if mod(neighborhood_param,2)==0
+    neighborhood_param = neighborhood_param + 1;
   end
-  if adaptive_factor < 0
-    adaptive_factor = 0;
-  end
-  T = adaptthresh(im_smooth, adaptive_factor);
+  T = adaptthresh(im_smooth, thresh_param, 'NeighborhoodSize', neighborhood_param);
   im_thresh = imbinarize(im_smooth,T);
   if ismember(debug_level,{'All'})
     f = figure(2885); clf; set(f,'name','threshold','NumberTitle', 'off');
@@ -67,6 +72,29 @@ function result = fun(plugin_name, plugin_num, img, smooth_param, thresh_param, 
   end
 
   im_labelled = bwlabel(im_areafilt);
+
+  if ~isequal(mean_intensity_threshold,false)      
+      stats = regionprops(im_labelled, img, 'MeanIntensity');
+      mean_intensity = cat(1,stats.MeanIntensity); % double check this
+
+      if contains(mean_intensity_threshold,'%')
+        % handle percentile threshold
+        percent_location = strfind(mean_intensity_threshold,'%');
+        mean_intensity_threshold = mean_intensity_threshold(1:percent_location-1); % remove '%' sign
+        mean_intensity_threshold = str2num(mean_intensity_threshold); % convert to number
+        im_labelled(ismember(im_labelled,find(mean_intensity < prctile(mean_intensity(:), mean_intensity_threshold))))=0;
+      else 
+        % handle fixed intensity threshold
+        im_labelled(ismember(im_labelled,find(mean_intensity < str2num(mean_intensity_threshold))))=0;
+      end
+
+      if ismember(debug_level,{'All'})
+        f = figure(66280); clf; set(f,'name','mean intensity filter','NumberTitle', 'off');
+        imshow(im_labelled,[]);
+      end
+  end
+  
+  im_labelled = bwlabel(im_labelled);
 
   if ~isequal(solidity_threshold,false)      
       stats = regionprops(im_labelled,'solidity');
