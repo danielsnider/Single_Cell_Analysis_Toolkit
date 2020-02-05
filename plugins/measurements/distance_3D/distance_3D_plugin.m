@@ -43,6 +43,7 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   %% Do distance measurement
   % Get centers of from objects
   from_stats = regionprops3(from_matrix, 'Centroid', 'Volume', 'EquivDiameter');
+  from_stats(from_stats.Volume==0, :) = [];
   from_stats.Centroid(:,3) = from_stats.Centroid(:,3) .* z_res_multiplier;  % z depth scale factor. How many times larger is one discrete step in the Z dimension than one step in the X dimension.
   points = from_stats.Centroid;
   % points = points(54:60,:); % limit pero for debugging
@@ -59,16 +60,24 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
   all_distances = []; % distance to each 
   all_surface_points = [];
   for i=1:length(to_vertices)
-    FV.faces = to_faces{i};
-    FV.vertices = to_vertices{i};
-    if isempty(FV.faces)
-      all_distances(:,i) = NaN;
-      all_surface_points(:,:,i) = NaN;
+    try
+      FV.faces = to_faces{i};
+      FV.vertices = to_vertices{i};
+      if isempty(FV.faces)
+        all_distances(:,i) = NaN;
+        all_surface_points(:,:,i) = NaN;
+        continue
+      end
+      [distances,surface_points] = point2trimesh(FV, 'QueryPoints', points);
+      all_distances(:,i) = abs(distances);
+      all_surface_points(:,:,i) = surface_points;
+    catch ME
+      error_msg = getReport(ME,'extended','hyperlinks','off');
+      disp('[NOTE] Unhandled error in distance_3D_plugin');
+      disp(error_msg);
+      disp('[NOTE] Continuing...!');
       continue
     end
-    [distances,surface_points] = point2trimesh(FV, 'QueryPoints', points);
-    all_distances(:,i) = abs(distances);
-    all_surface_points(:,:,i) = surface_points;
   end
 
   if ~isempty(all_surface_points)
@@ -79,7 +88,15 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
     % Get the correct surface points (there are multiple types 2D z=1,z=2,3D)
     surface_points = [];
     for pid=1:size(points,1)
-      surface_points(pid,:) = all_surface_points(pid,:,min_dist_type_id(pid));
+      try
+        surface_points(pid,:) = all_surface_points(pid,:,min_dist_type_id(pid));
+      catch ME
+        error_msg = getReport(ME,'extended','hyperlinks','off');
+        disp('[NOTE] Unhandled error in distance_3D_plugin');
+        disp(error_msg);
+        disp('[NOTE] Continuing...!');
+        continue
+      end
     end
 
     if strcmp(lower(measure_from_place),'edge')

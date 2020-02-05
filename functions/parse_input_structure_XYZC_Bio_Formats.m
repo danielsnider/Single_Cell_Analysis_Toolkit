@@ -4,8 +4,8 @@ function parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num)
 
   % List Image Files
   % Example: Laura DiGiovanni - PO-Mito Live Hyvolution 2018-03-07.lif
-  img_files = dir([img_dir '\*']);
-
+%   img_files = dir([img_dir '\*']);
+  img_files = dir([img_dir '/*']);
   % Remove banned file names
   banned_names = {'desktop.ini',...
     'Thumbs.db',...
@@ -17,8 +17,11 @@ function parse_input_structure_XYZ_Split_Bio_Formats(app, plate_num)
     };
   img_files(ismember({img_files.name},banned_names)) = []; % do delete
   
+  % Remove subfolders if any
+  img_files( cell2mat({img_files.isdir}) ) = []; % do delete
+ 
   if isempty(img_files)
-    msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+    msg = sprintf('Aborting because there were no image files found in:\n\n "%s".\n\n Please correct the ImageDir setting in the file:\n\n "%s".\n',img_dir, app.ChooseplatemapEditField.Value);
     title_ = 'Image Files Not Found';
     throw_application_error(app,msg,title_);
   end

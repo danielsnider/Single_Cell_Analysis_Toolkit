@@ -10,7 +10,7 @@ function img = func(app, image_file, chan_num)
   end
 
   % Log that we are loading the file
-  if ~ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+  if ~ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
     [filepath,name,ext] = fileparts(img_path);
     if isvalid(app.StartupLogTextArea.tx) == 1
       msg = sprintf('Loading channel %d of image %s', chan_num, [name ext]);
@@ -58,14 +58,24 @@ function img = func(app, image_file, chan_num)
       count = count + 1;
     end
 
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
     ImageName = image_file.ImageName;
     series_id = image_file.series_id;
     num_chans = image_file.num_chans;
     timepoint = image_file.timepoint;
     zslices = image_file.zslices;
-    select_images = chan_num:num_chans:num_chans*max(zslices); % bioformats stores images as a list of all channels, zslices and timepoints per stack, select the right channel and zslices
-    select_images = select_images + ((timepoint-1)*max(zslices)*num_chans); % adjust to select the right timepoint
+
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+      select_images = chan_num:num_chans:num_chans*max(zslices); % bioformats stores images as a list of all channels, zslices and timepoints per stack, select the right channel and zslices
+      select_images = select_images + ((timepoint-1)*max(zslices)*num_chans); % adjust to select the right timepoint
+    end
+
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZTC-Bio-Format-SingleFile'})
+      num_zslices = max(zslices);
+      num_timepoints = max(app.plates(plate_num).timepoints);
+      chan_offset = (chan_num - 1) * num_timepoints * num_zslices;
+      select_images = zslices + chan_offset + ((timepoint - 1) * num_zslices);
+    end
 
     debug_level = 'ERROR';
     if isvalid(app.StartupLogTextArea.tx) == 1

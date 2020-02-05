@@ -344,9 +344,13 @@ function func(app, app_parameters, createCallbackFcn)
     if strcmpi(key,'Primary Segment')
       app.PrimarySegmentDropDown.Value = app.PrimarySegmentDropDown.ItemsData(find(strcmpi(app.PrimarySegmentDropDown.Items,value)));
     elseif strcmpi(key,'Remove primary outside')
+      if value==0 % If user sets to FALSE, continue
+          continue
+      else
       app.RemovePrimarySegmentsOutside.Value = app.RemovePrimarySegmentsOutside.ItemsData(find(strcmpi(app.RemovePrimarySegmentsOutside.Items,value)));
       if ~isequal(value,false)
         app.RemovePrimarySegments_CheckBox.Value = true;
+      end
       end
     elseif strcmpi(key,'Remove segments outside primary')
       app.RemoveSecondarySegments_CheckBox.Value = value;
@@ -461,7 +465,7 @@ function func(app, app_parameters, createCallbackFcn)
                   elseif iscell(value)
                     msg = sprintf('It is not allowed to specify the value "%s" to the parameter "%s" for the "%s" algorithm named "%s". Change this value in your plate map spreadsheet to an allowed value. Find what is allowed by clicking ''Add Measure'' and testing what can be entered.',strjoin(value,','), key, plugin_pretty_name, tab_name);  
                   end
-                  endtitle_ = 'User Error - Bad Parameter Value';
+                  title_ = 'User Error - Bad Parameter Value';
                   throw_application_error(app,msg,title_)
                 end
                 value_set = true;

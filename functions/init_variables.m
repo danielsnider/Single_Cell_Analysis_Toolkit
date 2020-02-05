@@ -82,9 +82,31 @@ function fun(app)
   app.RemovePrimarySegmentsOutside.Enable = false;
 
   % Set number of parallel workers based on amount of available system memory or cpus
+  if ispc
   [user,sys] = memory;
   avail_mem_GiB = sys.PhysicalMemory.Available / 1024^3;
   total_mem_GiB = sys.PhysicalMemory.Total / 1024^3;
+  elseif ismac
+%       % Do something
+%       msg='Available memory searching has not been setup yet for MacOS';
+%       title='Unsupported MacOS';
+%       throw_application_error(app, msg, title);
+      
+      [~,sys] = system('sysctl -a | grep hw.memsize | awk ''{print $2}''');
+      total_mem_GiB = (eval(sys)/1024^3);
+      
+      
+  elseif isunix
+    [user,sys] = unix('free | grep Mem');
+    [user,sys] = unix('free -m');
+    stats = str2double(regexp(sys, '[0-9]*', 'match'));
+    avail_mem_GiB = stats(6)/1e3;
+    total_mem_GiB = (stats(1))/1e3;
+  else 
+      msg='Your operating system is not supported!!';
+      title='Unsupported OS';
+      throw_application_error(app, msg, title);
+  end
   GiB_required_per_worker = 4;
   worker_count_by_memory = floor(total_mem_GiB / GiB_required_per_worker);
   num_cores = feature('numcores');

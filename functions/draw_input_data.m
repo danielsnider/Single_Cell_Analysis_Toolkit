@@ -111,7 +111,7 @@ function fun(app, createCallbackFcn)
       'ValueChangedFcn', createCallbackFcn(app, @CheckCallback, true));
 
 
-    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs'})
+    if ismember(app.plates(plate_num).metadata.ImageFileFormat, {'OperettaSplitTiffs','IncuCyte','CellomicsTiffs','IXMCTiffs'})
       Plate_Map_Table_visibility = 'on';
       Filter_Data_visibility = 'on';
       Filter_Row_visibility = 'on';
@@ -146,7 +146,7 @@ function fun(app, createCallbackFcn)
       pos = app.plates(plate_num).NumberOfImagesField.Position;
       app.plates(plate_num).NumberOfImagesField.Position = [pos(1) 183 pos(3) pos(4)]; % Move up because some fields will be missing
 
-    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+    elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
       %first labal 248
       %first edit box 247
       %secon edit box 218 (29 diff)

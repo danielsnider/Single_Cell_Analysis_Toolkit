@@ -1,6 +1,4 @@
-function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_disk, max_dyn_range, remove_abridged_object_tracking, sweller_threshold, save_growth_plot, manually_filter_organoids, save_path)
-
-  manually_filter_organoids
+function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_disk, max_dyn_range, remove_abridged_object_tracking, sweller_threshold, save_growth_plot, save_path)
   
   % Check if save path is empty, ask the human
   if isempty(save_path)
@@ -40,7 +38,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
 
   %% Eliminate Orphan Segments (remove segments not seen at all timepoints)
   % Elimate objects whos centroids don't lie within objects that exist at all timepoints
-  if remove_abridged_object_tracking
+  if remove_abridged_object_tracking & num_timepoints > 1
     segs = [];
     seg_concat = zeros(size(segments(1).data));
     for tid = 1:num_timepoints
@@ -85,31 +83,39 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
       norm_organoid_areas(idx,tid) = organoid_areas(idx,tid) ./ organoid_areas(idx,1); % divide all by the first point
     end
   end
+  num_organoids = size(organoid_areas,1);
 
   % Get only swellers
-  sweller_pos = norm_organoid_areas(:,end) > sweller_threshold;
-  sweller_idx = find(sweller_pos);
-  sweller_organoid_areas = organoid_areas(sweller_pos,:);
-  sweller_norm_organoid_areas = norm_organoid_areas(sweller_pos,:);
+  if num_organoids > 0
+    sweller_pos = norm_organoid_areas(:,end) > sweller_threshold;
+    sweller_idx = find(sweller_pos);
+    sweller_organoid_areas = organoid_areas(sweller_pos,:);
+    sweller_norm_organoid_areas = norm_organoid_areas(sweller_pos,:);
+  else
+    sweller_pos = NaN;
+    sweller_idx = NaN;
+    sweller_organoid_areas = NaN;
+    sweller_norm_organoid_areas = NaN;
+  end
   relative_sweller_norm_organoid_areas = mean(sweller_norm_organoid_areas); % mean of relative growth
   absolute_sweller_norm_organoid_areas = sum(sweller_organoid_areas) ./ sum(sweller_organoid_areas(:,1)); % mean of absolute growth
 
-
-  %
-  %
-  % ADD GINPUT HERE
-  %
-  %
-
-
   % Calculate sweller statistics
-  num_organoids = size(organoid_areas,1);
-  num_sweller_organoids = size(sweller_organoid_areas,1);
-  sweller_absolute_total_growth = sum(sweller_organoid_areas(:,end))/sum(sweller_organoid_areas(:,1))*100;
-  sweller_mean_individual_relative_growth = mean(sweller_norm_organoid_areas(:,end))*100;
-  sweller_max_individual_relative_growth = max(sweller_norm_organoid_areas(:,end))*100;
-  absolute_total_growth = sum(organoid_areas(:,end))/sum(organoid_areas(:,1))*100;
-  mean_individual_relative_growth = mean(norm_organoid_areas(:,end))*100;
+  if num_organoids > 0
+    num_sweller_organoids = size(sweller_organoid_areas,1);
+    sweller_absolute_total_growth = sum(sweller_organoid_areas(:,end))/sum(sweller_organoid_areas(:,1))*100;
+    sweller_mean_individual_relative_growth = mean(sweller_norm_organoid_areas(:,end))*100;
+    sweller_max_individual_relative_growth = max(sweller_norm_organoid_areas(:,end))*100;
+    absolute_total_growth = sum(organoid_areas(:,end))/sum(organoid_areas(:,1))*100;
+    mean_individual_relative_growth = mean(norm_organoid_areas(:,end))*100;
+  else
+    num_sweller_organoids = 0;
+    sweller_absolute_total_growth = NaN;
+    sweller_mean_individual_relative_growth = NaN;
+    sweller_max_individual_relative_growth = NaN;
+    absolute_total_growth = NaN;
+    mean_individual_relative_growth = NaN;
+  end
   sweller_stats_txt = [ ...
     sprintf('number of objects that swelled more than %.3f%% --> %.1f%% (%d / %d)\n',sweller_threshold, num_sweller_organoids/num_organoids*100,num_sweller_organoids,num_organoids) ...
     sprintf('of the %d swellers --> absolute total growth = %.1f%%,\n\t mean individual growth (relative to its starting size) = %.1f%%\n\t max individual growth (relative to its starting size) = %.1f%%\n', num_sweller_organoids, sweller_absolute_total_growth, sweller_mean_individual_relative_growth, sweller_max_individual_relative_growth) ...
@@ -168,15 +174,21 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
         fig_name = sprintf('%s_visualization_%d.png',save_path_prefix, tid);
         [imageData, alpha] = export_fig(fig_name,save_mag);
 
-        % Make GIF
-        fps = 2;
-        gif_name = sprintf('%s_visualization.gif',save_path_prefix);
-        [imind,cm] = rgb2ind(imageData,256);
-        if tid == 1
-            imwrite(imind, cm, gif_name, 'gif', 'DelayTime',1/fps, 'Loopcount', inf); 
-        else 
-            imwrite(imind, cm, gif_name, 'gif', 'DelayTime',1/fps, 'WriteMode', 'append'); 
-        end 
+        if ndims(imageData) == 2
+          imageData = cat(3, imageData, imageData, imageData);
+        end
+      
+        if ndims(imageData) == 3
+          % Make GIF
+          fps = 2;
+          gif_name = sprintf('%s_visualization.gif',save_path_prefix);
+          [imind,cm] = rgb2ind(imageData,256);
+          if tid == 1
+              imwrite(imind, cm, gif_name, 'gif', 'DelayTime',1/fps, 'Loopcount', inf); 
+          else 
+              imwrite(imind, cm, gif_name, 'gif', 'DelayTime',1/fps, 'WriteMode', 'append'); 
+          end 
+        end
 
       end
     end
@@ -288,7 +300,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
       ResultTable.(meta_name) = {segments(1).info.well_info_struct.(meta_name)};
     end
   end
-  ResultTable.Number_of_Organoids = num_objects;
+  ResultTable.Number_of_Organoids= num_objects;
   num_sweller_organoids_per_timepoint = sum(sweller_organoid_areas>0);
   ResultTable.Number_of_Swelling_Organoids = num_sweller_organoids_per_timepoint;
   ResultTable.Area_Pixel_Count = areas;
@@ -319,32 +331,44 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     allResults = readtable(all_results_file);
     thisResult = readtable(save_file);
     data_loc = find(ismember(allResults.Experiment_Name,Experiment_Name)); % location of this time course data in the CSV file
-    [allResults, thisResult] = append_missing_columns_table_pair(allResults, thisResult);
 
+    %% Convert (AllResults) all table values to cells so that a single column can have both numeric and string values
+    % Reorder column names of tables to be in the same order so that joining works
+    original_column_order = allResults.Properties.VariableNames;
+    thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
+    allResults = allResults(:,sort(allResults.Properties.VariableNames));
+    % Join table and convert all table values to cells so that a single column can have both numeric and string values
+    allResults = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', allResults.Properties.VariableNames);
+    %% Convert (thisResult) all table values to cells so that a single column can have both numeric and string values
+    original_column_order2 = thisResult.Properties.VariableNames;
+    thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
+    allResults = allResults(:,sort(allResults.Properties.VariableNames));
+    % Join table and convert all table values to cells so that a single column can have both numeric and string values
+    thisResult = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', thisResult.Properties.VariableNames);
+    % Reorder table columns to the original order
+    allResults = allResults(:,original_column_order);
+    thisResult = thisResult(:,original_column_order2);
+
+    % Add missing columns
+    [allResults, thisResult] = append_missing_columns_table_pair(allResults, thisResult);
 
     if isempty(data_loc)
       % allResults = [allResults; thisResult]; % append this result % UPDATE this doesn't work with columns of different types
-      %% Convert all table values to cells so that a single column can have both numeric and string values
-      % Reorder column names of tables to be in the same order so that joining works
-      original_column_order = allResults.Properties.VariableNames;
-      thisResult = thisResult(:,sort(thisResult.Properties.VariableNames));
-      allResults = allResults(:,sort(allResults.Properties.VariableNames));
-      % Join table and convert all table values to cells so that a single column can have both numeric and string values
-      allResults = cell2table(cat(1,table2cell(allResults), table2cell(thisResult)), 'VariableNames', allResults.Properties.VariableNames);
-      % Reorder table columns to the original order
       allResults = allResults(:,original_column_order);
     else
       try
-        meoou
         allResults(data_loc,allResults.Properties.VariableNames) = thisResult(1,allResults.Properties.VariableNames); % update this result for all variables
       catch ME
+        missing_save_file = sprintf('%s/MISSING_in_all_results__%s_%s_results.csv',save_path, date_str, ImageName);
+        writetable(ResultTable,missing_save_file);
         error_msg = getReport(ME,'extended','hyperlinks','off');
         disp(error_msg);
         title_ = 'Error Saving Statistics to Disk';
-        msg = sprintf('We ran into an issue trying to add the current well''s growth statistics to the ''all_results.csv'' file. To avoid this problem, rename ''all_results.csv'' to anything else and try again.', plugin_name);
+        msg = sprintf('The analysis will continue but a well will be missing from the ''all_results.csv'' file. Please email Daniel Snider with the following three things: \n1. Your ''all_results.csv'' file. \n2. The file in the same folder named ''%s''.\n3. A screenshot of the following error:\n\n%s', missing_save_file, error_msg);
+        % msg = sprintf('We ran into an issue trying to add the current well''s growth statistics to the ''all_results.csv'' file. To avoid this problem, rename ''all_results.csv'' to anything else and try again.', plugin_name);
         f = errordlg(msg,title_);
-        err = MException('PLUGIN:input_param_error',msg);
-        throw(err);
+        % err = MException('PLUGIN:input_param_error',msg);
+        % throw(err);
       end
     end
 
@@ -370,12 +394,12 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     microplate_growth_matrix = nan(8,12);
     text_labels = cell(8,12);
     for row_num=1:height(allResults)
-      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change_') & ~contains(allResults.Properties.VariableNames,'Sweller')));
+      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change') & ~contains(allResults.Properties.VariableNames,'Sweller')));
       growth = allResults{row_num, col_pos};
       row = allResults{row_num,'row'};
       column = allResults{row_num,'column'};
       microplate_growth_matrix(row,column) = growth;
-      col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Organoids_')));
+      col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Organoids')));
       num_organoids = allResults{row_num, col_pos};
       text_labels{row,column} = sprintf('n=%d', num_organoids);
     end
@@ -409,7 +433,7 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     microplate_growth_matrix = nan(8,12);
     text_labels = cell(8,12);
     for row_num=1:height(allResults)
-      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change_') & contains(allResults.Properties.VariableNames,'Sweller')));
+      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change') & contains(allResults.Properties.VariableNames,'Sweller')));
       growth = allResults{row_num, col_pos};
       col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Swelling_Organoids')));
       num_swelling_organoids = allResults{row_num, col_pos};
@@ -452,11 +476,11 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     microplate_growth_matrix = nan(8,12);
     text_labels = cell(8,12);
     for row_num=1:height(allResults)
-      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change_') & contains(allResults.Properties.VariableNames,'Sweller')));
+      col_pos = max(find(contains(allResults.Properties.VariableNames,'Area_Normalized_Change') & contains(allResults.Properties.VariableNames,'Sweller')));
       growth = allResults{row_num, col_pos};
       col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Swelling_Organoids')));
       num_swelling_organoids = allResults{row_num, col_pos};
-      col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Organoids_')));
+      col_pos = max(find(contains(allResults.Properties.VariableNames,'Number_of_Organoids')));
       num_organoids = allResults{row_num, col_pos};
       perc_of_swellers = num_swelling_organoids/num_organoids;
       growth = growth*perc_of_swellers; % scale by percent of swellers
@@ -495,5 +519,6 @@ function fun(plugin_name, plugin_num, operate_on, segments, imgs, save_vis_to_di
     export_fig(fig_name,save_mag);
 
   end
+
 
 end

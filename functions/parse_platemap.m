@@ -1,7 +1,9 @@
 function [plates, app_parameters] = func(full_path)
   % full_path = 'C:\Users\daniel snider\Dropbox\Kafri\Projects\GUI\daniel\MY_PLATEMAP.xlsx';
+  tic;
   [num,txt,raw] = xlsread(full_path);
-
+  toc;
+  tic;
   plates = [];
   
   % Find locations in csv where "BeginPlate" or "Plugin=" is present
@@ -19,7 +21,8 @@ function [plates, app_parameters] = func(full_path)
       end
     end
   end
-
+  toc;
+    
   %% Loop over each plate, parsing it 
   for idx=1:size(plate_start_locs,1)
     plate = {};
@@ -32,7 +35,7 @@ function [plates, app_parameters] = func(full_path)
     plate.num_wells = plate.rows*plate.columns;
 
     %% Store specific well information
-    txt_str = cellstr(cellfun(@string, raw));
+    txt_str = cellstr(cellfun(@string, txt, 'UniformOutput', false)); % usr raw tends to cause the program to be stuck in computation.. repalced with txt for speed, for now.. TODO CHECK
     txt_str = txt_str(starty+3 : starty+2+plate.rows , startx+1 : startx+plate.columns);
     plate.wells = txt_str;
 
@@ -259,6 +262,7 @@ function [plates, app_parameters] = func(full_path)
       end
       key=raw{iter_yoffset, startx+1};
       value=raw{iter_yoffset, startx+2};
+%       disp(strcat('Key: ', key, ' | Value: ', num2str(value)))
       if any(isnan(key)) || isempty(key)
         break % found whitespace at end of plugin parameters, stop looping
       end
@@ -288,6 +292,7 @@ function [plates, app_parameters] = func(full_path)
       end
       key=raw{iter_yoffset, startx+1};
       value=raw{iter_yoffset, startx+2};
+%       disp(strcat('Adding Input Setting Param - Key: ', key, ' | Value: ', num2str(value)))
       if any(isnan(key)) || isempty(key)
         break % found whitespace at end of settings, stop looping
       end

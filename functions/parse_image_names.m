@@ -47,7 +47,7 @@ function fun(app)
       parse_input_structure_SingleChannelFiles(app, plate_num);
       app.plates(plate_num).supports_3D = false;
 
-    elseif ismember(naming_scheme, {'XYZCT-Bio-Format-SingleFile'})
+    elseif ismember(naming_scheme, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
       parse_input_structure_XYZCT_Bio_Formats(app, plate_num);
       app.plates(plate_num).supports_3D = true;
 
@@ -70,6 +70,11 @@ function fun(app)
     elseif ismember(naming_scheme, {'CellomicsTiffs'})
         parse_input_structure_CellomicsTiffs(app, plate_num);
         app.plates(plate_num).supports_3D = false;
+
+    elseif ismember(naming_scheme, {'IXMCTiffs'})
+        parse_input_structure_IXMCTiffs(app, plate_num);
+        app.plates(plate_num).supports_3D = false;
+        app.plates(plate_num).metadata.ImageFileFormat = {'CellomicsTiffs'}; % hack to write less code, mimic behaviour of CellomicsTiffs
     end
 
     % Enable by default all channels for display in the figure

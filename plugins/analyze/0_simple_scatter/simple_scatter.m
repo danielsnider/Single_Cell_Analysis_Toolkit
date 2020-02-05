@@ -34,6 +34,7 @@ function fun(plugin_name, plugin_num, x, y, marker_size, title_param, fontsize_p
   box off
 
   if trend_line
+    aaa='nope'
     lsline
   end
 

@@ -15,7 +15,6 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     imshow(img_smooth,[]);
   end
 
-
   % threshold
   img_thresh = img_smooth > thresh_param;
   if ismember(debug_level,{'All'})
@@ -138,7 +137,7 @@ function result = fun(plugin_name, plugin_num, img, seeds, threshold_smooth_para
     imshow(img8,[min_max]);
     hold on
     % Display color overlay
-    labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',0));
+    labelled_perim = imdilate(bwlabel(bwperim(labelled_img)),strel('disk',5));
     labelled_rgb = label2rgb(uint32(labelled_perim), 'jet', [1 1 1], 'shuffle');
     himage = imshow(im2uint8(labelled_rgb),[min_max]);
     himage.AlphaData = labelled_perim*1;

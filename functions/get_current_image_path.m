@@ -20,7 +20,7 @@ function img_path = fun(app, chan_num)
 
   elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'CellomicsTiffs'})
     fix_me
-  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile'})
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
     multi_channel_img = get_current_multi_channel_image(app);
     if isempty(multi_channel_img.chans)
       % The data for the current image is not in memory so load whole series. this is needed because we only load one series at a time into memory

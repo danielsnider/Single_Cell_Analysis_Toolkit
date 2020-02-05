@@ -18,7 +18,7 @@ function fun(app, plate_num)
   img_files(ismember({img_files.name},banned_names)) = []; % do delete
   
   if isempty(img_files)
-    msg = sprintf('Aborting because there were no image files found. Please correct the ImageDir setting in the file "%s".',app.ChooseplatemapEditField.Value);
+    msg = sprintf('Aborting because there were no image files found in:\n\n "%s".\n\n Please correct the ImageDir setting in the file:\n\n "%s".\n',img_dir, app.ChooseplatemapEditField.Value);
     title_ = 'Image Files Not Found';
     throw_application_error(app,msg,title_);
   end
@@ -45,6 +45,8 @@ function fun(app, plate_num)
     else
       try
         data = bfopen(full_path,1, 1, 1, 1);
+        % series_data = bfopenSeries(img_path,series_id,select_images, debug_level);
+        % dat=series_data{1};
       catch ME
         error_msg = getReport(ME,'extended','hyperlinks','off');
         msg = sprintf('Unable to read image file: "%s".\n\nThe error was:\n\n%s',full_path,error_msg);

@@ -61,7 +61,7 @@ function fun(app)
     pos(2) = 251; % move vertically
     app.ZSliceDropDownLabel.Position = pos;
 
-  elseif strcmp(app.plates(plate_num).metadata.ImageFileFormat, 'XYZCT-Bio-Format-SingleFile')
+  elseif ismember(app.plates(plate_num).metadata.ImageFileFormat, {'XYZCT-Bio-Format-SingleFile', 'XYZTC-Bio-Format-SingleFile'})
     app.RowDropDown.Visible = 'off';
     app.RowDropDownLabel.Visible = 'off';
     app.ColumnDropDown.Visible = 'off';
