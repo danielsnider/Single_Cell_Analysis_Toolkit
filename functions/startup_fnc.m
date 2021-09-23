@@ -1,3 +1,4 @@
+% ver 2.7fa22f
 function fun(app,createCallbackFcn)
   try
     set(0,'DefaultFigureWindowStyle','docked');
