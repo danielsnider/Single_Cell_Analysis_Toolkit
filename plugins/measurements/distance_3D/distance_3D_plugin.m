@@ -110,6 +110,19 @@ function MeasureTable=func(plugin_name, plugin_num, seg_from, seg_to, measure_fr
     surface_points(:) = NaN;
   end
 
+  % Check if objects overlap and set distance to zero if so. Unfortunately the algorithm above strictly measures distance edge to edge. This means that an object fully contained by another object will have a nonzero distance. Zero distances only occur when the objects edges intersect. This code block fixes the problem so that any object overlap leads to a distance of zero.
+  if strcmp(lower(measure_from_place),'edge')
+    for pid=1:size(points,1)
+      pid
+      one_from_object = from_matrix;
+      one_from_object(from_matrix~=pid)=0;
+      overlapping_pixels = sum(one_from_object(:) & to_matrix(:)) % total number of overlapping pixels
+      if overlapping_pixels
+        Distances(pid) = 0;
+      end
+    end
+  end
+
   % Store
   MeasureTable{:,['Distance_' matlab.lang.makeValidName(seg_from_name) '_to_' matlab.lang.makeValidName(seg_to_name)]}=Distances'; % Scalar
   MeasureTable{:,['Nearest_' matlab.lang.makeValidName(seg_to_name) '_Point']}=surface_points; % XYZ
